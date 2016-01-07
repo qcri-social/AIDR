@@ -45,7 +45,7 @@ public class Collection extends BaseEntity {
     @Column(name="publicly_listed")
     private boolean publiclyListed;
     
-	@Column(name="last_document")
+    @Column(length = 1024, name="last_document")
     private String lastDocument;
     
     @Column(name="classifier_enabled")

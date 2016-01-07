@@ -17,9 +17,14 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import qa.qcri.aidr.common.redis.LoadShedder;
+import qa.qcri.aidr.entity.DataFeed;
 import qa.qcri.aidr.io.FileSystemOperations;
+import qa.qcri.aidr.service.DataFeedService;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.JedisPubSub;
@@ -35,7 +40,7 @@ public class CollectionSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
-
+    DataFeedService dataFeedService = null;
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 
     public CollectionSubscriber() {
@@ -54,6 +59,9 @@ public class CollectionSubscriber extends JedisPubSub {
         }
         redisLoadShedder.put(channel, new LoadShedder(Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_LOAD_LIMIT)), Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true,channel));
         logger.info("Created loadshedder for channel: " + channel);
+        
+        ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
+        dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
     }
 
     @Override
@@ -64,6 +72,7 @@ public class CollectionSubscriber extends JedisPubSub {
     public void onPMessage(String pattern, String channel, String message) {
         if (redisLoadShedder.get(channel).canProcess()) {
             writeToFile(message);
+            writeToPostgres(message);
         } else {
             logger.info("loadshdder denied write for: " + channel);
         }
@@ -133,6 +142,29 @@ public class CollectionSubscriber extends JedisPubSub {
             isTimeToCreateNewFile();
         } catch (IOException ex) {
             logger.error(collectionCode + " Error in writing to file");
+        }
+    }
+    
+    //Persisting To Postgres
+    private void writeToPostgres(String message) {
+        try{
+        	JSONObject msgJson  = new JSONObject(message);
+            DataFeed dataFeed = new DataFeed();
+            dataFeed.setCode(collectionCode);
+            dataFeed.setFeed(msgJson);
+            JSONObject aidrJson = msgJson.getJSONObject("aidr");
+			dataFeed.setAidr(aidrJson);
+			dataFeed.setSource(aidrJson.getString("doctype"));
+			if(msgJson.has("coordinates") && !msgJson.isNull("coordinates")){
+				dataFeed.setGeo(msgJson.getJSONObject("coordinates"));
+			}
+			if(msgJson.has("place") && !msgJson.isNull("place")){
+				dataFeed.setPlace(msgJson.getJSONObject("place"));
+			}
+            dataFeedService.persist(dataFeed);
+            
+        }catch(Exception e){
+        	logger.error("Exception while persisting to postgres db ", e );
         }
     }
 

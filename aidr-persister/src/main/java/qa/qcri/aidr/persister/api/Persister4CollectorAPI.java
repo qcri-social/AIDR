@@ -28,6 +28,7 @@ import net.minidev.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
@@ -40,6 +41,7 @@ import qa.qcri.aidr.utils.ResultStatus;
 
 
 @Path("persister")
+@Component
 public class Persister4CollectorAPI {
 	
 	private static Logger logger = Logger.getLogger(Persister4CollectorAPI.class.getName());

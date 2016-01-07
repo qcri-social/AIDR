@@ -177,8 +177,9 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     } else {
                         me.loadData();
                         AIDRFMFunctions.reportIssue(response);
+                        Ext.getBody().unmask();
                     }
-					Ext.getBody().unmask();
+					
                     //AIDRFMFunctions.hideMask(mask);
                 },
                 failure: function () {

@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import net.minidev.json.JSONObject;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
@@ -32,6 +33,7 @@ import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
 
 @Path("/listPersister")
+@Component
 public class Persist2FileAPI {
 	private static Logger logger = Logger.getLogger(Persist2FileAPI.class.getName());
 

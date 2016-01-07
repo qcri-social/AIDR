@@ -359,6 +359,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
         btn.setDisabled(true);
         me.mainComponent.downloadLink.show();
+        Ext.suspendLayouts();
         me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
 
         Ext.Ajax.timeout = 900000;

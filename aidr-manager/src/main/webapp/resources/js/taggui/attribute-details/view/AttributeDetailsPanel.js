@@ -52,7 +52,16 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
                 width: '100%',
                 html: '<div class="horizontalLine"></div>'
             },
-            this.main
+            {
+            	xtype: 'container',
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [
+                    this.main
+                ]
+            }
         ];
 
         this.callParent(arguments);
