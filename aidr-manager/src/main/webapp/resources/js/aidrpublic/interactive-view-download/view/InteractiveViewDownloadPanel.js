@@ -173,7 +173,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			items:[
 			{
 				xtype: 'fieldcontainer',
-				fieldLabel: 'Full Tweets',
+				fieldLabel: 'Full ' + Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]),
 				labelWidth: 100,
 				layout: 'hbox',
 				items: [
