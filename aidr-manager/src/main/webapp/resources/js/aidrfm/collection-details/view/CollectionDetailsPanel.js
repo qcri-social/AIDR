@@ -108,7 +108,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             hidden: true
         });
 
-        this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
+        this.statusL = Ext.create('Ext.form.Label', {width: 500, padding: '0 10 0 0'});
         this.statusMsgL = Ext.create('Ext.form.Label', {flex: 1, cls:'bold-text'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
         this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
