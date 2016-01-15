@@ -103,7 +103,6 @@
         <module>aidr-tagger</module>
         <module>aidr-tagger-api</module>
         <module>aidr-output</module>
-        <module>aidr-analytics</module>
         <module>aidr-trainer-api</module>
         <!--<module>aidr-trainer-pybossa</module>-->
         <module>aidr-manager</module>
