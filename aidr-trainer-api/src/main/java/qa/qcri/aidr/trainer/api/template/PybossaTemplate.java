@@ -1,16 +1,23 @@
 package qa.qcri.aidr.trainer.api.template;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import qa.qcri.aidr.trainer.api.entity.*;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabelId;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
-
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,22 +57,22 @@ public class PybossaTemplate {
                 Long attributeID = (Long)info.get("attributeID");
 
                 Collection crisis = crisisService.findByCrisisID(crisisID) ;
-                Set<ModelFamily> modelFamilySet= crisis.getModelFamilySet();
+                Set<ModelFamily> modelFamilySet= new HashSet<ModelFamily>(crisis.getModelFamilies());
 
                 DocumentNominalLabel documentNominalLabel = null;
                 // String category ="Food and water";
 
                 for (ModelFamily modelFamily : modelFamilySet){
-                    if(modelFamily.getNominalAttributeID().equals(attributeID)){
+                    if(modelFamily.getNominalAttribute().getNominalAttributeId().equals(attributeID)){
                         ModelFamily currentModelFamily = modelFamily;
 
-                        Set<NominalLabel> nominalLabelSet = modelFamily.getNominalAttribute().getNominalLabelSet();
+                        Set<NominalLabel> nominalLabelSet = new HashSet<NominalLabel>(modelFamily.getNominalAttribute().getNominalLabels());
                         logger.info("attribute name : "   + modelFamily.getNominalAttribute().getName() + "\n");
                         for (NominalLabel nominalLabel : nominalLabelSet){
                             JSONObject taskAnswerElement = new JSONObject();
-                            if(nominalLabel.getNominalAttributeID().equals(attributeID)) {
+                            if(nominalLabel.getNominalAttribute().equals(attributeID)) {
                                 if(findMatchingLabel(categorySet, nominalLabel.getNominalLabelCode())) {
-                                    Long labelID = nominalLabel.getNominalLabelID().longValue();
+                                    Long labelID = nominalLabel.getNominalLabelId().longValue();
                                     if(!attributeIDJson.contains(attributeID) ){
                                         attributeIDJson.add(attributeID ) ;
                                     }
@@ -74,7 +81,12 @@ public class PybossaTemplate {
                                     taskAnswerElement.put("labelID", labelID) ;
 
                                     taskAnswerJson.add(taskAnswerElement);
-                                    documentNominalLabel = new DocumentNominalLabel(documentID,labelID, userID);
+                                    DocumentNominalLabelId documentNominalLabelId = new DocumentNominalLabelId(documentID,labelID, userID);
+                                    NominalLabel nl = new NominalLabel();
+                                    nl.setNominalLabelId(labelID);
+                                    Document d = new Document();
+                                    d.setDocumentId(documentID);
+                                    documentNominalLabel = new DocumentNominalLabel(documentNominalLabelId, nl, d);
                                     taskAnswerResponse.setDocumentNominalLabelList(documentNominalLabel);
                                 }
                             }

@@ -1,14 +1,14 @@
 package qa.qcri.aidr.trainer.api.template;
 
-import qa.qcri.aidr.trainer.api.entity.Collection;
-import qa.qcri.aidr.trainer.api.entity.ModelFamily;
-import qa.qcri.aidr.trainer.api.entity.NominalAttribute;
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
-
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,27 +24,27 @@ public class CrisisJsonOutput {
     public CrisisJsonModel crisisJsonModelGenerator(Collection crisis){
         CrisisJsonModel crisisJsonModel = new CrisisJsonModel();
         if (crisis != null) { 
-        	logger.info("received crisis = " + crisis.getCode() + ", id = " + crisis.getCrisisID());
+        	logger.info("received crisis = " + crisis.getCode() + ", id = " + crisis.getCrisisId());
         } else {
         	logger.info("received crisis = " + crisis);
         }
-        crisisJsonModel.setCrisisID(crisis.getCrisisID());
+        crisisJsonModel.setCrisisID(crisis.getCrisisId());
         crisisJsonModel.setCode(crisis.getCode());
         crisisJsonModel.setName(crisis.getName());
 
-        Set<ModelFamily> modelFamilySet =  crisis.getModelFamilySet();
+        Set<ModelFamily> modelFamilySet =  new HashSet<ModelFamily>(crisis.getModelFamilies());
         Set<NominalAttributeJsonModel> nominalAttributeJsonModelSetTemp = new HashSet <NominalAttributeJsonModel>();
         for(ModelFamily obj : modelFamilySet){
-            if(obj.isActive()){
+            if(obj.isIsActive()){
                 NominalAttributeJsonModel nominalAttributeJsonModel = new NominalAttributeJsonModel();
 
                 NominalAttribute nominalAttribute= obj.getNominalAttribute();
-                Set<NominalLabel> nominalLabelSet = nominalAttribute.getNominalLabelSet();
+                Set<NominalLabel> nominalLabelSet = new HashSet<NominalLabel>(nominalAttribute.getNominalLabels()) ;
 
                 nominalAttributeJsonModel.setCode(nominalAttribute.getCode());
                 nominalAttributeJsonModel.setName(nominalAttribute.getName());
                 nominalAttributeJsonModel.setDescription(nominalAttribute.getDescription());
-                nominalAttributeJsonModel.setNominalAttributeID(nominalAttribute.getNominalAttributeID());
+                nominalAttributeJsonModel.setNominalAttributeID(nominalAttribute.getNominalAttributeId());
 
                 Set<NominalLabelJsonModel> nominalLabelJsonModelSetTemp = new HashSet <NominalLabelJsonModel>();
                 for(NominalLabel nominalLabel : nominalLabelSet){
@@ -52,7 +52,7 @@ public class CrisisJsonOutput {
                     NominalLabelJsonModel nominalLabelJsonModel = new NominalLabelJsonModel();
                     nominalLabelJsonModel.setName(nominalLabel.getName());
                     nominalLabelJsonModel.setNorminalLabelCode(nominalLabel.getNominalLabelCode());
-                    nominalLabelJsonModel.setNorminalLabelID(nominalLabel.getNominalLabelID().longValue());
+                    nominalLabelJsonModel.setNorminalLabelID(nominalLabel.getNominalLabelId().longValue());
                     nominalLabelJsonModel.setDescription(nominalLabel.getDescription());
                     nominalLabelJsonModel.setSequence(nominalLabel.getSequence());
                     nominalLabelJsonModelSetTemp.add(nominalLabelJsonModel) ;

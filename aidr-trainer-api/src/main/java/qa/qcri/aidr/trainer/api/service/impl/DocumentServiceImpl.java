@@ -17,10 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
-import qa.qcri.aidr.trainer.api.entity.Collection;
-//import qa.qcri.aidr.trainer.api.entity.Document;
-import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
@@ -30,6 +29,7 @@ import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonOutput;
 import qa.qcri.aidr.trainer.api.template.NominalAttributeJsonModel;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
+//import qa.qcri.aidr.trainer.api.entity.Document;
 
 /**
  * Created with IntelliJ IDEA.
@@ -146,7 +146,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
 	public void addToOneTaskAssignmentWithUserName(Long documentID, String userName){
 		Users users = usersService.findUserByName(userName);
-		taskAssignmentService.addToOneTaskAssignment(documentID, users.getUserID());
+		taskAssignmentService.addToOneTaskAssignment(documentID, users.getId());
 	}
 
 

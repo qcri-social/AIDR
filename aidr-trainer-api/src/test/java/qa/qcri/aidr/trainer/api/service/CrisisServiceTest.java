@@ -1,15 +1,15 @@
 package qa.qcri.aidr.trainer.api.service;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import qa.qcri.aidr.trainer.api.entity.Collection;
-import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
-import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
 
-import java.util.List;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
 
 /**
  * Created with IntelliJ IDEA.

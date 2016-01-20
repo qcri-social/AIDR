@@ -1,12 +1,13 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
-import org.hibernate.criterion.Restrictions;
-import org.springframework.stereotype.Repository;
-import qa.qcri.aidr.trainer.api.dao.TaskQueueResponseDao;
-import qa.qcri.aidr.trainer.api.entity.TaskQueueResponse;
-
 import java.util.Date;
 import java.util.List;
+
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import qa.qcri.aidr.trainer.api.dao.TaskQueueResponseDao;
+import qa.qcri.aidr.trainer.api.entity.TaskQueueResponse;
 
 /**
  * Created with IntelliJ IDEA.

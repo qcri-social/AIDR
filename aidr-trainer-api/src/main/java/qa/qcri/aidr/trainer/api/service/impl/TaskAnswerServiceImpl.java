@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
-import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
-import qa.qcri.aidr.trainer.api.entity.TaskAnswer;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.service.DocumentNominalLabelService;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
@@ -109,7 +109,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 		if(taskAnswerList.size() > 0) {
 			TaskAnswer taskAnswer = taskAnswerList.get(0);
 			TaskAnswerDTO t = taskAnswer.toDTO();
-			try {
+			try{
 				taskManager.insertTaskAnswer(t);
 			} catch (Exception e) {
 				logger.error("[addToTaskAnswer] Error in saving task answer : " + taskAnswer+"\t"+e.getStackTrace());

@@ -117,6 +117,10 @@ public class Collection implements java.io.Serializable {
 	@Column(nullable=false, name = "updated_at")
 	private Timestamp updatedAt;
 	
+    private String provider;
+    
+	private Integer status;
+	
 	@PreUpdate
 	protected void onUpdate() {
 		updatedAt = new Timestamp(System.currentTimeMillis());
@@ -139,6 +143,13 @@ public class Collection implements java.io.Serializable {
 		this.isMicromapperEnabled = isMicromapperEnabled;
 	}
 
+	public Collection(Long crisisID, String name, String code, boolean isTrashed){
+        this.crisisId = crisisID;
+        this.name = name;
+        this.code = code;
+        this.isTrashed = isTrashed;
+    }
+	
 	public Collection(Users users, CrisisType crisisType, String name, String code,
 			boolean isTrashed, boolean isMicromapperEnabled, List<Document> documents,
 			List<ModelFamily> modelFamilies) {
@@ -386,5 +397,21 @@ public class Collection implements java.io.Serializable {
 	public boolean hasModelFamilies() {
 		//return ((PersistentList) this.modelFamilies).wasInitialized();
 		return Hibernate.isInitialized(this.modelFamilies);
+	}
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 }

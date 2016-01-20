@@ -26,6 +26,7 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 
 @Stateless(name="CollectionResourceFacadeImp")
 public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collection, Long> implements CollectionResourceFacade {
@@ -240,7 +241,11 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 			for (Collection c: list) {
 				try {
 					Hibernate.initialize(c.getModelFamilies());
-					dtoList.add(new CollectionDTO(c));
+					for(ModelFamily mf : c.getModelFamilies()){
+						if(mf.isIsActive()){
+							dtoList.add(new CollectionDTO(c));
+						}
+					}
 				} catch (HibernateException e) {
 					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
 				}

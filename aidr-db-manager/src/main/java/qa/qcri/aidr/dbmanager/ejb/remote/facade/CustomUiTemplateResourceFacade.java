@@ -21,5 +21,4 @@ public interface CustomUiTemplateResourceFacade extends CoreDBServiceFacade<Cust
     public CustomUiTemplateDTO updateCustomUITemplateStatus(CustomUiTemplateDTO currentTemplate, CustomUiTemplateDTO updatedTemplate);
     public void deleteCustomUITemplateBasedOnTypeByCrisisID(long crisisID, int type);
     public void deleteCustomUITemplateByCrisisID(long crisisID);
-
 }

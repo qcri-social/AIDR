@@ -1,5 +1,9 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -7,6 +11,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.api.dao.ReportTemplateDao;
 import qa.qcri.aidr.trainer.api.dao.TaskQueueResponseDao;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
@@ -19,10 +24,6 @@ import qa.qcri.aidr.trainer.api.service.TaskQueueService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.template.GeoJsonOutputModel;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

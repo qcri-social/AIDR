@@ -1,13 +1,13 @@
 package qa.qcri.aidr.trainer.api.util;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
-
-import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 /**
  * Created with IntelliJ IDEA.

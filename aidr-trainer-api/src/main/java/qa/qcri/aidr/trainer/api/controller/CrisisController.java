@@ -1,22 +1,25 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.trainer.api.entity.Collection;
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.

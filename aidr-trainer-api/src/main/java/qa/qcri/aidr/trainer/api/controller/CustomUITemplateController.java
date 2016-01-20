@@ -16,7 +16,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
+import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 
@@ -39,14 +39,14 @@ public class CustomUITemplateController {
     @GET
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/get/LandingPage/{crisisID}")
-    public List<CustomUITemplate> getLandingUIByID(@PathParam("crisisID") Long crisisID){
+    public List<CustomUiTemplate> getLandingUIByID(@PathParam("crisisID") Long crisisID){
         return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
     }
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/get/customUI/{crisisID}")
-    public List<CustomUITemplate> getCustomUIByID(@PathParam("crisisID") Long crisisID){
+    public List<CustomUiTemplate> getCustomUIByID(@PathParam("crisisID") Long crisisID){
         logger.info("[getCustomUIByID] Received request for crisisID = " + crisisID);
     	return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
     }
@@ -104,10 +104,10 @@ public class CustomUITemplateController {
             long attributeID = (Long)jsonObject.get("nominalAttributeID");
             int customUIType = ((Long)jsonObject.get("templateType")).intValue();
             int skinType = CodeLookUp.DEFAULT_SKIN;
-            List<CustomUITemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
+            List<CustomUiTemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
 
             if(templates.size() > 0){
-                CustomUITemplate c = templates.get(0);
+            	CustomUiTemplate c = templates.get(0);
                 skinType = Integer.parseInt(c.getTemplateValue());
             }
 
@@ -139,10 +139,10 @@ public class CustomUITemplateController {
             long attributeID = 0;
             int customUIType = ((Long)jsonObject.get("templateType")).intValue();
             int skinType = CodeLookUp.DEFAULT_SKIN;
-            List<CustomUITemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
+            List<CustomUiTemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
 
             if(templates.size() > 0){
-                CustomUITemplate c = templates.get(0);
+            	CustomUiTemplate c = templates.get(0);
                 skinType = Integer.parseInt(c.getTemplateValue());
             }
 

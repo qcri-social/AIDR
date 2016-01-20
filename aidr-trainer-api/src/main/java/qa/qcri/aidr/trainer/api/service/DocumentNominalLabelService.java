@@ -1,6 +1,6 @@
 package qa.qcri.aidr.trainer.api.service;
 
-import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
 /**
  * Created with IntelliJ IDEA.
