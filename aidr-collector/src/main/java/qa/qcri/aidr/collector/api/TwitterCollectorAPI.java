@@ -26,8 +26,8 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
-import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorErrorLog;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
@@ -180,6 +180,7 @@ public class TwitterCollectorAPI {
         }
         CollectionTask task = GenericCache.getInstance().getConfig(id);
         if (task != null) {
+        	response.setSourceOutage(task.getIsSourceOutage());
             return Response.ok(task).build();
         }
 

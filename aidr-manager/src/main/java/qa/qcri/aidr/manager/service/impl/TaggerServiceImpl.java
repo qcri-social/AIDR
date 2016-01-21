@@ -22,6 +22,7 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
@@ -58,7 +59,9 @@ import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.dto.TrainingDataRequest;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.ManagerConfigurationProperty;
 import qa.qcri.aidr.manager.util.ManagerConfigurator;
 
@@ -79,6 +82,9 @@ public class TaggerServiceImpl implements TaggerService {
 	private static String persisterMainUrl;
 
 	private static String outputAPIMainUrl;
+	
+	@Autowired
+	private UserService userService;
 
 	TaggerServiceImpl() {
 		taggerMainUrl = ManagerConfigurator.getInstance().getProperty(
@@ -244,6 +250,7 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	@Override
 	public Map<String, Integer> countCollectionsClassifiers(
 			List<String> collectionCodes) throws AidrException {
 
@@ -1245,6 +1252,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	}
 
+	@Override
 	public Map<String, Integer> getTaggersForCollections(
 			List<String> collectionCodes) throws AidrException {
 		Client client = ClientBuilder.newBuilder()
@@ -1519,19 +1527,29 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public Map<String, Object> generateCSVFilteredLink(String code,
-			String queryString, String userName, Integer count, boolean removeRetweet) throws AidrException {
+			String queryString, String userName, Integer count, boolean removeRetweet, UserAccount authenticatedUser) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
-			WebTarget webResource = client.target(persisterMainUrl
-					+ "/taggerPersister/filter/genCSV?collectionCode=" + code
-					+ "&exportLimit=" + count + "&userName=" + userName + "&removeRetweet=" + removeRetweet);
-			Response clientResponse = webResource.request(
-					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
-					Response.class);
+			
+			
+			String url = null;
+			Response clientResponse = null;
+			//if(userService.isUserAdmin(authenticatedUser)) {
+				url = persisterMainUrl + "/taggerPersister/filter/genCSV?collectionCode=" + code + "&exportLimit="
+						+ count + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
+				WebTarget webResource = client.target(url);
+				clientResponse = webResource.request(MediaType.APPLICATION_JSON).post(Entity.json(queryString),
+						Response.class);
+			/*} else {
+				url = persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code + "&downloadLimited="
+						+ false + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
+				WebTarget webResource = client.target(url);
+				clientResponse = webResource.request(MediaType.APPLICATION_JSON).get(Response.class);
+			}*/			 
+			
 			// String jsonResponse = clientResponse.readEntity(String.class);
-			Map<String, Object> jsonResponse = clientResponse
-					.readEntity(Map.class);
+			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
 			return jsonResponse;
 			/*
 			 * if (jsonResponse != null &&

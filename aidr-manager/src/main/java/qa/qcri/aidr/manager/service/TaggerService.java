@@ -20,6 +20,7 @@ import qa.qcri.aidr.manager.dto.TaggerUser;
 import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
 public interface TaggerService {
 
@@ -134,7 +135,7 @@ public interface TaggerService {
 			String queryString, String jsonType, String userName) throws AidrException;
 
 	//Added by koushik
-	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName, Integer count, boolean removeRetweet) throws AidrException;
+	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName, Integer count, boolean removeRetweet, UserAccount authenticatedUser) throws AidrException;
 
 	//Added by koushik
 	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString, String userName) throws AidrException;

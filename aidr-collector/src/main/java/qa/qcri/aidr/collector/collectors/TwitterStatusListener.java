@@ -4,6 +4,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -85,6 +86,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 
 	@Override
 	public void onStatus(Status status) {
+		task.setIsSourceOutage(false);
 		String json = TwitterObjectFactory.getRawJSON(status);
 		JsonObject originalDoc = Json.createReader(new StringReader(json)).readObject();
 		for (Predicate<JsonObject> filter : filters) {
@@ -149,10 +151,10 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 			}
 			else if(((TwitterException) ex).getStatusCode() == 503)
 			{
-				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS)))
+				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS))) {
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
-				else
-				{
+					task.setIsSourceOutage(true);
+				} else {
 					timeToSleep = (long) (getRandom()*attempt*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
 					logger.warn("Error 503, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
