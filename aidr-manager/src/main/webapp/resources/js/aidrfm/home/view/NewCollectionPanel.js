@@ -30,10 +30,9 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
 		
 		this.twitterStatus = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            margin: '0 0 0 0',
+            margin: '-30 0 0 0',
 			style: {
-				'color' : 'red',
-				'fontWeight' : 'bold'
+				'color' : 'red'
 			},
             html: '* We are facing twitter service disruption. Please be aware of any unexpected problem. For details refer to <a href="https://dev.twitter.com/overview/status">Twitter Status</a>.',
             hidden: true
@@ -104,7 +103,7 @@ this.collectionStore = Ext.create('Ext.data.JsonStore', {
                          document.location.href = BASE_URL + '/protected/home';
                      }
                      var count = store.getCount();
-					 if(!store.getProxy().reader.rawData.twitterOutage) {
+					 if(store.getProxy().reader.rawData.twitterOutage) {
 						me.twitterStatus.show();
 					 }
                      if (count > 0) {
