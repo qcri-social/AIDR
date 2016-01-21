@@ -44,14 +44,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                  margin: '0 0 0 810'
                                                  });
 
-           this.addNewClassifierButton = Ext.create('Ext.Button', {
-                                                    text: 'Add new classifier',
-                                                    cls:'btn btn-blueBig',
-                                                    id: 'addNewClassifier',
-                                                    width: 150,
-                                                    margin: '27 0 0 0'
-                                                    });
-
            this.enableMicroMappersButton = Ext.create('Ext.Button', {
                                                       text: 'Enable MicroMappers',
                                                       cls:'btn btn-greenBig',
@@ -216,12 +208,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
                                                     '<td class="styled-text-17" width="135px">Classifier:</td>',
                                                     '<td class="styled-text-17" >{[this.getModelName(values.modelID, values.attribute)]}</td>' +
-                                                    '<td class="styled-text-17 pdng-r-0" align="right">' +
-                                                    '<button id="removeClassifierBtn_{modelFamilyID}" class="btn btn-redSmall {[this.isRemoveClassifierButtonHidden(values.modelID)]}" onclick="taggerCollectionDetailsController.removeClassifierHandler(\'{modelFamilyID}\', \'{attribute}\')">',
-                                                    '<span>Remove Classifier</span>',
-                                                    '</button>',
-                                                    '</td>' +
-
                                                     '</tr>',
 
 
@@ -238,12 +224,13 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
                                                     '<tr><td><p title="If AUC is lower than 80%, or AUC is 100%, you urgently need more human-tagged tweets">Quality (AUC)<span class="redInfo">*</span>:</p></td>',
                                                     '<td>{[AIDRFMFunctions.getAucNumberAsPercentageWithColors(values.auc)]}</td>',
-
+                                                    '</td>' +
+                                                    '<td class="styled-text-17 pdng-r-0" align="right">' +
+                                                    '<button id="removeClassifierBtn_{modelFamilyID}" style="margin-right:17px" class="btn btn-redSmall {[this.isRemoveClassifierButtonHidden(values.modelID)]}" onclick="taggerCollectionDetailsController.removeClassifierHandler(\'{modelFamilyID}\', \'{attribute}\')">',
+                                                    '<i class="fa fa-minus-circle"/><span>&nbsp;&nbsp;Classifier</span>',
+                                                    '</button>',
                                                     '</td></tr></table></td>',
-
                                                     '</tr>',
-
-
                                                     '<tr><td colspan="2">',
                                                     '<div class="horizontalLine"></div>',
                                                     '</td></tr>',
@@ -1015,6 +1002,22 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                       width: '100%',
                                       minHeight: 400,
                                       activeTab: 0,
+                                      tabBar: {
+                                          items: [{
+                                              xtype: 'tbfill'
+                                          }, {
+                                              xtype: "container",
+                                              //cls: 'btn btn-green',
+                                              text: 'Classifier',
+                                              id: 'addNewClassifierContainer',
+                                              html: '<button class="btn btn-green" id="addNewClassifier" onclick="taggerCollectionDetailsController.addNewClassifier()">' +
+                                                    '<i class="fa fa-plus-circle"></i><span style="font-size:12px">&nbsp;&nbsp;Classifier</span>' +
+                                                    '</button>',
+                                              //glyph: 'xf055@FontAwesome',
+                                              //glyphColor: 'white'
+                                          }
+                                          ]
+                                      },
                                       items: [
                                               {
                                               title: 'Details',
@@ -1036,14 +1039,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                         html: '<div class="horizontalLine"></div>'
                                                        },*/
 
-                                                      {
-                                                      xtype: 'container',
-                                                      layout: 'hbox',
-                                                      items: [
-                                                              this.classifiersTitle,
-                                                              this.addNewClassifierButton
-                                                              ]
-                                                      },
+                                                      
                                                       this.crisisModelsView,
                                                       {
                                                       xtype: 'container',
@@ -1093,7 +1089,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                          margin: '5 0 5 0',
                          html: '<div class="horizontalLine"></div>'
                          },
-                         {
+                         /*{
                          xtype: 'container',
 
                          layout: {
@@ -1102,11 +1098,12 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                          padding: '0 0 10 0'
                          },
                          items: [
-                                 this.taggerTitle,
+                                 //this.taggerTitle,
                                  this.gotoCollectorButton
                                  ]
                          },
-                         this.tabPanel
+                         
+*/                         this.tabPanel
                          ];
 
            this.callParent(arguments);

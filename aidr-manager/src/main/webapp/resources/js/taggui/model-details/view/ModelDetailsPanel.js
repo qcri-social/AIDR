@@ -277,16 +277,6 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 margin: '5 0 0 0',
                 html: '<div class="horizontalLine"></div>'
             },
-            {
-                xtype: 'container',
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
-                items: [
-                    this.taggerTitle
-                ]
-            },
             this.tabPanel
         ];
 

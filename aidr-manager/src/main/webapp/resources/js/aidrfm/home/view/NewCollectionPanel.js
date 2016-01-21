@@ -55,7 +55,7 @@ this.refreshButton = Ext.create('Ext.Button', {
     // text: null,
     // height: 32,
     // width: 32,
-    margin: '27 395 0 20',
+    margin: '17 560 0 20',
     tooltip: 'Refresh',
     // iconCls: 'refrashIcon',
      cls:'btn btn-blueish4',
