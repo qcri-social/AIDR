@@ -5,10 +5,12 @@
 package qa.qcri.aidr.collector.beans;
 
 import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
@@ -33,6 +35,7 @@ public class ResponseWrapper implements Serializable{
 	private static final long serialVersionUID = -6615942283542314788L;
 	protected String statusCode;
 	protected String message;
+	protected boolean isSourceOutage;
 	protected Object dataObject;
 
 	public ResponseWrapper() {
@@ -63,4 +66,13 @@ public class ResponseWrapper implements Serializable{
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+	public boolean isSourceOutage() {
+		return isSourceOutage;
+	}
+
+	public void setSourceOutage(boolean isSourceOutage) {
+		this.isSourceOutage = isSourceOutage;
+	}
+
 }

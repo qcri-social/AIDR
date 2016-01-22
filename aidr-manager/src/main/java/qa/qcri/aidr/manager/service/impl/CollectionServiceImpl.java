@@ -312,6 +312,7 @@ public class CollectionServiceImpl implements CollectionService {
 		return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
 	}
 
+	@Override
 	@Transactional(readOnly = true)
 	public FetcherRequestDTO prepareFetcherRequest(Collection dbCollection) {
 		FetcherRequestDTO dto = new FetcherRequestDTO();
@@ -371,6 +372,7 @@ public class CollectionServiceImpl implements CollectionService {
 		return updateCollection;
 	}
 
+	@Override
 	@Transactional(readOnly = false)
 	public Collection startFetcher(FetcherRequestDTO fetcherRequest, Collection collection) {
 		try {
@@ -433,6 +435,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
+	@Override
 	@Transactional(readOnly = false)
 	public Collection stopAidrFetcher(Collection collection, Long userId) {
 		try {
@@ -478,7 +481,7 @@ public class CollectionServiceImpl implements CollectionService {
 					collection.setLastDocument(lastDocument);
 				collectionRepository.update(collection);
 			}
-			
+			collection.setSourceOutage(response.isSourceOutage());
 			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
 				
 				CollectionStatus prevStatus =  collection.getStatus();

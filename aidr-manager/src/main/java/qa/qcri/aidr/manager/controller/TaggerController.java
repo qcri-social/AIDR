@@ -784,8 +784,9 @@ public class TaggerController extends BaseController {
 		try {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
+			UserAccount authenticatedUser = getAuthenticatedUser();
 			//logger.info("Received request for download from user = " + userName);
-			result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet);
+			result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet, authenticatedUser);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
