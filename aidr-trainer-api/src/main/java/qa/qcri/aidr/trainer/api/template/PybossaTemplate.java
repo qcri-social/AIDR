@@ -1,8 +1,7 @@
 package qa.qcri.aidr.trainer.api.template;
 
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -10,8 +9,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import qa.qcri.aidr.dbmanager.entities.misc.Collection;
-import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
@@ -56,21 +56,21 @@ public class PybossaTemplate {
                 Long userID = (Long)info.get("aidrID");
                 Long attributeID = (Long)info.get("attributeID");
 
-                Collection crisis = crisisService.findByCrisisID(crisisID) ;
-                Set<ModelFamily> modelFamilySet= new HashSet<ModelFamily>(crisis.getModelFamilies());
+                CollectionDTO crisis = crisisService.findByCrisisID(crisisID) ;
+                List<ModelFamilyDTO> modelFamilySet= crisis.getModelFamiliesDTO();
 
                 DocumentNominalLabel documentNominalLabel = null;
                 // String category ="Food and water";
 
-                for (ModelFamily modelFamily : modelFamilySet){
-                    if(modelFamily.getNominalAttribute().getNominalAttributeId().equals(attributeID)){
-                        ModelFamily currentModelFamily = modelFamily;
+                for (ModelFamilyDTO modelFamily : modelFamilySet){
+                    if(modelFamily.getNominalAttributeDTO().getNominalAttributeId().equals(attributeID)){
+                        ModelFamilyDTO currentModelFamily = modelFamily;
 
-                        Set<NominalLabel> nominalLabelSet = new HashSet<NominalLabel>(modelFamily.getNominalAttribute().getNominalLabels());
-                        logger.info("attribute name : "   + modelFamily.getNominalAttribute().getName() + "\n");
-                        for (NominalLabel nominalLabel : nominalLabelSet){
+                        List<NominalLabelDTO> nominalLabelSet = modelFamily.getNominalAttributeDTO().getNominalLabelsDTO();
+                        logger.info("attribute name : "   + modelFamily.getNominalAttributeDTO().getName() + "\n");
+                        for (NominalLabelDTO nominalLabel : nominalLabelSet){
                             JSONObject taskAnswerElement = new JSONObject();
-                            if(nominalLabel.getNominalAttribute().equals(attributeID)) {
+                            if(nominalLabel.getNominalAttributeDTO().equals(attributeID)) {
                                 if(findMatchingLabel(categorySet, nominalLabel.getNominalLabelCode())) {
                                     Long labelID = nominalLabel.getNominalLabelId().longValue();
                                     if(!attributeIDJson.contains(attributeID) ){

@@ -15,8 +15,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.dbmanager.entities.misc.Collection;
-import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
@@ -53,15 +53,15 @@ public class CrisisController {
 	@GET
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/getallactive")
-	public List getAllActiveCrisis(){
-		return  crisisService.findAllActiveCrisis();
+	public List<CollectionDTO> getAllActiveCrisis(){
+		return crisisService.findAllActiveCrisis(); 
 	}
 
 	@GET
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/get/active")
-	public List<Collection> getActiveCrisis(){
-		return  crisisService.findActiveCrisisInfo();
+	public List<CollectionDTO> getActiveCrisis(){
+		return crisisService.findActiveCrisisInfo();
 	}
 
 	@GET
@@ -77,9 +77,9 @@ public class CrisisController {
 	public String getAllActiveCrisisNominalAttribute(@PathParam("crisisid") Long crisisID, @PathParam("nominalAttributeID") Long nominalAttributeID){
 		JSONArray labelJsonArrary = new JSONArray();
 
-		Set<NominalLabel> nominalLabels =  crisisService.getNominalLabelByCrisisID(crisisID, nominalAttributeID) ;
+		Set<NominalLabelDTO> nominalLabels =  crisisService.getNominalLabelByCrisisID(crisisID, nominalAttributeID) ;
 		if(nominalLabels != null){
-			for (NominalLabel o : nominalLabels) {
+			for (NominalLabelDTO o : nominalLabels) {
 				JSONObject qa = new JSONObject();
 				qa.put("qa", o.getNominalLabelCode());
 

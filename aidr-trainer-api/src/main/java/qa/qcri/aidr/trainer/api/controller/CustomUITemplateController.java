@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
 import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
@@ -104,10 +105,10 @@ public class CustomUITemplateController {
             long attributeID = (Long)jsonObject.get("nominalAttributeID");
             int customUIType = ((Long)jsonObject.get("templateType")).intValue();
             int skinType = CodeLookUp.DEFAULT_SKIN;
-            List<CustomUiTemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
+            List<CustomUiTemplateDTO> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
 
             if(templates.size() > 0){
-            	CustomUiTemplate c = templates.get(0);
+            	CustomUiTemplateDTO c = templates.get(0);
                 skinType = Integer.parseInt(c.getTemplateValue());
             }
 
@@ -139,10 +140,10 @@ public class CustomUITemplateController {
             long attributeID = 0;
             int customUIType = ((Long)jsonObject.get("templateType")).intValue();
             int skinType = CodeLookUp.DEFAULT_SKIN;
-            List<CustomUiTemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
+            List<CustomUiTemplateDTO> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
 
             if(templates.size() > 0){
-            	CustomUiTemplate c = templates.get(0);
+            	CustomUiTemplateDTO c = templates.get(0);
                 skinType = Integer.parseInt(c.getTemplateValue());
             }
 

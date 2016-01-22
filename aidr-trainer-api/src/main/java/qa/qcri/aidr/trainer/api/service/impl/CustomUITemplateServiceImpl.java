@@ -2,7 +2,6 @@ package qa.qcri.aidr.trainer.api.service.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -16,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CustomUiTemplateResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
-import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
 import qa.qcri.aidr.trainer.api.service.ClientAppService;
@@ -56,7 +57,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     ClientAppService clientAppService;
 
     @Override
-    public List<CustomUiTemplate> getCustomTemplateSkinType(Long crisisID){
+    public List<CustomUiTemplateDTO> getCustomTemplateSkinType(Long crisisID){
         return  getCustomUiTemplateByCrisisWithType(crisisID, CodeLookUp.CLASSIFIER_SKIN);
     }
 
@@ -66,9 +67,8 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     }
 
     @Override
-    public List<CustomUiTemplate> getCustomUiTemplateByCrisisWithType(Long crisisID, Integer templateType){
-		return remoteCustomUiTemplateResourceEJB.getAllByCriteria(Restrictions.conjunction().add(Restrictions.eq("crisisID",crisisID))
-				.add(Restrictions.eq("templateType", templateType)));
+    public List<CustomUiTemplateDTO> getCustomUiTemplateByCrisisWithType(Long crisisID, Integer templateType){
+		return remoteCustomUiTemplateResourceEJB.getCustomUITemplateBasedOnTypeByCrisisID(crisisID,templateType );
 
     }
     
@@ -111,13 +111,13 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         logger.debug("customUIType" + customUIType);
         logger.debug("skinType" + skinType);
          **/
-        List<CustomUiTemplate> cList ;
+        List<CustomUiTemplateDTO> cList ;
         if(customUIType== CodeLookUp.CLASSIFIER_WELCOME_PAGE){
             logger.debug("CLASSIFIER_WELCOME_PAGE");
             cList =  getTemplateByAttributeAndType(crisisID,attributeID, StatusCodeType.CUSTOM_UI_UPDATE_REQUEST, customUIType);
             if(cList.size() > 0){
                 ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
-                CustomUiTemplate c = cList.get(0);
+                CustomUiTemplateDTO c = cList.get(0);
                 String longDescString = buildWelcomePage(c.getTemplateValue());
                 //ClientApp clientApp, int customUIType, String updateTemplateValue
                 String jsonData = this.assembleTPybossaJson(clientApp, CodeLookUp.WELCOMPAGE_UPDATE, longDescString);
@@ -133,7 +133,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
             if(cList.size() > 0){
                 String tutorialOne = null ;
                 String tutorialTwo  = null;
-                for(CustomUiTemplate c : cList){
+                for(CustomUiTemplateDTO c : cList){
                     if(c.getTemplateType().equals(CodeLookUp.CLASSIFIER_TUTORIAL_ONE) ){
                         tutorialOne = c.getTemplateValue();
                     }
@@ -172,13 +172,13 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
             for(ClientApp clientApp : apps){
                // logger.debug("skim. clientApp: " + clientApp.getClientAppID());
                 //ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
-                Set<ModelFamily> families = new HashSet<ModelFamily>(crisisService.findByCrisisID(crisisID).getModelFamilies());
+                List<ModelFamilyDTO> families = crisisService.findByCrisisID(crisisID).getModelFamiliesDTO();
                // logger.debug("skim. families: " + families.size());
-                for(ModelFamily family : families){
+                for(ModelFamilyDTO family : families){
                    // logger.debug("skim. families: " + family.getNominalAttributeID());
                    // logger.debug("skim. clientApp: " + clientApp.getNominalAttributeID());
-                    if(family.getNominalAttribute().getNominalAttributeId().equals(clientApp.getNominalAttributeID())){
-                        NominalAttribute nom = family.getNominalAttribute();
+                    if(family.getNominalAttributeDTO().getNominalAttributeId().equals(clientApp.getNominalAttributeID())){
+                        NominalAttributeDTO nom = family.getNominalAttributeDTO();
                         String skinUpdate = buildAppSkin(clientApp, nom, skinType);
                         String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TASK_PRESENTER,  skinUpdate);
                         this.sendToPybossa(jsonData, clientApp );
@@ -189,29 +189,18 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     }
     
     @Override
-    public List<CustomUiTemplate> getTemplateByAttributeAndType(Long crisisID, Long attributeID, Integer status, Integer type){
+    public List<CustomUiTemplateDTO> getTemplateByAttributeAndType(Long crisisID, Long attributeID, Integer status, Integer type){
     	if(status == null){
-            return remoteCustomUiTemplateResourceEJB.getAllByCriteria(Restrictions.conjunction()
-                    .add(Restrictions.eq("nominalAttributeID", attributeID))
-                    .add(Restrictions.eq("crisisID",crisisID))
-                    .add(Restrictions.eq("templateType",type))
-                    );
-        }
+            return remoteCustomUiTemplateResourceEJB.getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(crisisID, attributeID, type);
+    	}
         else{
-            return remoteCustomUiTemplateResourceEJB.getAllByCriteria(Restrictions.conjunction()
-                    .add(Restrictions.eq("nominalAttributeID", attributeID))
-                    .add(Restrictions.eq("crisisID",crisisID))
-                    .add(Restrictions.eq("templateType",type))
-                    .add(Restrictions.eq("status", status)));
+            return remoteCustomUiTemplateResourceEJB.getCustomUITemplateBasedOnTypeByCrisisIDAttributeIDAndStatus(crisisID, attributeID, type, status);
         }
     }
     
     @Override
-    public List<CustomUiTemplate> getTemplateByAttribute(Long crisisID, Long attributeID) {
-        return remoteCustomUiTemplateResourceEJB.getAllByCriteria(Restrictions.conjunction()
-                .add(Restrictions.eq("nominalAttributeID", attributeID))
-                .add(Restrictions.eq("crisisID",crisisID))
-                );
+    public List<CustomUiTemplateDTO> getTemplateByAttribute(Long crisisID, Long attributeID) {
+        return remoteCustomUiTemplateResourceEJB.getCustomUITemplateByCrisisIDAndAttributeID(crisisID, attributeID);
     }
     
     @Override
@@ -297,7 +286,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         return longDescString;
     }
 
-    public String buildAppSkin(ClientApp clientApp, NominalAttribute attribute, int skinType) throws Exception {
+    public String buildAppSkin(ClientApp clientApp, NominalAttributeDTO attribute, int skinType) throws Exception {
         InputStream templateIS = null;
         if(skinType == CodeLookUp.DEFAULT_SKIN){
             templateIS = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/template.html");
@@ -315,7 +304,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         attributeDisplay =  attributeDisplay +" " + attribute.getDescription();
         templateString = templateString.replace("TEMPLATE:FORATTRIBUTEAIDR", attributeDisplay);
 
-        Set<NominalLabel> nominalLabels =   new HashSet<NominalLabel>(attribute.getNominalLabels());
+        List<NominalLabelDTO> nominalLabels = attribute.getNominalLabelsDTO();
         SortedMap nominalLabelMap = DataSorterUtil.sortNominalLabelByCode(nominalLabels);
         String labelString = buildLabelList(nominalLabelMap, skinType);
 

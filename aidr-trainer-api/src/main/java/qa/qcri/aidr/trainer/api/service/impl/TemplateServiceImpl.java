@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
-import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 import qa.qcri.aidr.trainer.api.entity.Client;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
@@ -145,7 +144,7 @@ public class TemplateServiceImpl implements TemplateService {
 		CrisisLandingHtmlModel crisisLandingHtmlModel = null;
 		try {
 			//Crisis crisis =  crisisService.findByCrisisID(crisisID);
-			Collection crisis =  crisisService.findByCrisisID(crisisID);
+			CollectionDTO crisis =  crisisService.findByCrisisID(crisisID);
 			List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisisID);
 			if(clientAppList != null & crisis!= null){
 				if(clientAppList.size() > 0){
@@ -166,7 +165,7 @@ public class TemplateServiceImpl implements TemplateService {
 	public String getCrisisLandingJSONPByCrisisID(Long crisisID) {
 		CrisisLandingHtmlModel crisisLandingHtmlModel = null;
 		JSONObject json = new JSONObject();
-		Collection crisis = null;
+		CollectionDTO crisis = null;
 		try {
 			//Crisis crisis =  crisisService.findByCrisisID(crisisID);
 			crisis =  crisisService.findByCrisisID(crisisID);

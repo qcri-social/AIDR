@@ -14,13 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
+import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Collection;
-import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
-import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
@@ -51,8 +52,15 @@ public class CrisisServiceImpl implements CrisisService {
     private CustomUITemplateService customUITemplateService;
     
     @Override
-    public Collection findByCrisisID(Long id) {
-        return remoteCollectionResourceEJB.getById(id);  //To change body of implemented methods use File | Settings | File Templates.
+    public CollectionDTO findByCrisisID(Long id) {
+    	CollectionDTO collection = null;
+    	try {
+    		 collection = remoteCollectionResourceEJB.getWithModelFamilyNominalAttributeByCrisisID(id);  //To change body of implemented methods use File | Settings | File Templates.
+    	} catch(Exception e) {
+    		logger.error("Error in fetching : ", e);
+    	}
+    	
+    	return collection;
     }
     
     @Override
@@ -66,10 +74,10 @@ public class CrisisServiceImpl implements CrisisService {
     }
 
     @Override
-    public CrisisJsonModel findByOptimizedCrisisID(Long id) {
-    	Collection crisis = remoteCollectionResourceEJB.getById(id);
+    public CrisisJsonModel findByOptimizedCrisisID(Long id) throws PropertyNotSetException {
+    	CollectionDTO crisis = remoteCollectionResourceEJB.getWithModelFamilyNominalAttributeByCrisisID(id);
         CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
-        List<CustomUiTemplate> uiTemps =  customUITemplateService.getCustomUiTemplateByCrisisWithType(id, CodeLookUp.CURATOR_NAME);
+        List<CustomUiTemplateDTO> uiTemps =  customUITemplateService.getCustomUiTemplateByCrisisWithType(id, CodeLookUp.CURATOR_NAME);
 
         if (!uiTemps.isEmpty()) {
             jsonOutput.setCuratorInfo(uiTemps.get(0).getTemplateValue());
@@ -89,8 +97,13 @@ public class CrisisServiceImpl implements CrisisService {
     }*/
 
     @Override
-    public List<Collection> findAllActiveCrisis() {
-        return remoteCollectionResourceEJB.getAll();
+    public List<CollectionDTO> findAllActiveCrisis() {
+    	try {
+    		return remoteCollectionResourceEJB.getAllCrisis();
+    	} catch(Exception e) {
+    		logger.error("Error in collection : ", e);
+    	}
+    	return null;
     }
 
     @Override
@@ -132,14 +145,13 @@ public class CrisisServiceImpl implements CrisisService {
         return found;
     }
     @Override
-    public Set<NominalLabel> getNominalLabelByCrisisID(Long crisisID, Long nominalAtrributeID){
-        Set<NominalLabel> nominalLabels = null;
-       //[{"qa":"severe"}, {"qa":"mild"}, {"qa":"none"}]
-        Set<ModelFamily> families = new HashSet<ModelFamily>(this.findByCrisisID(crisisID).getModelFamilies());
-        for(ModelFamily family : families){
-            if(family.getNominalAttribute().getNominalAttributeId().equals(nominalAtrributeID)){
-                NominalAttribute nom = family.getNominalAttribute();
-                nominalLabels =   new HashSet<NominalLabel>(nom.getNominalLabels());
+    public Set<NominalLabelDTO> getNominalLabelByCrisisID(Long crisisID, Long nominalAtrributeID){
+        Set<NominalLabelDTO> nominalLabels = null;
+        List<ModelFamilyDTO> families = this.findByCrisisID(crisisID).getModelFamiliesDTO();
+        for(ModelFamilyDTO family : families){
+            if(family.getNominalAttributeDTO().getNominalAttributeId().equals(nominalAtrributeID)){
+                NominalAttributeDTO nom = family.getNominalAttributeDTO();
+                nominalLabels = new HashSet<NominalLabelDTO>(nom.getNominalLabelsDTO());
             }
         }
 
@@ -148,19 +160,13 @@ public class CrisisServiceImpl implements CrisisService {
     }
 
     @Override
-    public List<Collection> findActiveCrisisInfo() {
-    	List<Collection> collectionList = new ArrayList<Collection>();
+    public List<CollectionDTO> findActiveCrisisInfo() {
 		try {
-			List<CollectionDTO> activeCollectionsDTOList = remoteCollectionResourceEJB.findActiveCrisis();
-		
-			
-			for (CollectionDTO collectionDTO : activeCollectionsDTOList) {
-				collectionList.add(collectionDTO.toEntity());
-			}
+			return remoteCollectionResourceEJB.findActiveCrisis();
 		}catch (PropertyNotSetException e) {
 			logger.error("PropertyNotSetException while fetching all active collections",e);
+			return null;
 		}
-    	return collectionList;
     }
 
 }

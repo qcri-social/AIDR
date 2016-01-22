@@ -41,9 +41,6 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 	@Autowired
 	private CrisisService crisisService;
 
-	//@Autowired
-	//private TaskAnswerDao taskAnswerDao;
-
 	@Autowired
 	private TaskAssignmentService taskAssignmentService;
 

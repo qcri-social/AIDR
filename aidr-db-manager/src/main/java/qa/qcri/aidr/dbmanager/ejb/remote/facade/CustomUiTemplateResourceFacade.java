@@ -15,6 +15,7 @@ public interface CustomUiTemplateResourceFacade extends CoreDBServiceFacade<Cust
     public List<CustomUiTemplateDTO> getAllCustomUITemplateByCrisisID(long crisisID);
     public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisID(long crisisID, int type);
     public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(long crisisID, long attributeID,int type);
+    public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisIDAttributeIDAndStatus(long crisisID, long attributeID, int templateType, int status);
     public List<CustomUiTemplateDTO> getCustomUITemplateByCrisisIDAndAttributeID(long crisisID, long attributeID);
     public CustomUiTemplateDTO addCustomUITemplate(CustomUiTemplateDTO customUITemplate);
     public CustomUiTemplateDTO updateCustomUITemplate(CustomUiTemplateDTO currentTemplate, CustomUiTemplateDTO updatedTemplate);
