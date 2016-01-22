@@ -67,13 +67,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             padding: 0
         });
 
-        this.collectionTitle = Ext.create('Ext.form.Label', {
+        /*this.collectionTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1',
             margin: '10 0 15 0',
             padding: 0,
             text: '',
             flex: 1
-        });
+        });*/
 
         this.refreshButton = Ext.create('Ext.Button', {
             height: 32,
@@ -108,12 +108,20 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             hidden: true
         });
 
-        this.statusL = Ext.create('Ext.form.Label', {width: 500, padding: '0 10 0 0'});
-        this.statusMsgL = Ext.create('Ext.form.Label', {flex: 1, cls:'bold-text'});
+        this.statusL = Ext.create('Ext.form.Label', {width: 500, padding: '0', top: '0px'});
+        this.statusMsgL = Ext.create('Ext.form.Label', {flex: 1, cls:'bold-text', top: '0px', text: 'Test Value'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
         this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.willStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.codeL = Ext.create('Ext.form.Label', {flex: 1});
+        this.collectionTitle = Ext.create('Ext.form.Label', {
+            cls: 'header-h3',
+            fontSize: '25px',
+            padding: 0,
+            top: '15px',
+            text: '',
+            flex: 1
+        });
         this.keywordsL = Ext.create('Ext.form.Label', {
             flex: 1,
             cls: 'word-wrap-class'
@@ -896,14 +904,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             defaultType: 'label',
-                            padding: '10 0',
+                            padding: '0',
                             layout: 'hbox',
                             items: [
                                 {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
+									margin: '13 0 0 0',
                                     //height:72,
-                                    height:72,
+                                    height:50,
                                     width:75,
                                     id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
@@ -914,25 +923,23 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     defaultType: 'label',
                                     layout: 'vbox',
                                     defaults: {
-                                        margin: '5 0'
+                                        margin: '0 0'
                                     },
                                     items: [
-                                        // {
-                                        //     xtype: 'container',
-                                        //     defaultType: 'label',
-                                        //     layout: 'hbox',
-                                        //     items: [
-                                        //         {
-                                        //             padding: '0 10 0 0',
-                                        //             text: 'Short name:'
-                                        //         },
-                                        //         this.codeL
-                                        //     ]
-                                        // },
+                                        {
+                                             xtype: 'container',
+                                             defaultType: 'label',
+                                             layout: 'hbox',
+                                             items: [
+                                                this.collectionTitle
+                                             ]
+                                        },
                                         {
                                             xtype: 'container',
                                             defaultType: 'label',
+											margin: '-5 0 0 0',
                                             layout: 'hbox',
+                                            style: {'top':'0px!important'},
                                             items: [
                                                 this.statusL
                                             ]
@@ -941,6 +948,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                             xtype: 'container',
                                             defaultType: 'label',
                                             layout: 'hbox',
+											margin: '5 0 0 0',
                                             items: [
                                                 this.statusMsgL
                                             ]
@@ -1531,7 +1539,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 margin: '5 0 0 0',
                 html: '<div class="horizontalLine"></div>'
             },
-            {
+            /*{
                 xtype: 'container',
                 layout: 'hbox',
                 padding: '10 0',
@@ -1539,7 +1547,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     this.collectionTitle,
                     this.refreshButton
                 ]
-            },
+            },*/
             this.tabPanel
         ];
 

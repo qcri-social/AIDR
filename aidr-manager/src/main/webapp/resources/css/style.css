@@ -328,6 +328,12 @@ a.svg-menu {
 	-webkit-margin-end: 0px;
 }
 
+.header-h3 {
+	font-size: 24px;
+	display: block;
+	margin: 0.67em 0 0.67em 0;
+}
+
 .bold-text {
 	font-weight: bold;
 }
