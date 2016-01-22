@@ -91,7 +91,7 @@ public class Collection extends BaseEntity {
     private UserAccount classifierEnabledBy;
     
     @Column(name="is_qa_collection")
-    private boolean isQACollection = false;
+    private Boolean isQACollection = false;
     
     @Transient
     private boolean isSourceOutage = false;
@@ -273,11 +273,11 @@ public class Collection extends BaseEntity {
 		this.purpose = purpose;
 	}	
 
-	public boolean isQACollection() {
+	public Boolean isQACollection() {
 		return isQACollection;
 	}
 
-	public void setQACollection(boolean isQACollection) {
+	public void setQACollection(Boolean isQACollection) {
 		this.isQACollection = isQACollection;
 	}
 
