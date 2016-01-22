@@ -937,7 +937,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                         {
                                             xtype: 'container',
                                             defaultType: 'label',
-											margin: '-5 0 0 0',
+											margin: '0 0 0 0',
                                             layout: 'hbox',
                                             style: {'top':'0px!important'},
                                             items: [
@@ -989,6 +989,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             defaultType: 'label',
                             layout: 'hbox',
+							margin: '25 0 0 0',
                             items: [
                                 {
                                     id:'downloadLabel',
