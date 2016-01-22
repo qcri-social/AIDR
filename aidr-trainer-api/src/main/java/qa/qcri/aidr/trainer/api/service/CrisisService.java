@@ -23,7 +23,7 @@ public interface CrisisService {
     CrisisJsonModel findByOptimizedCrisisID(Long id) throws PropertyNotSetException;
     List<Collection> findByCriteria(String columnName, Object value);
    // List<Collection> findByCriteria(String columnName, Long value);
-    List<CollectionDTO> findAllActiveCrisis();
+    List findAllActiveCrisis();
     List<CrisisNominalAttributeModel> getAllActiveCrisisNominalAttribute();
     Set<NominalLabelDTO> getNominalLabelByCrisisID(Long crisisID, Long nominalAtrributeID);
     List<CollectionDTO> findActiveCrisisInfo();

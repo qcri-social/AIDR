@@ -15,9 +15,11 @@ import javax.ejb.Stateless;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -50,6 +52,19 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 			}
 		}
 		return dtoList;
+	}
+	
+	@Override
+	public List findAllCrisisIds() {
+		Criteria criteria = getCurrentSession().createCriteria(Collection.class);
+		criteria.setProjection(Projections.distinct(Projections.property("id")));
+		try {
+			List result = criteria.list();
+			return result;
+		} catch (HibernateException e) {
+			logger.error("Error in findAllCrisisIds(). ",e);
+			return null;
+		}
 	}
 
 	@Override 
