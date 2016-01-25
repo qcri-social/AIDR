@@ -820,8 +820,9 @@ background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
 	padding-bottom: 9px;
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,
 		startColorstr='#44B5B1', endColorstr='#3FB6B0');
-	background-image: url(../img/refresh-icon.png);
+	background-image: url(../img/refresh-icon.png) !important;
 	background-repeat: no-repeat;
+	box-shadow: none !important;
 	opacity: 1;
 	/*  background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
     background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);

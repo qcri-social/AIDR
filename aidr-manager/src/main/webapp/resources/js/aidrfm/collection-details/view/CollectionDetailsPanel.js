@@ -975,6 +975,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             defaultType: 'label',
                             hidden:true,
                             layout: 'hbox',
+                            margin: '5 0 0 0',
                             items: [
                                 {
                                     width: 220,
