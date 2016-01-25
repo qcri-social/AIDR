@@ -97,9 +97,9 @@ public class CrisisServiceImpl implements CrisisService {
     }*/
 
     @Override
-    public List<CollectionDTO> findAllActiveCrisis() {
+    public List findAllActiveCrisis() {
     	try {
-    		return remoteCollectionResourceEJB.getAllCrisis();
+    		return remoteCollectionResourceEJB.findAllCrisisIds();
     	} catch(Exception e) {
     		logger.error("Error in collection : ", e);
     	}

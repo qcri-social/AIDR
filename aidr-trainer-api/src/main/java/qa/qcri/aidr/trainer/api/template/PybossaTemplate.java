@@ -70,7 +70,7 @@ public class PybossaTemplate {
                         logger.info("attribute name : "   + modelFamily.getNominalAttributeDTO().getName() + "\n");
                         for (NominalLabelDTO nominalLabel : nominalLabelSet){
                             JSONObject taskAnswerElement = new JSONObject();
-                            if(nominalLabel.getNominalAttributeDTO().equals(attributeID)) {
+                            if(nominalLabel.getNominalAttributeDTO().getNominalAttributeId().equals(attributeID)) {
                                 if(findMatchingLabel(categorySet, nominalLabel.getNominalLabelCode())) {
                                     Long labelID = nominalLabel.getNominalLabelId().longValue();
                                     if(!attributeIDJson.contains(attributeID) ){
