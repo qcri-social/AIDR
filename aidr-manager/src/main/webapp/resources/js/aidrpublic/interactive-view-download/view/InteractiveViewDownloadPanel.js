@@ -384,7 +384,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 				            	  margin: 0,
 				            	  padding: 0,
 				            	  items: [
-				            	          this.screenTitle,
+				            	          //this.screenTitle,
 				            	          this.statusL
 				            	          ]
 				              },

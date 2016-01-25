@@ -58,7 +58,7 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
 
         this.skipTaskButton = Ext.create('Ext.Button', {
             text: 'Skip',
-            cls:'btn btn-blueSmall',
+            cls:'btn btn-redSmall',
             id: 'skipTask',
             margin: '0 0 0 15'
         });
