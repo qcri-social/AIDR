@@ -86,12 +86,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'refreshBtn'
         });
 
-        this.collectionHistoryTitle = Ext.create('Ext.form.Label', {
-            padding: '10 0 0 0',
-            cls: 'header-h1',
-            text: 'Collection History'
-        });
-
         this.horizontalLineTop = Ext.create('Ext.container.Container', {
             width: '100%',
             html: '<div class="horizontalLine"></div>'
@@ -480,7 +474,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     var count = s.getCount();
 
                     if (count > 0) {
-                        me.collectionHistoryTitle.show();
                         collectionHistoryChart.show();
                         me.horizontalLineTop.show();
                         me.collectionHistoryPanelView.show();
@@ -490,7 +483,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.down('#collectionLogStoreCount').setText("Total no. of records :  " + s.getCount());
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
-                        me.collectionHistoryTitle.hide();
                         collectionHistoryChart.hide();
                         me.horizontalLineTop.hide();
                         me.collectionHistoryPanelView.hide();
@@ -1471,7 +1463,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 align: 'stretch'
                             },
                             items: [
-                                this.collectionHistoryTitle,
                                 collectionHistoryChart,
                                 this.horizontalLineTop,
                                 this.collectionHistoryPanelView,
