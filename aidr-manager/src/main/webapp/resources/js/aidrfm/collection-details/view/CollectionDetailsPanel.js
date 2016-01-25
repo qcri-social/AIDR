@@ -902,7 +902,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
-									margin: '13 0 0 0',
+									margin: '8 0 0 0',
                                     //height:72,
                                     height:50,
                                     width:75,
