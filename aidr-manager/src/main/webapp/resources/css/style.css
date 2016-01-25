@@ -712,7 +712,7 @@ body {
 	
 	border-radius: 0.44em;
 }
-.btn.btn-redSmall:active{
+.btn.btn-redBig:active, .btn.btn-redSmall:active{
 background: -webkit-linear-gradient(left, #D9544F, #D9544F);
 	background: -moz-linear-gradient(left, #D9544F, #D9544F);
 	background: -o-linear-gradient(left, #D9544F, #D9544F);
@@ -749,13 +749,12 @@ background: -webkit-linear-gradient(left, #D9544F, #D9544F);
 	-moz-border-radius: 0.6em;
 	border-radius: 0.44em;
 }
-.btn.btn-greenBig:active{
+.btn.btn-green:active, .btn.btn-greenBig:active{
 background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
 	background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
 	background: -o-linear-gradient(left, #44B5B1, #3FB6B0);
 	background: -ms-linear-gradient(left, #44B5B1, #3FB6B0);
 	border: 1px solid;
-	
 }
 
 .btn.btn-bluish1 {
@@ -1010,7 +1009,7 @@ background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
 }
 
 ,
-.btn.btn-redBigbutton {
+.btn.btn-redBig button {
 	width: 100px;
 	height: 23px;
 	line-height: 22px;
@@ -1538,3 +1537,7 @@ End of the tab panel styles
 .collapse-style .x-tool-expand-bottom {
 	background-position: 0 -240px;
 }*/
+
+.x-btn.x-btn-pressed.x-btn-default-small {	
+	border: none;
+}
