@@ -84,7 +84,7 @@ public class Persister4CollectorAPI {
     @Path("/stop")
     public Response stopPersister(@QueryParam("collectionCode") String collectionCode) {
         String response;
-        RedisCollectorPersister p = (RedisCollectorPersister) GenericCache.getInstance().getPersisterObject(collectionCode);
+        RedisCollectorPersister p = GenericCache.getInstance().getPersisterObject(collectionCode);
         if (p != null) {
             try {
                 logger.debug(collectionCode + "Aborting persister...");
@@ -132,6 +132,7 @@ public class Persister4CollectorAPI {
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         
         JSONObject obj = new JSONObject();
+        obj.put("tweetCount", result.get("count"));
 		if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)) ) {
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));

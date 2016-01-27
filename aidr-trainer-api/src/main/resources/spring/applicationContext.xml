@@ -41,6 +41,22 @@
 		jndi-name="${REMOTE_DB_MANAGER_TASK_ASSIGNMENT_RESOURCE_FACADE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAssignmentResourceFacade" />
 
+	<jee:remote-slsb id="CollectionResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_COLLECTION_RESOURCE_FACADE_JNDI_NAME}"
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade" />
+		
+	<jee:remote-slsb id="ModelFamilyResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_MODEL_FAMILY_RESOURCE_FACADE_JNDI_NAME}"
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade" />
+		
+	<jee:remote-slsb id="CustomUiTemplateResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_CUSTOM_UI_TEMPLATE_RESOURCE_FACADE_JNDI_NAME}"
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.CustomUiTemplateResourceFacade" />
+		
+	<jee:remote-slsb id="UsersResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_USERS_RESOURCE_FACADE_JNDI_NAME}"
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade" />
+		
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/" />

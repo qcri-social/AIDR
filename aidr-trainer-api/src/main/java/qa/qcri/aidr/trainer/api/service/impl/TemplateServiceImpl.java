@@ -11,13 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
+import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 import qa.qcri.aidr.trainer.api.entity.Client;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
-//import qa.qcri.aidr.trainer.api.entity.Crisis;
-import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
 import qa.qcri.aidr.trainer.api.service.ClientAppService;
 import qa.qcri.aidr.trainer.api.service.ClientService;
+import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
 import qa.qcri.aidr.trainer.api.service.TaskQueueService;
 import qa.qcri.aidr.trainer.api.service.TemplateService;
@@ -28,6 +27,7 @@ import qa.qcri.aidr.trainer.api.template.CrisisApplicationListFormatter;
 import qa.qcri.aidr.trainer.api.template.CrisisApplicationListModel;
 import qa.qcri.aidr.trainer.api.template.CrisisLandingHtmlModel;
 import qa.qcri.aidr.trainer.api.template.CrisisLandingStatusModel;
+//import qa.qcri.aidr.trainer.api.entity.Crisis;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,11 +52,8 @@ public class TemplateServiceImpl implements TemplateService {
 	@Autowired
 	private TaskQueueService taskQueueService;
 
-	//@Autowired
-	//private CrisisService crisisService;
-
 	@Autowired
-	private CollectionResourceFacade crisisService;
+	private CrisisService crisisService;
 
 	@Autowired
 	private CustomUITemplateService customUITemplateService;
@@ -108,7 +105,7 @@ public class TemplateServiceImpl implements TemplateService {
 		List<CrisisApplicationListModel> crisisApplicationListModelList = null;
 		List<CollectionDTO> crisisList;
 		try {
-			crisisList = crisisService.findByCriteria("code", crisisCode);
+			crisisList = crisisService.findByCrisisCode(crisisCode);
 			if(crisisList!=null){
 				if(crisisList.size() > 0){
 					CollectionDTO crisis = crisisList.get(0);
@@ -127,7 +124,7 @@ public class TemplateServiceImpl implements TemplateService {
 		CrisisLandingHtmlModel crisisLandingHtmlModel = null;
 		List<CollectionDTO> crisisList = null;
 		try {
-			crisisList = crisisService.findByCriteria("code", crisisCode);
+			crisisList = crisisService.findByCrisisCode(crisisCode);
 		} catch (Exception e) {
 			logger.error("Exception in CrisisLandingHtmlModel for crisis="+crisisCode+"\t"+e.getStackTrace());
 		}
@@ -147,7 +144,7 @@ public class TemplateServiceImpl implements TemplateService {
 		CrisisLandingHtmlModel crisisLandingHtmlModel = null;
 		try {
 			//Crisis crisis =  crisisService.findByCrisisID(crisisID);
-			CollectionDTO crisis =  crisisService.findCrisisByID(crisisID);
+			CollectionDTO crisis =  crisisService.findByCrisisID(crisisID);
 			List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisisID);
 			if(clientAppList != null & crisis!= null){
 				if(clientAppList.size() > 0){
@@ -171,7 +168,7 @@ public class TemplateServiceImpl implements TemplateService {
 		CollectionDTO crisis = null;
 		try {
 			//Crisis crisis =  crisisService.findByCrisisID(crisisID);
-			crisis =  crisisService.findCrisisByID(crisisID);
+			crisis =  crisisService.findByCrisisID(crisisID);
 		} catch (Exception e) {
 			logger.error("Exception while finding crisis by id:"+crisisID ,e);
 		}
@@ -205,9 +202,9 @@ public class TemplateServiceImpl implements TemplateService {
 			}
 		}
 
-		List<CustomUITemplate> uiTemps =  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
+		List<CustomUiTemplate> uiTemps =  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
 
-		for(CustomUITemplate iTemplate: uiTemps){
+		for(CustomUiTemplate iTemplate: uiTemps){
 			if(iTemplate.getTemplateType().equals(CodeLookUp.CURATOR_NAME)){
 				json.put("curator", iTemplate.getTemplateValue());
 			}
@@ -233,7 +230,7 @@ public class TemplateServiceImpl implements TemplateService {
 		String returnValue = "";
 		List<CollectionDTO> crisisList = null;
 		try {
-			crisisList = crisisService.findByCriteria("code", crisisCode);
+			crisisList = crisisService.findByCrisisCode(crisisCode);
 			if(crisisList != null){
 				if(crisisList.size() > 0){
 					CollectionDTO crisis = crisisList.get(0);
@@ -251,7 +248,7 @@ public class TemplateServiceImpl implements TemplateService {
 		CrisisLandingStatusModel crisisLandingStatusModel = null;
 		List<CollectionDTO> crisisList = null;
 		try {
-			crisisList = crisisService.findByCriteria("code", crisisCode);
+			crisisList = crisisService.findByCrisisCode(crisisCode);
 			logger.info("crisisList size = " + (crisisList != null ? crisisList.size() : "null"));
 		} catch (Exception e) {
 			logger.error("Exception in getCrisisLandingStatusByCrisisCode for crisis: "+crisisCode+"\t"+e.getStackTrace());

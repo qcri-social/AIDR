@@ -2,8 +2,6 @@ package qa.qcri.aidr.trainer.api.service;
 
 import qa.qcri.aidr.trainer.api.entity.ClientAppAnswer;
 
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: jlucas

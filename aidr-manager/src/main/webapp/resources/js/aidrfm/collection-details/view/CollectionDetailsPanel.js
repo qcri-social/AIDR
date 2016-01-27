@@ -62,18 +62,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         var me = this;
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
-            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;Collection Details</span></div>',
+            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a></div>',
             margin: 0,
             padding: 0
         });
 
-        this.collectionTitle = Ext.create('Ext.form.Label', {
+        /*this.collectionTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1',
             margin: '10 0 15 0',
             padding: 0,
             text: '',
             flex: 1
-        });
+        });*/
 
         this.refreshButton = Ext.create('Ext.Button', {
             height: 32,
@@ -84,12 +84,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             
             cls:'btn btn-blueish4',
             id: 'refreshBtn'
-        });
-
-        this.collectionHistoryTitle = Ext.create('Ext.form.Label', {
-            padding: '10 0 0 0',
-            cls: 'header-h1',
-            text: 'Collection History'
         });
 
         this.horizontalLineTop = Ext.create('Ext.container.Container', {
@@ -108,12 +102,20 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             hidden: true
         });
 
-        this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
-        this.statusMsgL = Ext.create('Ext.form.Label', {flex: 1, cls:'bold-text'});
+        this.statusL = Ext.create('Ext.form.Label', {width: 500, padding: '0', top: '0px'});
+        this.statusMsgL = Ext.create('Ext.form.Label', {flex: 1, cls:'bold-text', top: '0px', text: 'Test Value'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
         this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.willStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.codeL = Ext.create('Ext.form.Label', {flex: 1});
+        this.collectionTitle = Ext.create('Ext.form.Label', {
+            cls: 'header-h3',
+            fontSize: '25px',
+            padding: 0,
+            top: '15px',
+            text: '',
+            flex: 1
+        });
         this.keywordsL = Ext.create('Ext.form.Label', {
             flex: 1,
             cls: 'word-wrap-class'
@@ -472,7 +474,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     var count = s.getCount();
 
                     if (count > 0) {
-                        me.collectionHistoryTitle.show();
                         collectionHistoryChart.show();
                         me.horizontalLineTop.show();
                         me.collectionHistoryPanelView.show();
@@ -482,7 +483,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.down('#collectionLogStoreCount').setText("Total no. of records :  " + s.getCount());
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
-                        me.collectionHistoryTitle.hide();
                         collectionHistoryChart.hide();
                         me.horizontalLineTop.hide();
                         me.collectionHistoryPanelView.hide();
@@ -896,14 +896,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             defaultType: 'label',
-                            padding: '10 0',
+                            padding: '0',
                             layout: 'hbox',
                             items: [
                                 {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
+									margin: '8 0 0 0',
                                     //height:72,
-                                    height:72,
+                                    height:50,
                                     width:75,
                                     id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
@@ -914,25 +915,23 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     defaultType: 'label',
                                     layout: 'vbox',
                                     defaults: {
-                                        margin: '5 0'
+                                        margin: '0 0'
                                     },
                                     items: [
-                                        // {
-                                        //     xtype: 'container',
-                                        //     defaultType: 'label',
-                                        //     layout: 'hbox',
-                                        //     items: [
-                                        //         {
-                                        //             padding: '0 10 0 0',
-                                        //             text: 'Short name:'
-                                        //         },
-                                        //         this.codeL
-                                        //     ]
-                                        // },
+                                        {
+                                             xtype: 'container',
+                                             defaultType: 'label',
+                                             layout: 'hbox',
+                                             items: [
+                                                this.collectionTitle
+                                             ]
+                                        },
                                         {
                                             xtype: 'container',
                                             defaultType: 'label',
+											margin: '0 0 0 0',
                                             layout: 'hbox',
+                                            style: {'top':'0px!important'},
                                             items: [
                                                 this.statusL
                                             ]
@@ -941,6 +940,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                             xtype: 'container',
                                             defaultType: 'label',
                                             layout: 'hbox',
+											margin: '5 0 0 0',
                                             items: [
                                                 this.statusMsgL
                                             ]
@@ -967,6 +967,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             defaultType: 'label',
                             hidden:true,
                             layout: 'hbox',
+                            margin: '5 0 0 0',
                             items: [
                                 {
                                     width: 220,
@@ -981,6 +982,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             defaultType: 'label',
                             layout: 'hbox',
+							margin: '25 0 0 0',
                             items: [
                                 {
                                     id:'downloadLabel',
@@ -1462,7 +1464,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 align: 'stretch'
                             },
                             items: [
-                                this.collectionHistoryTitle,
                                 collectionHistoryChart,
                                 this.horizontalLineTop,
                                 this.collectionHistoryPanelView,
@@ -1531,7 +1532,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 margin: '5 0 0 0',
                 html: '<div class="horizontalLine"></div>'
             },
-            {
+            /*{
                 xtype: 'container',
                 layout: 'hbox',
                 padding: '10 0',
@@ -1539,7 +1540,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     this.collectionTitle,
                     this.refreshButton
                 ]
-            },
+            },*/
             this.tabPanel
         ];
 

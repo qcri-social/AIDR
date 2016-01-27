@@ -1,8 +1,8 @@
 package qa.qcri.aidr.trainer.api.template;
 
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
-
 import java.util.Set;
+
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 /**
  * Created with IntelliJ IDEA.

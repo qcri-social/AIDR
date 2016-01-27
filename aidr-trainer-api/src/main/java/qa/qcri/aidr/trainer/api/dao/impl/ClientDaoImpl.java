@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.api.dao.impl;
 
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.api.dao.ClientDao;
 import qa.qcri.aidr.trainer.api.entity.Client;
 

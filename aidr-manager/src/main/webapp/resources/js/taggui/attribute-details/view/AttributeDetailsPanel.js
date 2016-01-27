@@ -36,22 +36,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
                 xtype: 'container',
                 margin: '5 0 0 0',
                 html: '<div class="horizontalLine"></div>'
-            },
-            {
-                xtype: 'container',
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
-                items: [
-                    this.taggerTitle
-                ]
-            },
-            {
-                xtype: 'container',
-                width: '100%',
-                html: '<div class="horizontalLine"></div>'
-            },
+            },            
             {
             	xtype: 'container',
                 layout: {

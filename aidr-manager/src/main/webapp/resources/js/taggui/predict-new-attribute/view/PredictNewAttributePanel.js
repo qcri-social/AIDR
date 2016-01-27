@@ -198,22 +198,6 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
                 margin: '5 0 0 0',
                 html: '<div class="horizontalLine"></div>'
             },
-            {
-                xtype: 'container',
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
-                },
-                items: [
-                    this.pageTitle,
-                    this.pageDescription
-                ]
-            },
-            {
-                xtype: 'container',
-                width: '100%',
-                html: '<div class="horizontalLine"></div>'
-            },
             this.standardAttributesView,
             this.emptySpace,
             this.customAttributesView,

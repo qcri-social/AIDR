@@ -258,7 +258,7 @@
 		</repository>
 	</repositories>
 	<build>
-		<finalName>aidr-manager</finalName>
+		<finalName>AIDRFetchManager</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

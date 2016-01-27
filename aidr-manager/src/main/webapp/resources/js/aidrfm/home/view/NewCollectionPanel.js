@@ -27,6 +27,17 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             text: 'Status as of ' + moment(new Date()).format("MMM Do, YYYY hh:mm A"),
             flex: 1
         });
+		
+		this.twitterStatus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            margin: '-30 0 0 0',
+			style: {
+				'color' : 'red'
+			},
+            html: '* We are facing twitter service disruption. Please be aware of any unexpected problem. For details refer to <a href="https://dev.twitter.com/overview/status">Twitter Status</a>.',
+            hidden: true
+        });
+		
          this.newCollectionButton = Ext.create('Ext.Button', {
             text: 'Create Collection',
             margin: '6 0 0 15',
@@ -55,7 +66,7 @@ this.refreshButton = Ext.create('Ext.Button', {
     // text: null,
     // height: 32,
     // width: 32,
-    margin: '27 395 0 20',
+    margin: '17 560 0 20',
     tooltip: 'Refresh',
     // iconCls: 'refrashIcon',
      cls:'btn btn-blueish4',
@@ -73,7 +84,9 @@ this.collectionStore = Ext.create('Ext.data.JsonStore', {
         url: 'protected/collection/findAll.action',
         reader: {
             rootProperty: 'data',
-            totalProperty: 'total'
+            totalProperty: 'total',
+			sourceOutageProperty: 'sourceOutage'
+			
         }
     },
     autoLoad: true,
@@ -90,7 +103,9 @@ this.collectionStore = Ext.create('Ext.data.JsonStore', {
                          document.location.href = BASE_URL + '/protected/home';
                      }
                      var count = store.getCount();
-
+					 if(store.getProxy().reader.rawData.twitterOutage) {
+						me.twitterStatus.show();
+					 }
                      if (count > 0) {
                         me.collectionPaging.show();
                     } else {
@@ -397,9 +412,11 @@ this.tabs =  Ext.create('Ext.tab.Panel', {
             margin: '0 0 40 0',
             items: [
             this.collectionDescription,
+			
             // this.refreshButton
             ]
         },
+		this.twitterStatus,
         me.tabs,
         {
             xtype: 'container',

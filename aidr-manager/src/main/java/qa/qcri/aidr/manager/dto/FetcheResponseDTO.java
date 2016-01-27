@@ -22,17 +22,18 @@ public class FetcheResponseDTO implements Serializable{
 	private String geoLocation;
 	private Integer collectionCount;
 	private String lastDocument;
-        private String languageFilter;
-        private String statusMessage;
-        private Object dataObject;
-        private String consumerKey;
-        private String consumerSecret;
-        private String accessToken;
-        private String accessTokenSecret;
-        private String twitterInfoPresent;
-        private String toTrackAvailable;
-        private String toFollowAvailable;
-        private String geoLocationAvailable;
+    private String languageFilter;
+    private String statusMessage;
+    private Object dataObject;
+    private String consumerKey;
+    private String consumerSecret;
+    private String accessToken;
+    private String accessTokenSecret;
+    private String twitterInfoPresent;
+    private String toTrackAvailable;
+    private String toFollowAvailable;
+    private String geoLocationAvailable;
+    private boolean isSourceOutage;    
 	
 	public String getId() {
 		return id;
@@ -248,8 +249,10 @@ public class FetcheResponseDTO implements Serializable{
     public void setGeoLocationAvailable(String geoLocationAvailable) {
         this.geoLocationAvailable = geoLocationAvailable;
     }
-
-	
-	
-	
+	public boolean isSourceOutage() {
+		return isSourceOutage;
+	}
+	public void setSourceOutage(boolean isSourceOutage) {
+		this.isSourceOutage = isSourceOutage;
+	}
 }

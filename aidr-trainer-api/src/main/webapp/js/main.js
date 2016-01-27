@@ -91,7 +91,7 @@ function renderList(data) {
        // desc = desc + list[0].crisisName;
         var topStory = '';
         if(list[0].topStory == null) {
-            topStory = '<b>Hi!</b>&nbsp;&nbsp;Thanks a lot for helping us tag tweets on'+ list[0].crisisName +'.';
+            topStory = '<b>Hi!</b>&nbsp;&nbsp;Thanks a lot for helping us tag tweets on '+ list[0].crisisName +'.';
             topStory =  topStory + ' We need to identify which tweets refer to ';
             topStory =  topStory + classifierNames+ ' to gain a better understanding of this situation.';
             topStory =  topStory + ' Simply click on &ldquo;Start Here&rdquo; to start tagging.<br/><br/>Thank you for volunteering your time as a Digital Humanitarian!';

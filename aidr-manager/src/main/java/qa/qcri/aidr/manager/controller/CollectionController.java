@@ -327,6 +327,8 @@ public class CollectionController extends BaseController{
 			if (trashed != null && trashed.equalsIgnoreCase("yes")) {
 				onlyTrashed = true;
 			}
+			
+			boolean sourceOutage = false;
 			try {
 				// Call update from Fetcher and then get list with updated items
 				/*collectionService.updateAndGetRunningCollectionStatusByUser(userId);				
@@ -345,13 +347,16 @@ public class CollectionController extends BaseController{
 						case RUNNING:
 						case RUNNING_WARNING:
 						case WARNING:
-							collectionService.statusByCollection(collection, userEntity.getId());
+							collectionService.statusByCollection(collection, userEntity.getId());							
 						default:
 							break;						
 						}
 						AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, null);
 						dtoList.add(dto);
 						collectionCodes.add(collection.getCode());
+						if(collection.isSourceOutage()) {
+							sourceOutage = true;
+						}
 					}
 					
 					Map<String, Integer> collectionsClassifiers = taggerService.countCollectionsClassifiers(collectionCodes);
@@ -362,7 +367,9 @@ public class CollectionController extends BaseController{
 			} catch (Exception e) {
 				logger.error("Error while finding all collections for current user: "+userName, e);
 			}
-			return getUIWrapper(dtoList, count.longValue());
+			Map<String, Object> uiWrapper = getUIWrapper(dtoList, count.longValue());
+			uiWrapper.put("sourceOutage", sourceOutage);
+			return uiWrapper;
 		}
 		return getUIWrapper(false);
 	}

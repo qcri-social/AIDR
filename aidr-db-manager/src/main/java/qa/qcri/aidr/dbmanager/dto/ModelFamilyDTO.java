@@ -53,6 +53,9 @@ public class ModelFamilyDTO implements Serializable {
 			if (model.hasNominalAttribute()) {
 				NominalAttribute na = new NominalAttribute(model.getNominalAttribute().getUsers(), 
 						model.getNominalAttribute().getName(), model.getNominalAttribute().getDescription(), model.getNominalAttribute().getCode());
+				if(model.getNominalAttribute().hasNominalLabels()){
+					na.setNominalLabels(model.getNominalAttribute().getNominalLabels());
+				}
 				na.setNominalAttributeId(model.getNominalAttribute().getNominalAttributeId());
 				this.setNominalAttributeDTO(new NominalAttributeDTO(na));
 			}

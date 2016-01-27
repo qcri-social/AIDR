@@ -1,12 +1,12 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
+import java.util.List;
+
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
-import qa.qcri.aidr.trainer.api.dao.ReportTemplateDao;
-import qa.qcri.aidr.trainer.api.entity.ModelFamily;
-import qa.qcri.aidr.trainer.api.entity.ReportTemplate;
 
-import java.util.List;
+import qa.qcri.aidr.trainer.api.dao.ReportTemplateDao;
+import qa.qcri.aidr.trainer.api.entity.ReportTemplate;
 
 /**
  * Created with IntelliJ IDEA.

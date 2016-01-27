@@ -1,10 +1,10 @@
 package qa.qcri.aidr.trainer.api.template;
 
-import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
-import qa.qcri.aidr.trainer.api.entity.TaskAnswer;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 
 /**
  * Created with IntelliJ IDEA.

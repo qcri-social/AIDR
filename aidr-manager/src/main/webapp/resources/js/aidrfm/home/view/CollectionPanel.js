@@ -21,6 +21,13 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             text: 'Status as of ' + moment(new Date()).format("MMM Do, YYYY hh:mm A"),
             flex: 1
         });
+        
+        this.twitterStattus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            margin: '8 0 0 0',
+            text: 'Twitter API is down now' ,
+            flex: 1
+        });
 
         this.goToAdminSection = Ext.create('Ext.Button', {
             text: 'Administrator console',
@@ -307,6 +314,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 margin: '5 0 40 0',
                 items: [
                     this.collectionDescription,
+                    this.twitterStattus,
                     this.goToAdminSection,
                     this.newCollectionButton,
                     this.manageCrisisButton,
