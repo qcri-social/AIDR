@@ -90,8 +90,8 @@ public class Collection extends BaseEntity {
     @JoinColumn(name="classifier_enabled_by")
     private UserAccount classifierEnabledBy;
     
-    @Column(name="is_qa")
-    private Boolean isQA = false;
+    @Column(name="usage_type")
+    private String usageType;
     
     @Transient
     private boolean isSourceOutage = false;
@@ -273,12 +273,12 @@ public class Collection extends BaseEntity {
 		this.purpose = purpose;
 	}	
 
-	public Boolean getIsQA() {
-		return isQA;
+	public String getUsageType() {
+		return usageType;
 	}
 
-	public void setIsQA(Boolean isQA) {
-		this.isQA = isQA;
+	public void setUsageType(String usageType) {
+		this.usageType = usageType;
 	}
 
 	public boolean isSourceOutage() {

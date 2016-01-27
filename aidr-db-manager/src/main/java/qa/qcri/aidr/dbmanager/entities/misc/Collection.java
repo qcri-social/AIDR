@@ -95,8 +95,8 @@ public class Collection implements java.io.Serializable {
     @Column(name="micromappers_enabled")
     private boolean isMicromapperEnabled;
     
-    @Column(name="is_qa")
-    private Boolean isQA = false;
+    @Column(name="usage_type")
+    private String usageType;
 
     @ManyToOne
     @JoinColumn(name="classifier_enabled_by")
@@ -418,12 +418,12 @@ public class Collection implements java.io.Serializable {
 		this.status = status;
 	}
 
-	public Boolean getIsQA() {
-		return isQA;
+	public String getUsageType() {
+		return usageType;
 	}
 
-	public void setIsQA(Boolean isQA) {
-		this.isQA = isQA;
+	public void setUsageType(String usageType) {
+		this.usageType = usageType;
 	}
 
 }
