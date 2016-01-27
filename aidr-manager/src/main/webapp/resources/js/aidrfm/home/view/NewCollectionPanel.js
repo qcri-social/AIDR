@@ -103,7 +103,7 @@ this.collectionStore = Ext.create('Ext.data.JsonStore', {
                          document.location.href = BASE_URL + '/protected/home';
                      }
                      var count = store.getCount();
-					 if(store.getProxy().reader.rawData.twitterOutage) {
+					 if(store.getProxy().reader.rawData.sourceOutage) {
 						me.twitterStatus.show();
 					 }
                      if (count > 0) {

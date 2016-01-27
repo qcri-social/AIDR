@@ -33,7 +33,7 @@ public class FetcheResponseDTO implements Serializable{
     private String toTrackAvailable;
     private String toFollowAvailable;
     private String geoLocationAvailable;
-    private boolean isSourceOutage;    
+    private boolean sourceOutage;    
 	
 	public String getId() {
 		return id;
@@ -250,9 +250,9 @@ public class FetcheResponseDTO implements Serializable{
         this.geoLocationAvailable = geoLocationAvailable;
     }
 	public boolean isSourceOutage() {
-		return isSourceOutage;
+		return sourceOutage;
 	}
-	public void setSourceOutage(boolean isSourceOutage) {
-		this.isSourceOutage = isSourceOutage;
+	public void setSourceOutage(boolean sourceOutage) {
+		this.sourceOutage = sourceOutage;
 	}
 }

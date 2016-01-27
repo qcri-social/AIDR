@@ -84,9 +84,10 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 		publishers.add(publisher);
 	}
 
+	
 	@Override
-	public void onStatus(Status status) {
-		task.setIsSourceOutage(false);
+	public void onStatus(Status status) {		
+		task.setSourceOutage(false);
 		String json = TwitterObjectFactory.getRawJSON(status);
 		JsonObject originalDoc = Json.createReader(new StringReader(json)).readObject();
 		for (Predicate<JsonObject> filter : filters) {
@@ -101,7 +102,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 		builder.add("aidr", aidr);
 		JsonObject doc = builder.build();
 		for (Publisher p : publishers)
-			p.publish(channelName, doc);
+			p.publish(channelName, doc);			
 	}
 
 	@Override
@@ -153,14 +154,14 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 			{
 				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS))) {
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
-					task.setIsSourceOutage(true);
+					task.setSourceOutage(true);
 				} else {
 					timeToSleep = (long) (getRandom()*attempt*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
 					logger.warn("Error 503, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
-				}
+				}			 
 			}
 			else
 				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
