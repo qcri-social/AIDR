@@ -179,8 +179,7 @@ public class TwitterCollectorAPI {
             return Response.ok(response).build();
         }
         CollectionTask task = GenericCache.getInstance().getConfig(id);
-        if (task != null) {
-        	response.setSourceOutage(task.getIsSourceOutage());
+        if (task != null) {        	
             return Response.ok(task).build();
         }
 

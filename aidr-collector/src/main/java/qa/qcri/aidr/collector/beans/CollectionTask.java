@@ -42,7 +42,7 @@ public class CollectionTask {
     private String statusCode;
     private String statusMessage;
     private Boolean persist;
-    private Boolean isSourceOutage = false;
+    private boolean sourceOutage;
     /**
      *
      */
@@ -328,7 +328,7 @@ public class CollectionTask {
         newTask.setCollectionCount(collectionCount);
         newTask.setLanguageFilter(languageFilter);
         newTask.setPersist(persist);
-        newTask.setIsSourceOutage(isSourceOutage);
+        newTask.setSourceOutage(sourceOutage);
         return newTask;
     }
 
@@ -385,12 +385,12 @@ public class CollectionTask {
 		this.persist = persist;
 	}
 
-	public Boolean getIsSourceOutage() {
-		return isSourceOutage;
+	public boolean isSourceOutage() {
+		return sourceOutage;
 	}
 
-	public void setIsSourceOutage(Boolean isSourceOutage) {
-		this.isSourceOutage = isSourceOutage;
+	public void setSourceOutage(boolean sourceOutage) {
+		this.sourceOutage = sourceOutage;
 	}
 
 }

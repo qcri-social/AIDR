@@ -353,7 +353,7 @@ public class CollectionController extends BaseController{
 						}
 						AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, null);
 						dtoList.add(dto);
-						collectionCodes.add(collection.getCode());
+						collectionCodes.add(collection.getCode());						
 						if(collection.isSourceOutage()) {
 							sourceOutage = true;
 						}

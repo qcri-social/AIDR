@@ -30,11 +30,11 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
 		
 		this.twitterStatus = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            margin: '-30 0 0 0',
+            margin: '-15 0 0 0',
 			style: {
 				'color' : 'red'
 			},
-            html: '* We are facing twitter service disruption. Please be aware of any unexpected problem. For details refer to <a href="https://dev.twitter.com/overview/status">Twitter Status</a>.',
+            html: '* We are facing Twitter service disruption. Please be aware of any unexpected behaviour. For details refer to <a href="https://dev.twitter.com/overview/status">Twitter Status</a>.',
             hidden: true
         });
 		
@@ -103,8 +103,10 @@ this.collectionStore = Ext.create('Ext.data.JsonStore', {
                          document.location.href = BASE_URL + '/protected/home';
                      }
                      var count = store.getCount();
-					 if(store.getProxy().reader.rawData.twitterOutage) {
+					 if(store.getProxy().reader.rawData.sourceOutage) {
 						me.twitterStatus.show();
+					 } else {
+						me.twitterStatus.hide();
 					 }
                      if (count > 0) {
                         me.collectionPaging.show();
@@ -356,16 +358,17 @@ this.tabs =  Ext.create('Ext.tab.Panel', {
             }
         }
     },
+	margin: "0 0 0 0",
     items: [
     {
         title:'My Collections',
         height: '500',
         itemId: "myCollectionTab",
-        id: "myCollectionTab",
+        id: "myCollectionTab",		
         items:[
         {
             xtype: "container",
-            margin: "0 0"
+            margin: "0 0 0 0"
         },
         this.collectionView,
         this.collectionPaging
