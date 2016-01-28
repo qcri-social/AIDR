@@ -1,6 +1,6 @@
 package qa.qcri.aidr.trainer.api.service;
 
-import qa.qcri.aidr.trainer.api.entity.Users;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 
 /**
  * Created with IntelliJ IDEA.

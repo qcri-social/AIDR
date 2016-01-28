@@ -53,7 +53,7 @@ bin/asadmin undeploy AIDRPersister
 bin/asadmin undeploy AIDRCollector
 bin/asadmin undeploy AIDRTaggerAPI
 bin/asadmin undeploy AIDROutput
-bin/asadmin undeploy AIDRAnalytics
+
 bin/asadmin undeploy AIDRTrainerAPI
 bin/asadmin undeploy AIDRFetchManager
 
@@ -90,7 +90,6 @@ bin/asadmin deploy --contextroot=AIDRPersister --name=AIDRPersister $AIDR_HOME/a
 bin/asadmin deploy --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/aidr-collector/target/aidr-collector-1.0.war
 bin/asadmin deploy --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war
 bin/asadmin deploy --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
-bin/asadmin deploy --contextroot=AIDRAnalytics --name=AIDRAnalytics $AIDR_HOME/aidr-analytics/target/aidr-analytics-1.0.war
 bin/asadmin deploy --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
 
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
@@ -111,7 +110,6 @@ bin/asadmin redeploy --keepstate=true --contextroot=AIDRPersister --name=AIDRPer
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/aidr-collector/target/aidr-collector-1.0.war
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war
 bin/asadmin redeploy --keepstate=true --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
-bin/asadmin redeploy --keepstate=true --contextroot=AIDRAnalytics --name=AIDRAnalytics $AIDR_HOME/aidr-analytics/target/aidr-analytics-1.0.war
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
 bin/asadmin redeploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidr-manager.war

@@ -1,13 +1,14 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.api.dao.TaskQueueDao;
 import qa.qcri.aidr.trainer.api.entity.TaskQueue;
 import qa.qcri.aidr.trainer.api.service.TaskQueueService;
-
-import java.util.List;
 
 @Service("taskStatusLookUpService")
 @Transactional(readOnly = true)

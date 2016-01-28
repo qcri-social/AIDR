@@ -432,7 +432,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     updateDetailsPanel: function (r) {
         var p = this.DetailsComponent;
         p.currentCollection = r;
-
+        
+        p.breadcrumbs.setHtml('<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;'+r.name+'</span></div>');
         p.collectionTitle.setText('<b>' + r.name + '</b>', false);
 
         this.setStatus(r.status, r.collectionType);

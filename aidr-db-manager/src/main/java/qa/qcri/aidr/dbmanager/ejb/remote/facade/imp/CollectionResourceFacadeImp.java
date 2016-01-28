@@ -15,9 +15,11 @@ import javax.ejb.Stateless;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -26,6 +28,7 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 
 @Stateless(name="CollectionResourceFacadeImp")
 public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collection, Long> implements CollectionResourceFacade {
@@ -49,6 +52,19 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 			}
 		}
 		return dtoList;
+	}
+	
+	@Override
+	public List findAllCrisisIds() {
+		Criteria criteria = getCurrentSession().createCriteria(Collection.class);
+		criteria.setProjection(Projections.distinct(Projections.property("id")));
+		try {
+			List result = criteria.list();
+			return result;
+		} catch (HibernateException e) {
+			logger.error("Error in findAllCrisisIds(). ",e);
+			return null;
+		}
 	}
 
 	@Override 
@@ -136,8 +152,7 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 		List<Collection> collections = getAll();
 		if (collections != null && !collections.isEmpty()) {
 			for (Collection collection : collections) {
-				logger.info("Converting to DTO crisis: " + collection.getCode() + ", " + collection.getName() + ", " + collection.getCrisisId()
-						+ ", " + collection.getUsers().getId() + ":" + collection.getUsers().getUserName());
+				logger.info("Converting to DTO crisis: " + collection.getCode() + ", " + collection.getName() + ", " + collection.getCrisisId());
 
 				CollectionDTO dto = new CollectionDTO(collection);
 				dtoList.add(dto);
@@ -209,6 +224,11 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 			for (Collection c: list) {
 				try {
 					Hibernate.initialize(c.getModelFamilies());
+					for (ModelFamily mf : c.getModelFamilies()) {
+						if(mf.hasNominalAttribute()){
+							Hibernate.initialize(mf.getNominalAttribute().getNominalLabels());
+						}
+					}
 					dtoList.add(new CollectionDTO(c));
 				} catch (HibernateException e) {
 					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
@@ -224,6 +244,11 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 		if (crisis != null) {
 			try {
 				Hibernate.initialize(crisis.getModelFamilies());
+				for (ModelFamily mf : crisis.getModelFamilies()) {
+					if(mf.hasNominalAttribute()){
+						Hibernate.initialize(mf.getNominalAttribute().getNominalLabels());
+					}
+				}
 				return new CollectionDTO(crisis);
 			} catch (HibernateException e) {
 				logger.error("Hibernate initialization error for lazy objects in : " + crisis.getCrisisId());
@@ -240,7 +265,11 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 			for (Collection c: list) {
 				try {
 					Hibernate.initialize(c.getModelFamilies());
-					dtoList.add(new CollectionDTO(c));
+					for(ModelFamily mf : c.getModelFamilies()){
+						if(mf.isIsActive()){
+							dtoList.add(new CollectionDTO(c));
+						}
+					}
 				} catch (HibernateException e) {
 					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
 				}

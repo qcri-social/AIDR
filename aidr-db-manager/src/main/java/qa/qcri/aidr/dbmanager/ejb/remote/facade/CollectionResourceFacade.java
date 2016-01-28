@@ -44,4 +44,6 @@ public interface CollectionResourceFacade extends CoreDBServiceFacade<Collection
 	public List<CollectionDTO> findActiveCrisis() throws PropertyNotSetException;
 	
 	public int deleteCrisis(Long id);
+
+	public List findAllCrisisIds();
 }

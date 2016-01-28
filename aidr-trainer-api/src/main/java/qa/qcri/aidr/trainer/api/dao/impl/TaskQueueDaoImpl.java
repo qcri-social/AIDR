@@ -1,14 +1,14 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
+import java.util.List;
+
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.api.dao.TaskQueueDao;
 import qa.qcri.aidr.trainer.api.entity.TaskQueue;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

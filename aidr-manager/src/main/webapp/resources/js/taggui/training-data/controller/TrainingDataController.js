@@ -115,7 +115,8 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        		// this.getRetrainingThreshold(0,0);
 	        		me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
 	        				'<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
-	        				'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
+	        				'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;</span>' +
+	        				'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">Classifier</a><span>&nbsp;>&nbsp;' +
 	        				MODEL_NAME + '&nbsp;>&nbsp;Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '</span></div>', false);
 
 	        	}

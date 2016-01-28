@@ -1,10 +1,9 @@
 package qa.qcri.aidr.trainer.api.service;
 
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.trainer.api.entity.Document;
-import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
-
 import java.util.List;
+
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
 
 /**
  * Created with IntelliJ IDEA.

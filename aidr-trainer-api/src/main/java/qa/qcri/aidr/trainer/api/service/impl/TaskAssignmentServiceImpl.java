@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
-import qa.qcri.aidr.trainer.api.dao.UsersDao;
-import qa.qcri.aidr.trainer.api.entity.Users;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
+import qa.qcri.aidr.trainer.api.service.UsersService;
 
 @Service("taskAssignmentService")
 @Transactional(readOnly = true)
@@ -23,7 +23,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     //private TaskAssignmentDao taskAssignmentDao;
 
     @Autowired
-    private UsersDao usersDao;
+    private UsersService usersService;
     
     @Autowired TaskManagerRemote<DocumentDTO, Long> taskManager;
     
@@ -40,9 +40,10 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
             taskAssignmentDao.undoTaskAssignment(documentID,userID);
         }
         */
-    	Users users = usersDao.findUserByName(userName);
+    	Users users = null;
+			users = usersService.findUserByName(userName);
         if(users!= null){
-            Long userID = users.getUserID();
+            Long userID = users.getId();
             //System.out.println("userID : " + userID);
             //taskAssignmentDao.undoTaskAssignment(documentID,userID);
             try {

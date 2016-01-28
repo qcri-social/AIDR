@@ -2,13 +2,13 @@ package qa.qcri.aidr.collector.beans;
 
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * @author Imran
@@ -42,6 +42,7 @@ public class CollectionTask {
     private String statusCode;
     private String statusMessage;
     private Boolean persist;
+    private boolean sourceOutage;
     /**
      *
      */
@@ -308,7 +309,8 @@ public class CollectionTask {
         this.statusMessage = statusMessage;
     }
 
-    public CollectionTask clone() {
+    @Override
+	public CollectionTask clone() {
 
         CollectionTask newTask = new CollectionTask();
         newTask.setAccessToken(accessToken);
@@ -326,6 +328,7 @@ public class CollectionTask {
         newTask.setCollectionCount(collectionCount);
         newTask.setLanguageFilter(languageFilter);
         newTask.setPersist(persist);
+        newTask.setSourceOutage(sourceOutage);
         return newTask;
     }
 
@@ -381,4 +384,13 @@ public class CollectionTask {
 	public void setPersist(Boolean persist) {
 		this.persist = persist;
 	}
+
+	public boolean isSourceOutage() {
+		return sourceOutage;
+	}
+
+	public void setSourceOutage(boolean sourceOutage) {
+		this.sourceOutage = sourceOutage;
+	}
+
 }

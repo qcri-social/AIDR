@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.data.ActivityType;
-import qa.qcri.aidr.data.RoleType;
+import qa.qcri.aidr.data.CommonUtil;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
 import qa.qcri.aidr.data.persistence.entity.UserAccountActivity;
 import qa.qcri.aidr.data.service.PersisterService;
@@ -47,6 +45,9 @@ public class PersisterController {
 	
 	@Autowired
 	private UserAcountActivityService userAcountActivityService;
+	
+	@Autowired
+	private CommonUtil commonUtil;
 
 	@PreAuthorize("hasRole('ROLE_USER_SPRINGSOCIALSECURITY')")
 	@RequestMapping(value = "/generateDownloadLink", method = RequestMethod.POST)
@@ -61,18 +62,8 @@ public class PersisterController {
 		try {
 
 			// check user download limit
-			UserAccount userAccount = getAuthenticatedUser();
-			List<RoleType> userRoles = userService.getUserRoles(userAccount.getId());
-			
-			//checking if current user is admin
-			boolean isAdmin = false;
-			if (userRoles != null) {
-				for (RoleType userRole : userRoles) {
-					if(userRole.equals(RoleType.ADMIN)) {
-						isAdmin = true;
-					}
-				}
-			}
+			UserAccount userAccount = commonUtil.getAuthenticatedUser();
+			boolean isAdmin = commonUtil.isCurrentUserIsAdmin();			
 
 			String userName = "AIDR_Data_User";
 
@@ -124,10 +115,11 @@ public class PersisterController {
 					
 					// update download count of userAccountActivity
 					if(result.containsKey("tweetCount")){
+						Object countObject = result.get("tweetCount");						
 						if(userAccountActivity == null){
 							userAccountActivity = new UserAccountActivity(userAccount, fromDate, 0, ActivityType.DOWNLOAD);
 						}
-						Integer downloadedTweets = (Integer)result.get("tweetCount");
+						Integer downloadedTweets = (Integer)countObject;
 						userAccountActivity.setDownloadCount(downloadedTweets + userAccountActivity.getDownloadCount());
 						userAcountActivityService.save(userAccountActivity);
 					}
@@ -172,15 +164,6 @@ public class PersisterController {
 			return "Successful";
 		} else {
 			return "Failure";
-		}
-	}
-
-	protected UserAccount getAuthenticatedUser() throws Exception {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null) {
-			return userService.fetchByUserName(authentication.getName());
-		} else {
-			throw new Exception("No user logged in ");
 		}
 	}
 

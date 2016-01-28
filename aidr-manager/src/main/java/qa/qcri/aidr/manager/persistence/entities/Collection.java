@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
@@ -88,6 +89,12 @@ public class Collection extends BaseEntity {
     @ManyToOne
     @JoinColumn(name="classifier_enabled_by")
     private UserAccount classifierEnabledBy;
+    
+    @Column(name="usage_type")
+    private String usageType;
+    
+    @Transient
+    private boolean isSourceOutage = false;
 
     public boolean isPubliclyListed() {
 		return publiclyListed;
@@ -264,5 +271,22 @@ public class Collection extends BaseEntity {
 
 	public void setPurpose(String purpose) {
 		this.purpose = purpose;
+	}	
+
+	public String getUsageType() {
+		return usageType;
 	}
+
+	public void setUsageType(String usageType) {
+		this.usageType = usageType;
+	}
+
+	public boolean isSourceOutage() {
+		return isSourceOutage;
+	}
+
+	public void setSourceOutage(boolean isSourceOutage) {
+		this.isSourceOutage = isSourceOutage;
+	}
+	
 }

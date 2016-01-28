@@ -24,7 +24,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		this.breadcrumbs = Ext.create('Ext.form.Label', {
 			html: '<div class="bread-crumbs">' +
 			'<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
-			'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">Classifier for ' + CRISIS_NAME + '</a>' +
+			'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/collection-details">' + CRISIS_NAME + '</a>' +
 			'<span>&nbsp;>&nbsp;Interactive View/Download</span></div>',
 			margin: 0,
 			padding: 0
@@ -173,7 +173,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			items:[
 			{
 				xtype: 'fieldcontainer',
-				fieldLabel: 'Full Tweets',
+				fieldLabel: 'Full ' + Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]),
 				labelWidth: 100,
 				layout: 'hbox',
 				items: [
@@ -384,7 +384,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 				            	  margin: 0,
 				            	  padding: 0,
 				            	  items: [
-				            	          this.screenTitle,
+				            	          //this.screenTitle,
 				            	          this.statusL
 				            	          ]
 				              },

@@ -1,17 +1,16 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.api.dao.ClientAppDeploymentDao;
 import qa.qcri.aidr.trainer.api.entity.ClientAppDeployment;
-import qa.qcri.aidr.trainer.api.entity.Lookup;
 import qa.qcri.aidr.trainer.api.service.ClientAppDeploymentService;
-import qa.qcri.aidr.trainer.api.service.ClientAppService;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

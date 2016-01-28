@@ -1,13 +1,15 @@
 package qa.qcri.aidr.trainer.api.util;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
-
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,10 +38,10 @@ public class DataSorterUtil {
         return sorted;
     }
 
-    public static SortedMap sortNominalLabelByCode(Set<NominalLabel> objSet){
+    public static SortedMap sortNominalLabelByCode(List<NominalLabelDTO> nominalLabels){
         SortedMap map = new TreeMap();
 
-        for (NominalLabel o : objSet) {
+        for (NominalLabelDTO o : nominalLabels) {
             map.put(o.getSequence(),o);
         }
 

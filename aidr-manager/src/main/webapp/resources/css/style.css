@@ -328,6 +328,12 @@ a.svg-menu {
 	-webkit-margin-end: 0px;
 }
 
+.header-h3 {
+	font-size: 24px;
+	display: block;
+	margin: 0.67em 0 0.67em 0;
+}
+
 .bold-text {
 	font-weight: bold;
 }
@@ -706,7 +712,7 @@ body {
 	
 	border-radius: 0.44em;
 }
-.btn.btn-redSmall:active{
+.btn.btn-redBig:active, .btn.btn-redSmall:active{
 background: -webkit-linear-gradient(left, #D9544F, #D9544F);
 	background: -moz-linear-gradient(left, #D9544F, #D9544F);
 	background: -o-linear-gradient(left, #D9544F, #D9544F);
@@ -743,13 +749,12 @@ background: -webkit-linear-gradient(left, #D9544F, #D9544F);
 	-moz-border-radius: 0.6em;
 	border-radius: 0.44em;
 }
-.btn.btn-greenBig:active{
+.btn.btn-green:active, .btn.btn-greenBig:active{
 background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
 	background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
 	background: -o-linear-gradient(left, #44B5B1, #3FB6B0);
 	background: -ms-linear-gradient(left, #44B5B1, #3FB6B0);
 	border: 1px solid;
-	
 }
 
 .btn.btn-bluish1 {
@@ -814,8 +819,9 @@ background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
 	padding-bottom: 9px;
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,
 		startColorstr='#44B5B1', endColorstr='#3FB6B0');
-	background-image: url(../img/refresh-icon.png);
+	background-image: url(../img/refresh-icon.png) !important;
 	background-repeat: no-repeat;
+	box-shadow: none !important;
 	opacity: 1;
 	/*  background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
     background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
@@ -1004,7 +1010,7 @@ background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
 }
 
 ,
-.btn.btn-redBigbutton {
+.btn.btn-redBig button {
 	width: 100px;
 	height: 23px;
 	line-height: 22px;
@@ -1337,6 +1343,7 @@ End of the tab panel styles
 }
 
 .gray-backgrpund {
+	margin: 7px 0px 0px 0px;
 	padding: 10px;
 	background: #f5f5f5;
 	border: 1px solid #ebebeb;
@@ -1531,3 +1538,7 @@ End of the tab panel styles
 .collapse-style .x-tool-expand-bottom {
 	background-position: 0 -240px;
 }*/
+
+.x-btn.x-btn-pressed.x-btn-default-small {	
+	border: none;
+}

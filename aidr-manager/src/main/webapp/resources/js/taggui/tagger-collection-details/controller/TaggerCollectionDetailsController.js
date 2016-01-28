@@ -32,12 +32,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 }
             },
 
-            "#addNewClassifier": {
-                click: function (btn, e, eOpts) {
-                    this.addNewClassifier();
-                }
-            },
-            
             "#generateCSVLink": {
                 click: function (btn, e, eOpts) {
                     this.generateCSVLinkButtonHandler(btn);

@@ -77,7 +77,7 @@ public class NominalAttribute implements java.io.Serializable {
 
 	public NominalAttribute(Users users, String name, String description,
 			String code, List<ModelFamily> modelFamilies,
-			List<Collection> crisises, List<NominalLabel> nominalLabels) {
+			List<NominalLabel> nominalLabels) {
 		this.users = users;
 		this.name = name;
 		this.description = description;

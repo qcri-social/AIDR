@@ -1,22 +1,25 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.trainer.api.entity.Collection;
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,14 +54,14 @@ public class CrisisController {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/getallactive")
 	public List getAllActiveCrisis(){
-		return  crisisService.findAllActiveCrisis();
+		return crisisService.findAllActiveCrisis(); 
 	}
 
 	@GET
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/get/active")
-	public List<Collection> getActiveCrisis(){
-		return  crisisService.findActiveCrisisInfo();
+	public List<CollectionDTO> getActiveCrisis(){
+		return crisisService.findActiveCrisisInfo();
 	}
 
 	@GET
@@ -74,9 +77,9 @@ public class CrisisController {
 	public String getAllActiveCrisisNominalAttribute(@PathParam("crisisid") Long crisisID, @PathParam("nominalAttributeID") Long nominalAttributeID){
 		JSONArray labelJsonArrary = new JSONArray();
 
-		Set<NominalLabel> nominalLabels =  crisisService.getNominalLabelByCrisisID(crisisID, nominalAttributeID) ;
+		Set<NominalLabelDTO> nominalLabels =  crisisService.getNominalLabelByCrisisID(crisisID, nominalAttributeID) ;
 		if(nominalLabels != null){
-			for (NominalLabel o : nominalLabels) {
+			for (NominalLabelDTO o : nominalLabels) {
 				JSONObject qa = new JSONObject();
 				qa.put("qa", o.getNominalLabelCode());
 

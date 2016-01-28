@@ -97,6 +97,31 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 			return null;
 		}
 	}
+	
+	@Override
+	public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisIDAttributeIDAndStatus(long crisisID, long attributeID, int templateType, int status) {
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisisID",crisisID))
+				.add(Restrictions.eq("templateType", templateType))
+				.add(Restrictions.eq("nominalAttributeID", attributeID))
+				.add(Restrictions.eq("status", status));
+		List<CustomUiTemplateDTO> dtoList = null;
+		try {
+			List<CustomUiTemplate> customUITemplates = this.getAllByCriteria(criterion);
+			if (customUITemplates != null) {
+				dtoList = new ArrayList<CustomUiTemplateDTO>(0);
+				for (CustomUiTemplate c: customUITemplates) {
+					CustomUiTemplateDTO dto = new CustomUiTemplateDTO(c);
+					dtoList.add(dto);
+				}
+			}
+			return dtoList;
+		} catch (Exception e) {
+			logger.error("Error in getCustomUITemplateBasedOnTypeByCrisisIDAttributeIDAndStatus for crisisID : " + crisisID
+				+ " and attributeID : " + attributeID);
+			return null;
+		}
+	}
 
 	@Override
 	public List<CustomUiTemplateDTO> getCustomUITemplateByCrisisIDAndAttributeID(long crisisID, long attributeID) {
