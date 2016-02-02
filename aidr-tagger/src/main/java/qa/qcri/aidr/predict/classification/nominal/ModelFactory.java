@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predict.DataStore;
+import qa.qcri.aidr.predict.classification.ClassifierFactory;
+import qa.qcri.aidr.predict.common.AlgorithmType;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import weka.attributeSelection.AttributeSelection;
@@ -134,7 +136,7 @@ public class ModelFactory {
 
 	private static Classifier trainClassifier(Instances trainingSet)
 			throws Exception {
-		Classifier model = (Classifier) new RandomForest();
+		Classifier model = (Classifier) ClassifierFactory.getClassifier(AlgorithmType.RANDOM_FOREST);
 		model.buildClassifier(trainingSet);
 		return model;
 	}
