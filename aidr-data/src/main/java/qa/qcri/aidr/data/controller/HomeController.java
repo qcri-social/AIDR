@@ -61,6 +61,14 @@ public class HomeController {
         return view;  
     }   
     
+    @ResponseBody 
+    @RequestMapping(value = "/newui")
+    public ModelAndView newui(){
+    	ModelAndView view = new ModelAndView();  
+        view.setViewName("newui"); //name of the jsp-file in the "page" folder  
+        return view;  
+    }
+    
     @ResponseBody
     @RequestMapping(value = "/login")
     public ModelAndView login(){
