@@ -14,7 +14,7 @@ import java.io.Serializable;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(catalog = "mm_scheduler",name = "report_template")
+@Table(name = "report_template")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ReportTemplate implements Serializable {
 
