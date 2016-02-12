@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.dao.DataFeedDAO;
 import qa.qcri.aidr.entity.DataFeed;
 
-@Service("dataFeedService")
+@Service
 @Transactional(readOnly = false)
 public class DataFeedService{
 
@@ -30,8 +30,12 @@ public class DataFeedService{
     	logger.info("Data saved");
     }
     
-    public List<DataFeed> findbyCollectionCode(String code) {
+    public List<DataFeed> findbyCollectionCode(String code, double offset, double limit) {
     	List<DataFeed> collectionList = dataFeedDAO.findByCriteria(Restrictions.eq("code", code));
     	return collectionList;
+    }
+    
+    public List<DataFeed> findbyCollectionCodeAndConfidence(String code, double confidence, double offset, double limit) {
+    	return null;
     }
 }
