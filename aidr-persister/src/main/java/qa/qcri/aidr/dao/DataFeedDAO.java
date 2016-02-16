@@ -27,7 +27,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 			+ "FROM data_feed "
 			+ "where code =  ? and "
 			+ "(geo is not null or place is not null) "
-			+ "limit ? offset ?";
+			+ "order by created_at desc";
 	
 	private static final String SELECT_DATA_FEED_BY_CODE_AND_CONFIDENCE = "SELECT "
 			+ "feed->>\'text\' AS text, "
@@ -41,20 +41,22 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 			+ "FROM data_feed "
 			+ "where code =  ? and "
 			+ "(geo is not null or place is not null) and "
-			+ "cast(aidr->'nominal_labels'->0->>'confidence' AS float)>= ?"
-			+ " limit ? offset ?";
+			+ "cast(aidr->'nominal_labels'->0->>'confidence' AS float)>= ? "
+			+ "order by created_at desc";
 	
 	protected DataFeedDAO() {
 		super(DataFeed.class);
 	}
 	
+	//Fetching text, created_at, geo, place, label_code, label_name, attribute_code & attribut_name
+	//on the basis of code where geo or place information is present. 
 	public List<DataFeedInfo> getAllDataFeedsByCode(String code, Integer offset, Integer limit){
 		Query createQuery =null;
 		try{
 			createQuery = getCurrentSession().createSQLQuery(SELECT_DATA_FEED_BY_CODE);
 			createQuery.setParameter(0, code);
-			createQuery.setParameter(1, limit);
-			createQuery.setParameter(2, offset);
+			createQuery.setFirstResult(offset);
+			createQuery.setMaxResults(limit);
 			
 			List results = createQuery.list();
 			return adaptToDataFeedInfo(results);
@@ -65,14 +67,16 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 		}
 	}
 	
+	//Fetching text, created_at, geo, place, label_code, label_name, attribute_code, attribut_name & confidence
+	//on the basis of code where geo or place information is present and confidence is ge to given confidence.
 	public List<DataFeedInfo> getAllDataFeedsByCodeAndConfidence(String code, double confidence, Integer offset, Integer limit){
 		Query createQuery =null;
 		try{
 			createQuery = getCurrentSession().createSQLQuery(SELECT_DATA_FEED_BY_CODE_AND_CONFIDENCE);
 			createQuery.setParameter(0, code);
 			createQuery.setParameter(1, confidence);
-			createQuery.setParameter(2, limit);
-			createQuery.setParameter(3, offset);
+			createQuery.setFirstResult(offset);
+			createQuery.setMaxResults(limit);
 			List results = createQuery.list();
 			return adaptToDataFeedInfo(results);
 		}

@@ -14,6 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.service.DataFeedService;
+import qa.qcri.aidr.utils.Constants;
 import qa.qcri.aidr.utils.DataFeedInfo;
 
 @Path("/collection")
@@ -28,8 +29,8 @@ public class DataFeedAPI {
     		@QueryParam("offset") Integer offset,
     		@QueryParam("limit") Integer limit){
 		
-		offset = (offset != null) ? offset : 0;
-		limit = (limit != null) ? limit :1500;
+		offset = (offset != null) ? offset : Constants.OFFSET;
+		limit = (limit != null) ? limit : Constants.LIMIT;
 		
 		ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
         DataFeedService dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
@@ -45,9 +46,9 @@ public class DataFeedAPI {
     		@QueryParam("offset") Integer offset,
     		@QueryParam("limit") Integer limit){
 		
-		offset = (offset != null) ? offset : 0;
-		limit = (limit != null) ? limit :1500;
-		confidence = (confidence != null) ? confidence :0.5;
+		offset = (offset != null) ? offset : Constants.OFFSET;
+		limit = (limit != null) ? limit : Constants.LIMIT;
+		confidence = (confidence != null) ? confidence : Constants.CONFIDENCE;
 		
 		ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
         DataFeedService dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
