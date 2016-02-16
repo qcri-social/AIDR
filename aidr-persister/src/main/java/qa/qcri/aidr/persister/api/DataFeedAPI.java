@@ -16,14 +16,14 @@ import org.springframework.stereotype.Component;
 import qa.qcri.aidr.service.DataFeedService;
 import qa.qcri.aidr.utils.DataFeedInfo;
 
-@Path("/datafeeds")
+@Path("/collection")
 @Component
 public class DataFeedAPI {
 
 	@GET
 	@Produces("application/json")
 	@Consumes("application/json")
-	@Path(value = "/{code}")
+	@Path(value = "/{code}/feeds")
     public List<DataFeedInfo> findbyCollectionCode(@PathParam("code") String code, 
     		@QueryParam("offset") Integer offset,
     		@QueryParam("limit") Integer limit){
@@ -39,7 +39,7 @@ public class DataFeedAPI {
 	@GET
 	@Produces("application/json")
 	@Consumes("application/json")
-	@Path("/{code}/by-confidence")
+	@Path("/{code}/feeds/by-confidence")
     public List<DataFeedInfo> findbyCollectionCodeAndConfidence(@PathParam("code") String code, 
     		@QueryParam("confidence") Double confidence, 
     		@QueryParam("offset") Integer offset,
@@ -47,7 +47,7 @@ public class DataFeedAPI {
 		
 		offset = (offset != null) ? offset : 0;
 		limit = (limit != null) ? limit :1500;
-		confidence = (confidence != null) ? confidence :0.0;
+		confidence = (confidence != null) ? confidence :0.5;
 		
 		ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
         DataFeedService dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");

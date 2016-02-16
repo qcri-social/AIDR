@@ -60,19 +60,19 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-bundle</artifactId>
-			<version>1.18.1</version>
+			<version>1.19</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
-			<version>1.18.1</version>
+			<version>1.19</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-servlet</artifactId>
-			<version>1.18.1</version>
+			<version>1.19</version>
 		</dependency>
 
 		<dependency>

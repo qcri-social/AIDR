@@ -57,7 +57,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 			createQuery.setParameter(2, offset);
 			
 			List results = createQuery.list();
-			return parseToEntity(results);
+			return adaptToDataFeedInfo(results);
 		}
 		catch(Exception e){
 			logger.error("Exception while fetching data from db for collectionCode: "+code , e);
@@ -74,7 +74,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 			createQuery.setParameter(2, limit);
 			createQuery.setParameter(3, offset);
 			List results = createQuery.list();
-			return parseToEntity(results);
+			return adaptToDataFeedInfo(results);
 		}
 		catch(Exception e){
 			logger.error("Exception while fetching data from db for collectionCode: "+code , e);
@@ -82,7 +82,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 		}
 	}
 
-	private List<DataFeedInfo> parseToEntity(List results) {
+	private List<DataFeedInfo> adaptToDataFeedInfo(List results) {
 		List<DataFeedInfo> dataFeedInfos = new ArrayList<DataFeedInfo>();
 		DataFeedInfo dataFeedInfo;
 		try{
