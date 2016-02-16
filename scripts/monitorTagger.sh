@@ -4,6 +4,10 @@ GLASSFISH_HOME=/home/aidr.dev/glassfish4
 AIDR_HOME=/home/aidr.dev/AIDR
 filePath=/home/aidr.dev/taggerMonitor
 log=/home/aidr.dev/taggerMonitor/tagger.log
+HOST=http://localhost:8084
+SEND_MAIL_API=$HOST/AIDRTaggerAPI/rest/misc/sendErrorEmail
+tagger_stop_description="Stopping Tagger."$'\n'
+tagger_start_description="Tagger Started."$'\n'
 
 screenpid=$(ps -eo pid,cmd | grep [q]cri.aidr.predict.Controller | awk '{print $1}')
 
@@ -12,7 +16,9 @@ date >> $log
 if [ -z "$screenpid" ]
 then
 	cd $AIDR_HOME/aidr-tagger
-	screen -d -m java -Xmx2048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:target/aidr-tagger-1.0-jar-with-dependencies.jar:lib-non-maven/* qa.qcri.aidr.predict.Controller
+	curl --data "module=AIDRTaggerAPI&description=$tagger_stop_description" $SEND_MAIL_API
+	screen -d -m java -Xmx4096m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:target/aidr-tagger-1.0-jar-with-dependencies.jar:lib-non-maven/* qa.qcri.aidr.predict.Controller
+	curl --data "module=AIDRTaggerAPI&description=$tagger_start_description" $SEND_MAIL_API
 	echo "Tagger started" >> $log
 else
 
@@ -39,7 +45,7 @@ else
 		if [ ${status} -eq 0 ]
 		then
                 	#killed thread is found. Restart tagger
-                	killedThreads++
+                	$((killedThreads++))
                 	echo "thread not found" ${array[i]} $pid >> $log
 		fi
 	done
@@ -48,9 +54,10 @@ else
 	then
 		kill -9 $pid
 		cd $AIDR_HOME/aidr-tagger
-		screen -d -m java -Xmx2048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:target/aidr-tagger-1.0-jar-with-dependencies.jar:lib-non-maven/* qa.qcri.aidr.predict.Controller
+		curl --data "module=AIDRTaggerAPI&description=$tagger_stop_description" $SEND_MAIL_API
+		screen -d -m java -Xmx4096m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:target/aidr-tagger-1.0-jar-with-dependencies.jar:lib-non-maven/* qa.qcri.aidr.predict.Controller
+		curl --data "module=AIDRTaggerAPI&description=$tagger_start_description" $SEND_MAIL_API
 	fi
 
 	echo "threads killed" ${killedThreads} >> $log
 fi
-

@@ -1,13 +1,7 @@
 package qa.qcri.aidr.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -15,25 +9,15 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.json.JSONObject;
 
-/*import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
-import org.json.JSONObject;
-*/
-
 @Entity
 @TypeDefs({ @TypeDef(name = "CustomJsonObject", typeClass = JSONObjectUserType.class) })
 @Table(name="data_feed")
-public class DataFeed  implements Serializable {
+public class DataFeed  extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5739273882912395843L;
-	
-	@Id
-	@GeneratedValue( strategy = GenerationType.IDENTITY)
-	private Long id;
 	
 	@Column(name="code", length = 64)
     private String code;
@@ -56,16 +40,6 @@ public class DataFeed  implements Serializable {
 	@Column(name="place")
 	@Type(type = "CustomJsonObject")
 	private JSONObject place;
-	
-	@Column(updatable = false, nullable=false, name = "created_at")
-	private Date createdAt;
-	
-	@Column(nullable=false, name = "updated_at")
-	private Date updatedAt;
-	
-	public Long getId() {
-		return id;
-	}
 
 	public String getCode() {
 		return code;
@@ -83,10 +57,6 @@ public class DataFeed  implements Serializable {
 		return aidr;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public void setCode(String code) {
 		this.code = code;
 	}
@@ -101,22 +71,6 @@ public class DataFeed  implements Serializable {
 
 	public void setAidr(JSONObject aidr) {
 		this.aidr = aidr;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
 	}
 
 	public JSONObject getGeo() {
