@@ -1,7 +1,7 @@
 /**
- * POJO for (de)serialization of tweets coming on the REDIS aidr_predict.* channels
+ * POJO for (de)serialization of tweets coming from postgres db
  * 
- * @author Koushik
+ * @author Kushal
  */
 
 

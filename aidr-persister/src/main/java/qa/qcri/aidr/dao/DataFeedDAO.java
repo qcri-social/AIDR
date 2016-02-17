@@ -19,7 +19,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 	private static final String SELECT_DATA_FEED_BY_CODE = "SELECT "
 			+ "feed->>\'text\' AS text, "
 			+ "cast((EXTRACT(EPOCH FROM  cast(feed->>\'created_at\' as timestamp)) * 1000) AS BIGINT)AS created_at, "
-			+ "cast(geo as text), cast(place as text),"
+			+ "cast(geo as text), place->>\'full_name\' AS location,"
 			+ "aidr->\'nominal_labels\'->0->>\'label_code\' AS label_code, "
 			+ "aidr->\'nominal_labels\'->0->>\'label_name\' AS label_name, "
 			+ "aidr->\'nominal_labels\'->0->>\'attribute_code\' AS attribute_code, "
@@ -32,7 +32,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 	private static final String SELECT_DATA_FEED_BY_CODE_AND_CONFIDENCE = "SELECT "
 			+ "feed->>\'text\' AS text, "
 			+ "cast((EXTRACT(EPOCH FROM  cast(feed->>\'created_at\' as timestamp)) * 1000) AS BIGINT)AS created_at, "
-			+ "cast(geo as text), cast(place as text),"
+			+ "cast(geo as text), place->>\'full_name\' AS location,"
 			+ "aidr->\'nominal_labels\'->0->>\'label_code\' AS label_code, "
 			+ "aidr->\'nominal_labels\'->0->>\'label_name\' AS label_name, "
 			+ "aidr->\'nominal_labels\'->0->>\'attribute_code\' AS attribute_code, "
@@ -48,7 +48,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 		super(DataFeed.class);
 	}
 	
-	//Fetching text, created_at, geo, place, label_code, label_name, attribute_code & attribut_name
+	//Fetching text, created_at, geo, location, label_code, label_name, attribute_code & attribut_name
 	//on the basis of code where geo or place information is present. 
 	public List<DataFeedInfo> getAllDataFeedsByCode(String code, Integer offset, Integer limit){
 		Query createQuery =null;
@@ -67,7 +67,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 		}
 	}
 	
-	//Fetching text, created_at, geo, place, label_code, label_name, attribute_code, attribut_name & confidence
+	//Fetching text, created_at, geo, location, label_code, label_name, attribute_code, attribut_name & confidence
 	//on the basis of code where geo or place information is present and confidence is ge to given confidence.
 	public List<DataFeedInfo> getAllDataFeedsByCodeAndConfidence(String code, double confidence, Integer offset, Integer limit){
 		Query createQuery =null;
