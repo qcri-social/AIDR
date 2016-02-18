@@ -16,6 +16,7 @@
 		<org.springframework.data.version>1.9.0.RELEASE</org.springframework.data.version>
 		<org.hibernate.hibernate-validator.version>5.1.0.CR1</org.hibernate.hibernate-validator.version>
 		<org.hibernate.version>4.3.11.Final</org.hibernate.version>
+		<commons-dbcp.version>1.2.2</commons-dbcp.version>
 	</properties>
 
 	<dependencies>
@@ -332,10 +333,24 @@
 			<version>2.5.1</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>${commons-dbcp.version}</version>
+        </dependency>
+        
 	</dependencies>
 
 	<build>
 		<plugins>
+			<!-- <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-war-plugin</artifactId>
+			    <configuration>
+			        <failOnMissingWebXml>false</failOnMissingWebXml>
+			    </configuration>
+			</plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
