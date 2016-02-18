@@ -29,8 +29,8 @@ public class DataFeedAPI {
     		@QueryParam("offset") Integer offset,
     		@QueryParam("limit") Integer limit){
 		
-		offset = (offset != null) ? offset : Constants.OFFSET;
-		limit = (limit != null) ? limit : Constants.LIMIT;
+		offset = (offset != null) ? offset : Constants.DEFAULT_OFFSET;
+		limit = (limit != null) ? limit : Constants.DEFAULT_RECORD_LIMIT;
 		
 		ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
         DataFeedService dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
@@ -46,9 +46,9 @@ public class DataFeedAPI {
     		@QueryParam("offset") Integer offset,
     		@QueryParam("limit") Integer limit){
 		
-		offset = (offset != null) ? offset : Constants.OFFSET;
-		limit = (limit != null) ? limit : Constants.LIMIT;
-		confidence = (confidence != null) ? confidence : Constants.CONFIDENCE;
+		offset = (offset != null) ? offset : Constants.DEFAULT_OFFSET;
+		limit = (limit != null) ? limit : Constants.DEFAULT_RECORD_LIMIT;
+		confidence = (confidence != null) ? confidence : Constants.DEFAULT_CONFIDENCE;
 		
 		ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
         DataFeedService dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
