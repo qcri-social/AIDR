@@ -1,0 +1,190 @@
+<html hola_ext_inject="disabled" class="gr__aidr-dev_qcri_org">
+<head>
+<style type="text/css">
+.ng-animate.item:not (.left ):not (.right ){
+	-webkit-transition: 0s ease-in-out left;
+	transition: 0s ease-in-out left
+}
+</style>
+<style type="text/css">
+@charset "UTF-8"; 
+
+[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not
+	(.ng-hide-animate ){
+	display: none !important;
+}
+
+ng\:form {
+	display: block;
+}
+
+.ng-animate-shim {
+	visibility: hidden;
+}
+
+.ng-anchor {
+	position: absolute;
+}
+</style>
+<style type="text/css">
+.ng-animate.item:not (.left ):not (.right ){
+	-webkit-transition: 0s ease-in-out left;
+	transition: 0s ease-in-out left
+}
+</style>
+<style type="text/css">
+@charset "UTF-8"; 
+
+[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not
+	(.ng-hide-animate ){
+	display: none !important;
+}
+
+ng\:form {
+	display: block;
+}
+
+.ng-animate-shim {
+	visibility: hidden;
+}
+
+.ng-anchor {
+	position: absolute;
+}
+</style>
+<title>AIDR - Dashboard</title>
+<script src="resources/js/angular.min.js"></script>
+<script src="resources/js/angular-animate.min.js"></script>
+<script src="resources/js/angular-route.min.js"></script>
+<script src="resources/js/angular-resource.min.js"></script>
+<script src="resources/js/ui-bootstrap-tpls.min.js"></script>
+<script src="resources/js/DataApp.js"></script>
+<script type="text/javascript"
+	src="resources/js/angular-toastr.tpls.min.js"></script>
+<link rel="stylesheet" href="resources/css/bootstrap.min.css">
+<link rel="stylesheet" href="resources/css/style1.css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css"
+	href="resources/css/angular-toastr.min.css">
+<style>
+.list-group-item.active,.list-group-item.active:focus,.list-group-item.active:hover
+	{
+	background-color: white !important;
+}
+.list-group-item{
+	border: none;
+	
+}
+</style>
+
+</head>
+<body ng-app="DataApp" ng-controller="appCtrl"
+	style="overflow: auto; background-color: rgba(0, 0, 0, 0.070588);"
+	class="ng-scope">
+	<div class="headerWrapper">
+		<div class="header">
+			<div class="col-md-1 col-xs-1" tooltip-placement="right"
+				uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
+				<a href="http://aidr.qcri.org" class="pull-right"> <img
+					src="resources/img/AIDR/aidr_triangle_105x90.png" width="40"
+					height="40">
+				</a>
+			</div>
+			<div class="col-md-1 col-xs-1 aidr_text_logo"
+				tooltip-placement="right"
+				uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
+				<span>AIDR</span>
+			</div>
+			<div class="col-md-6 col-xs-3"></div>
+			<div class="col-md-2 col-xs-4">
+				<div class="input-group" style="">
+					<span class="input-group-addon" id="basic-addon1"><i
+						class="fa fa-search"></i></span> <input type="text"
+						class="form-control ng-pristine ng-untouched ng-valid"
+						placeholder="Search collection" aria-describedby="basic-addon1"
+						ng-model="search" ng-change="figureOutItemsToDisplay()">
+				</div>
+			</div>
+			<div class="col-md-2 col-xs-3">
+				<div class="btn-group dropdown" uib-dropdown=""
+					dropdown-append-to-body="" style="">
+					<!-- <button id="btn-append-to-body" type="button" class="btn btn-default btn-lg" uib-dropdown-toggle style="margin-top: 45px">
+				        <i class="fa fa-bars"></i> 
+				      </button> -->
+					<div class="dropdown-toggle" uib-dropdown-toggle=""
+						style="cursor: pointer; color: white" aria-haspopup="true"
+						aria-expanded="false">
+						<img height="32" width="32" style="border-radius: 4px"
+							ng-src="http://pbs.twimg.com/profile_images/635772676900950016/u9GfJrSU_normal.jpg"
+							src="http://pbs.twimg.com/profile_images/635772676900950016/u9GfJrSU_normal.jpg">
+						<b class="ng-binding">@amanagrawal9</b> <i
+							class="fa fa-caret-down"></i>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div ng-hide="flag" id="loading" class="ng-hide" style=""></div>
+	<div ng-show="flag" class="col-md-12">
+		<div id="myDiv">
+			<div class="col-md-4 ng-scope"
+				ng-repeat="letter in pagedItems track by $index" style="">
+				<div class="list-group" style="border-top: 3px solid #4caf50;box-shadow: 0 2px 5px 0 rgba(0,0,0,0.26);">
+					<div class="list-group-item active ng-binding"
+						style="color: black; font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 18px; border-bottom: 1px solid; border-color: rgba(110, 115, 120, 0.090);">
+						Chennai Floods <small
+							style="display: block; font-size: 13px; opacity: 0.55; margin-top: 3px;">My
+							friend show me pictures of his KIDS. But all I can show him was
+							pictures of my KICKS.</small>
+					</div>
+					<div class="list-group-item1">
+						Total Tweets <img id="twitter"
+							src="resources/img/twitter_icon3.png">
+						<span class="badge pull-right">1245</span>
+					</div>
+					<div class="list-group-item">
+						Languages
+						<span class="label label-info pull-right" style="font-size: 14px;">en, fra</span>
+					</div>
+					<div class="list-group-item">
+						Status
+						<span class="ng-binding label label-success pull-right" style="">RUNNING</span>
+					</div>
+
+					<div class="list-group-item" style="border-top: 1px solid rgba(110, 115, 120, 0.090);">
+						Owner 
+						<img src="http://pbs.twimg.com/profile_images/635772676900950016/u9GfJrSU_normal.jpg"
+							style="border-radius: 50%; height: 36px;" class="pull-right">
+						<span style="margin-left: 288px; display: none;">
+							Aman Agrawal
+						</span>
+					</div>
+					<div class="list-group-item">
+						<span class="ng-binding pull-right" style="opacity: 0.80; font-size: 13px;">**
+							143,425 tweets collected (since last restart)</span>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<ul class="uib-dropdown-menu dropdown-menu" role="menu"
+		aria-labelledby="btn-append-to-body"
+		style="margin-left: -12px; top: 40px; display: none; left: 1274.63px; right: auto;">
+		<li role="menuitem" ng-click="openProfile(letter)"><a href=""><i
+				class="fa fa-user"></i> Profile</a></li>
+		<li class="divider"></li>
+		<li role="menuitem"><a href="logout"><i
+				class="fa fa-sign-out"></i> Logout</a></li>
+	</ul>
+	<span class="gr__tooltip gr__flipped"
+		data-content="No definition found"
+		style="top: -9999px; left: 476.125px; opacity: 0;"><span
+		class="gr__tooltip-content"></span><i class="gr__tooltip-logo"></i><span
+		class="gr__triangle" style="margin-left: 28px;"></span></span>
+</body>
+</html>

@@ -8,5 +8,6 @@ public class JsonPostgreSQLDialect extends PostgreSQL9Dialect {
 	public JsonPostgreSQLDialect() {
         super();
         this.registerColumnType(Types.JAVA_OBJECT, "jsonb");
+       // this.registerHibernateType(Types.OTHER, "StringJsonUserType");
     }
 }

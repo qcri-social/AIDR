@@ -18,7 +18,7 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(catalog = "mm_scheduler",name = "task_queue_response")
+@Table(name = "task_queue_response")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskQueueResponse implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;

@@ -19,8 +19,9 @@
 		<property name="packagesToScan" value="qa.qcri.aidr.trainer.api.entity" />
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.dialect">${HIBERNATE_DIALECT_PostgreSQL}</prop>
 				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">${TRAINER_DB_HBM2DDL}</prop>
 			</props>
 
 		</property>
