@@ -134,8 +134,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
 		this.downloadFormat = Ext.create('Ext.form.RadioGroup', {
 			fieldLabel: 'Format',
-			labelWidth: 55,
-			columns: [150, 210, 240],
+			labelWidth: 100,
+			columns: [180, 250, 250],
 			items: [
 			        {
 			        	boxLabel: 'Spreadsheet (.csv)',
@@ -163,8 +163,33 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			}
 		});
 		
-		this.downloadContents = Ext.create('Ext.container.Container', {
-			label: 'Full Tweets',
+		this.downloadContents = Ext.create('Ext.form.RadioGroup', {
+			fieldLabel: 'Contents',
+			labelWidth: 100,
+			columns: [230, 90],
+			items: [
+			        {
+			        	boxLabel: 'Full tweets (max. 50K items)',
+			        	name: 'contents',
+			        	inputValue: 'full',
+			        	checked: true
+			        },
+			        {
+			        	boxLabel: 'Ids only',
+			        	name: 'contents',
+			        	inputValue: 'ids'
+			        }
+			        ],
+	        listeners: {
+				change: function(ctl, val) {
+					Ext.suspendLayouts();
+					Ext.getCmp('downloadLink').hide();
+				}
+			}
+		});
+
+		this.downloadConfig = Ext.create('Ext.container.Container', {
+		//	label: 'Full Tweets',
 		    layout: {
 		        type: 'hbox'
 		    },
@@ -173,24 +198,19 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			items:[
 			{
 				xtype: 'fieldcontainer',
-				fieldLabel: 'Full ' + Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]),
-				labelWidth: 100,
+				fieldLabel: 'Max. Download',
+				//labelWidth: 100,
+				labelAlign: 'bottom',
 				layout: 'hbox',
 				items: [
-			{
-				xtype: 'label',
-				text: 'Max.',
-				labelAlign: 'bottom'
-			},
 			{ 
 				xtype: 'splitter'
 			},
 			{
 		        xtype:'combo',
-				queryMode:'local',
+				mode:'local',
 				store:['1500','3000','10000', '50000'],
 				value: '1500',
-				displayField:'division',
 				editable: false,
 			   	autoSelect:true,
 			   	forceSelection:true,
@@ -232,8 +252,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		    
 		});
 		
-
-
+		
 		this.downloadButton = Ext.create('Ext.Button', {
 			text: 'Generate Downloadable File',
 			cls:'btn btn-blueSmall',
@@ -323,7 +342,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        this.downloadTweetsDescription,
 			        this.downloadFormat,
 			        this.downloadContents,
-			        
+			        this.downloadConfig,
 			        {
 			        	xtype: 'container',
 			        	layout: 'hbox',

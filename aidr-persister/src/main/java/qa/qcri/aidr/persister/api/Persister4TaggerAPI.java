@@ -211,11 +211,11 @@ public class Persister4TaggerAPI {
 			return Response.ok(obj.toJSONString()).build();
 		}
 	}
-
+	
 	/**
 	 * 
 	 * @param collectionCode
-	 * @return CSV format output from JSON filtered by user provided list of label names 
+	 * @return CSV format output(tweetIds and classifiers) from JSON filtered by user provided list of label names 
 	 * @throws UnknownHostException
 	 */
 	@POST
@@ -237,7 +237,63 @@ public class Persister4TaggerAPI {
 		} else {
 			logger.info(collectionCode + ": received constraints = " + queryList);
 		}
-		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsCSVFiltered(collectionCode, queryList, downloadLimited, userName);
+		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsAndClassifiersCSVFiltered(collectionCode, queryList, downloadLimited, userName);
+		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + result.get("fileName"));
+		
+		JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			return Response.ok(obj.toJSONString())
+					.allow("POST", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		} else {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode,  PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)+ PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode,   PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)+ PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			return Response.ok(obj.toJSONString())
+					.allow("POST", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param collectionCode
+	 * @return CSV format output(tweetIds only) from JSON filtered by user provided list of label names 
+	 * @throws UnknownHostException
+	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/filter/genTweetIdsOnly")
+	public Response generateTweetsIDSOnlyCSVFromAllJSONFiltered(String queryString, 
+			@QueryParam("collectionCode") String collectionCode,
+			@QueryParam("exportLimit") Integer exportLimit,
+			@QueryParam("removeRetweet") boolean removeRetweet,
+			@QueryParam("userName") String userName) 
+					throws UnknownHostException {
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
+
+		JsonDeserializer jsonD = new JsonDeserializer();
+		logger.info("received request for collection: " + collectionCode);
+		if (queryList != null) {
+			logger.info(collectionCode + ": received constraints = " + queryList.toString());
+		} else {
+			logger.info(collectionCode + ": received constraints = " + queryList);
+		}
+		
+		if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT));
+			
+		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsOnlyCSVFiltered(collectionCode, exportLimit, queryList, userName, removeRetweet);
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + result.get("fileName"));
 		
 		JSONObject obj = new JSONObject();
@@ -382,6 +438,53 @@ public class Persister4TaggerAPI {
 		}
 		JsonDeserializer jsonD = new JsonDeserializer();
 		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsJSONFiltered(collectionCode, downloadLimited, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType), userName);
+		
+		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + result.get("fileName"));
+		//return Response.ok(fileName).build();
+		JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			return Response.ok(obj.toJSONString())
+					.allow("POST", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		} else {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode,   PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)+ PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode,  PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)+ PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX) + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
+			return Response.ok(obj.toJSONString())
+					.allow("POST", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		}
+	}
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/filter/genJsonTweetIdsOnly")
+	public Response generateTweetsIDSOnlyJSONFromAllJSONFiltered(String queryString, 
+			@QueryParam("collectionCode") String collectionCode, 
+			@QueryParam("exportLimit") Integer exportLimit,
+			@QueryParam("removeRetweet") boolean removeRetweet,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType,
+			@QueryParam("userName") String userName) throws UnknownHostException {
+		logger.debug("In tagger-persister genTweetIds");
+		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
+		if (queryList != null) {
+			logger.info(collectionCode + ": received constraints = " + queryList.toString());
+		} else {
+			logger.info(collectionCode + ": received constraints = " + queryList);
+		}
+		JsonDeserializer jsonD = new JsonDeserializer();
+		
+		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsOnlyJSONFiltered(collectionCode, exportLimit, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType), userName, removeRetweet);
 		
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + result.get("fileName"));
 		//return Response.ok(fileName).build();
