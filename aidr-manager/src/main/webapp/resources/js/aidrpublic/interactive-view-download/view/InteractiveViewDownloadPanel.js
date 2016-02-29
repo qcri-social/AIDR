@@ -252,6 +252,28 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		    
 		});
 		
+		this.fullTweetInfo =  Ext.create('Ext.form.Label', {
+            height: 22,
+            width: 22,
+            html: '<img src="/AIDRFetchManager/resources/img/info.png" width="18" height="18"/>' ,
+            margin: '3 0 0 20',
+            listeners: {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "To download full tweet by tweet-id, please refer the link and API given below.<br>" +
+                        		"<b>API:</b> https://api.twitter.com/1.1/statuses/show.json?id=682105812345678 <br>" +
+                        		"<b>Ref Link:</b> <a href=\"http://www.smartjava.org/content/access-twitter-rest-api-v11-scala-and-java-using-signpost\">Click here</a>",
+                        target: infoPanel.el,
+                        width: 500,
+                        focusOnToFront: true,
+                        dismissDelay: 0,
+                        autoHide: false,
+                        closable: false,
+                    });
+                }
+            }
+        });
 		
 		this.downloadButton = Ext.create('Ext.Button', {
 			text: 'Generate Downloadable File',
@@ -340,7 +362,15 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			items: [
 			        this.downloadTweetsL,
 			        this.downloadTweetsDescription,
-			        this.downloadFormat,
+			        {
+			        	xtype: 'container',
+			        	layout: 'hbox',
+			        		items: [
+									this.downloadFormat,
+									this.fullTweetInfo,
+			        	        ]
+			        },
+			        
 			        this.downloadContents,
 			        this.downloadConfig,
 			        {
