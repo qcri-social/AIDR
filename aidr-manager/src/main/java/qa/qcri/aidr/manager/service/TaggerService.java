@@ -135,7 +135,7 @@ public interface TaggerService {
 			String queryString, String jsonType, String userName) throws AidrException;
 
 	//Added by koushik
-	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName, Integer count, boolean removeRetweet, UserAccount authenticatedUser) throws AidrException;
+	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName, Integer count, boolean removeRetweet) throws AidrException;
 
 	//Added by koushik
 	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString, String userName) throws AidrException;
@@ -151,4 +151,8 @@ public interface TaggerService {
 	public Boolean sendMailService(String subject, String body);
 	
 	public Long getLabelCount(Long collectionId);
+
+	Map<String, Object> generateTweetIdsOnlyFilteredLink(String code, String queryString, String userName, Integer count, Boolean removeRetweet) throws AidrException;
+
+	Map<String, Object> generateJsonTweetIdsOnlyFilteredLink(String code, String queryString, String jsonType, String userName, Integer exportLimit, Boolean removeRetweet) throws AidrException;
 }
