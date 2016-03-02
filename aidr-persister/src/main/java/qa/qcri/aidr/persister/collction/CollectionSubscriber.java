@@ -25,6 +25,7 @@ import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.entity.DataFeed;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.service.DataFeedService;
+import qa.qcri.aidr.service.ImageFeedService;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.JedisPubSub;
@@ -40,18 +41,24 @@ public class CollectionSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
-    DataFeedService dataFeedService = null;
+    private boolean saveMediaEnabled;
+    
+    private DataFeedService dataFeedService;
+    private ImageFeedService imageFeedService;
+    
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 
     public CollectionSubscriber() {
     }
 
-    public CollectionSubscriber(String fileLoc, String channel, String collectionCode) {
+    public CollectionSubscriber(String fileLoc, String channel, String collectionCode, boolean saveMediaEnabled) {
         //remove leading and trailing double quotes from collectionCode
         fileVolumnNumber = FileSystemOperations.getLatestFileVolumeNumber(collectionCode);
         this.collectionCode = collectionCode.replaceAll("^\"|\"$", "");
         this.persisterDir = fileLoc.replaceAll("^\"|\"$", "");
         collectionDir = createNewDirectory();
+        this.saveMediaEnabled = saveMediaEnabled;
+        
         createNewFile();
         createBufferWriter();
         if (null == redisLoadShedder) {
@@ -62,6 +69,7 @@ public class CollectionSubscriber extends JedisPubSub {
         
         ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
         dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
+        imageFeedService = (ImageFeedService) appContext.getBean("imageFeedService");
     }
 
     @Override
@@ -161,9 +169,21 @@ public class CollectionSubscriber extends JedisPubSub {
 			if(msgJson.has("place") && !msgJson.isNull("place")){
 				dataFeed.setPlace(msgJson.getJSONObject("place"));
 			}
-            dataFeedService.persist(dataFeed);
-            
+			
+            Long dataFeedId = dataFeedService.persist(dataFeed);
+            if(dataFeedId != null && saveMediaEnabled) {
+            	JSONObject entities = msgJson.getJSONObject("entities");
+            	if(entities != null && entities.has("media")
+            			&& entities.getJSONArray("media") != null
+            			&& entities.getJSONArray("media").length() > 0 
+            			&& entities.getJSONArray("media").getJSONObject(0).getString("type") != null
+            			&& entities.getJSONArray("media").getJSONObject(0).getString("type").equals("photo")) {
+            		String imageUrl = entities.getJSONArray("media").getJSONObject(0).getString("media_url");
+            		imageFeedService.checkAndSaveIfNotExists(dataFeedId, collectionCode, imageUrl);
+            	}
+            }
         }catch(Exception e){
+        	logger.error("Error in persisting :::: " + message);
         	logger.error("Exception while persisting to postgres db ", e );
         }
     }

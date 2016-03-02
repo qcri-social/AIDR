@@ -32,7 +32,8 @@ public class Persister4CollectionAPI {
     @GET
     @Path("/start")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response startPersister(@QueryParam("channel_provider") String provider, @QueryParam("collection_code") String code) {
+    public Response startPersister(@QueryParam("channel_provider") String provider, @QueryParam("collection_code") String code,
+    		@QueryParam("saveMediaEnabled") boolean saveMediaEnabled) {
         String response = "";
         try {
             String channel = StringUtils.defaultIfBlank(provider, "") + "." + StringUtils.defaultIfBlank(code, "");
@@ -42,7 +43,7 @@ public class Persister4CollectionAPI {
                     return Response.ok(response).build();
                 }
 
-                RedisCollectionPersister p = new RedisCollectionPersister(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH), channel, code);
+                RedisCollectionPersister p = new RedisCollectionPersister(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH), channel, code, saveMediaEnabled);
                 p.startMe();
                 GenericCache.getInstance().setCollectionPersisterMap(code, p);
                 response = "Started persisting to " + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);

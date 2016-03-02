@@ -331,7 +331,8 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setGeoLocation(dbCollection.getGeo());
 		dto.setGeoR(dbCollection.getGeoR());
 		dto.setLanguageFilter(dbCollection.getLangFilters());
-
+		dto.setSaveMediaEnabled(dbCollection.isSaveMediaEnabled());
+		
 		// Added by koushik
 		accessTokenStr = dto.getAccessToken();
 		accessTokenSecretStr = dto.getAccessTokenSecret();
