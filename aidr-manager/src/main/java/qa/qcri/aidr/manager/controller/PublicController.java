@@ -586,7 +586,7 @@ public class PublicController extends BaseController{
 		try {
 			briefInfos = collectionService.getMicromappersFilteredCollections(micromappersEnabled);
 		} catch (Exception e) {
-			logger.error("Error is fetching collection list., e);
+			logger.error("Error is fetching collection list.", e);
 		}
 		
 		return briefInfos;
