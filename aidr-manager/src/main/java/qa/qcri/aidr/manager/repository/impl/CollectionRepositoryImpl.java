@@ -24,6 +24,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import qa.qcri.aidr.manager.persistence.entities.Collection;
@@ -32,6 +33,7 @@ import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
 @Repository("collectionRepository")
+@Transactional
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, Serializable> implements CollectionRepository{
 	private Logger logger = Logger.getLogger(CollectionRepositoryImpl.class);
 
@@ -501,6 +503,24 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 	
 		List<Collection> collections = new ArrayList<Collection>();
 		collections = findAll();
+		return collections;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Collection> findMicromappersFilteredCollections(boolean micromappersEnabled) {
+		
+		List<Collection> collections = new ArrayList<Collection>();
+
+		try {
+			Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
+			criteria.add(Restrictions.eq("micromappersEnabled", micromappersEnabled));
+			collections = criteria.list();
+			
+		} catch (HibernateException e) {
+			logger.error("Exception in fetching list of collections.", e);
+		}
+		
 		return collections;
 	}
 }

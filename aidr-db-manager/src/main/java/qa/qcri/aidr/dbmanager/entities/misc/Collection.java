@@ -124,6 +124,9 @@ public class Collection implements java.io.Serializable {
     
 	private Integer status;
 	
+    @Column(name="save_media_enabled", columnDefinition="bit default 0")
+    private boolean saveMediaEnabled;
+	
 	@PreUpdate
 	protected void onUpdate() {
 		updatedAt = new Timestamp(System.currentTimeMillis());
@@ -424,6 +427,14 @@ public class Collection implements java.io.Serializable {
 
 	public void setUsageType(String usageType) {
 		this.usageType = usageType;
+	}
+
+	public boolean isSaveMediaEnabled() {
+		return saveMediaEnabled;
+	}
+
+	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
+		this.saveMediaEnabled = saveMediaEnabled;
 	}
 
 }
