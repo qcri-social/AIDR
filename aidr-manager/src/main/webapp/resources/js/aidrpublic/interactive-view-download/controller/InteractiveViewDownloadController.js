@@ -302,7 +302,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     me.mainComponent.updateLayout();
                 }
                 //Check whether the logged in user can download full tweets or not
-                if(!me.isCurrentUserCanDownloadFullTweets(managers)){
+                Ext.DOWNLOAD_ENABLED = me.isCurrentUserCanDownloadFullTweets(managers);
+                if(!Ext.DOWNLOAD_ENABLED){
                 	me.mainComponent.downloadContents.hide();
                 }
                 me.updateStatusInfo(jsonData.status, jsonData.endDate, jsonData.collectionType);
@@ -366,6 +367,10 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
             queryString: me.mainComponent.constraintsString
         };
 
+        if(!Ext.DOWNLOAD_ENABLED) {
+        	contents = 'ids;'
+        }
+        
         if(format == 'csv'){
             if (contents == 'full') {
                 url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
