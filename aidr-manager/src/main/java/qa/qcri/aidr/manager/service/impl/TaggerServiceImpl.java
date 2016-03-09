@@ -59,7 +59,6 @@ import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.dto.TrainingDataRequest;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
-import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.ManagerConfigurationProperty;
@@ -1527,7 +1526,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public Map<String, Object> generateCSVFilteredLink(String code,
-			String queryString, String userName, Integer count, boolean removeRetweet, UserAccount authenticatedUser) throws AidrException {
+			String queryString, String userName, Integer count, boolean removeRetweet) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
@@ -1535,27 +1534,13 @@ public class TaggerServiceImpl implements TaggerService {
 			
 			String url = null;
 			Response clientResponse = null;
-			//if(userService.isUserAdmin(authenticatedUser)) {
 				url = persisterMainUrl + "/taggerPersister/filter/genCSV?collectionCode=" + code + "&exportLimit="
 						+ count + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
 				WebTarget webResource = client.target(url);
 				clientResponse = webResource.request(MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 						Response.class);
-			/*} else {
-				url = persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code + "&downloadLimited="
-						+ false + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
-				WebTarget webResource = client.target(url);
-				clientResponse = webResource.request(MediaType.APPLICATION_JSON).get(Response.class);
-			}*/			 
-			
-			// String jsonResponse = clientResponse.readEntity(String.class);
 			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
 			return jsonResponse;
-			/*
-			 * if (jsonResponse != null &&
-			 * "http".equals(jsonResponse.substring(0, 4))) { return
-			 * jsonResponse; } else { return ""; }
-			 */
 		} catch (Exception e) {
 			logger.info("Error while generating csv filtered download link in Persister for collection: "+code, e);
 			throw new AidrException(
@@ -1594,6 +1579,33 @@ public class TaggerServiceImpl implements TaggerService {
 					e);
 		}
 	}
+	
+	@Override
+	public Map<String, Object> generateTweetIdsOnlyFilteredLink(String code, String queryString, String userName, Integer count, Boolean removeRetweet) throws AidrException {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		try {
+			logger.info("[generateTweetIdsOnlyFilteredLink] Invoked URL: "
+					+ persisterMainUrl
+					+ "/taggerPersister/filter/genTweetIdsOnly?collectionCode="
+					+ code + "&userName=" + userName + "&exportLimit=" + count + "&removeRetweet=" + removeRetweet);
+			WebTarget webResource = client.target(persisterMainUrl
+					+ "/taggerPersister/filter/genTweetIdsOnly?collectionCode="
+					+ code + "&userName=" + userName + "&exportLimit=" + count + "&removeRetweet=" + removeRetweet);
+			Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
+					Response.class);
+
+			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
+			return jsonResponse;
+		} catch (Exception e) {
+			logger.error("Error while generating filtererd Tweet Ids Only download link in Persister for collection: "+code, e);
+			throw new AidrException(
+					"[generateTweetIdsOnlyFilteredLink] Error while generating filtererd Tweet Ids Only download link in Persister",
+					e);
+		}
+	}
+	
 
 	@Override
 	public Map<String, Object> generateJSONFilteredLink(String code,
@@ -1655,6 +1667,38 @@ public class TaggerServiceImpl implements TaggerService {
 			 * "http".equals(jsonResponse.substring(0, 4))) { return
 			 * jsonResponse; } else { return ""; }
 			 */
+		} catch (Exception e) {
+			logger.error("Error while generating filtered JSON Tweet Ids download link in Persister for collection: "+code, e);
+			throw new AidrException(
+					"[generateJsonTweetIdsFilteredLink] Error while generating filtered JSON Tweet Ids download link in Persister",
+					e);
+		}
+	}
+	
+	@Override
+	public Map<String, Object> generateJsonTweetIdsOnlyFilteredLink(String code,
+			String queryString, String jsonType, String userName, Integer exportLimit, Boolean removeRetweet)
+			throws AidrException {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		//System.out.println("[generateJsonTweetIdsLink] Received request for code: "	+ code);
+		try {
+			logger.info("[generateJsonTweetIdsLink] Invoked URL: "
+					+ persisterMainUrl
+					+ "/taggerPersister/filter/genJsonTweetIdsOnly?collectionCode="
+					+ code + "&userName=" + userName + "&exportLimit=" + exportLimit + "&jsonType=" 
+					+ jsonType + "&removeRetweet=" + removeRetweet);
+			WebTarget webResource = client.target(persisterMainUrl
+					+ "/taggerPersister/filter/genJsonTweetIdsOnly?collectionCode="
+					+ code + "&userName=" + userName + "&exportLimit=" + exportLimit + "&jsonType=" 
+					+ jsonType + "&removeRetweet=" + removeRetweet);
+			Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
+					Response.class);
+
+			Map<String, Object> jsonResponse = clientResponse
+					.readEntity(Map.class);
+			return jsonResponse;
 		} catch (Exception e) {
 			logger.error("Error while generating filtered JSON Tweet Ids download link in Persister for collection: "+code, e);
 			throw new AidrException(

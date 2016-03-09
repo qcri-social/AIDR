@@ -301,7 +301,11 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     me.mainComponent.suspendLayout = false;
                     me.mainComponent.updateLayout();
                 }
-
+                //Check whether the logged in user can download full tweets or not
+                Ext.DOWNLOAD_ENABLED = me.isCurrentUserCanDownloadFullTweets(managers);
+                if(!Ext.DOWNLOAD_ENABLED){
+                	me.mainComponent.downloadContents.hide();
+                }
                 me.updateStatusInfo(jsonData.status, jsonData.endDate, jsonData.collectionType);
             }
         });
@@ -337,11 +341,24 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         });
         return result;
     },
+    
+    isCurrentUserCanDownloadFullTweets: function(managers){
+        var result = false;
+        Ext.Array.each(managers, function(r) {
+            if (r.userName == USER_NAME){
+            	if(r.downloadPermitted){
+            		 result = true;
+            	}
+            	return false; // to stop loop iteration
+            }
+        });
+        return result;
+    },
 
     downloadButtonHandler: function(btn){
         var me = this;
         var format = me.mainComponent.downloadFormat.getValue().format;
-
+        var contents = me.mainComponent.downloadContents.getValue().contents;
         var url = '';
         var params = {
             code: CRISIS_CODE,
@@ -350,11 +367,23 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
             queryString: me.mainComponent.constraintsString
         };
 
+        if(!Ext.DOWNLOAD_ENABLED) {
+        	contents = 'ids;'
+        }
+        
         if(format == 'csv'){
-            url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
+            if (contents == 'full') {
+                url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
+            } else {
+                url = '/protected/tagger/taggerGenerateTweetIdsFilteredLink.action';
+            }
         } else {
             params.jsonType = format;
-            url = '/protected/tagger/taggerGenerateJSONFilteredLink.action';
+            if (contents == 'full') {
+                url = '/protected/tagger/taggerGenerateJSONFilteredLink.action';
+            } else {
+                url = '/protected/tagger/taggerGenerateJsonTweetIdsFilteredLink.action';
+            }
         }
 
         btn.setDisabled(true);
@@ -388,7 +417,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 } else {
                     me.mainComponent.downloadLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
-                    AIDRFMFunctions.reportIssue(response);
+                    //AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {

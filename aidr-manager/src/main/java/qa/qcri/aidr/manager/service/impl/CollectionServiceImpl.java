@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
@@ -331,7 +332,8 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setGeoLocation(dbCollection.getGeo());
 		dto.setGeoR(dbCollection.getGeoR());
 		dto.setLanguageFilter(dbCollection.getLangFilters());
-
+		dto.setSaveMediaEnabled(dbCollection.isSaveMediaEnabled());
+		
 		// Added by koushik
 		accessTokenStr = dto.getAccessToken();
 		accessTokenSecretStr = dto.getAccessTokenSecret();
@@ -820,6 +822,21 @@ public class CollectionServiceImpl implements CollectionService {
 		return collectionSummaryInfos;
 	}
 	
+
+	@Override
+	public List<CollectionBriefInfo> getMicromappersFilteredCollections(
+			boolean micromappersEnabled) {
+		
+		List<Collection> collections = collectionRepository.findMicromappersFilteredCollections(micromappersEnabled);
+		List<CollectionBriefInfo> briefInfos = new ArrayList<CollectionBriefInfo>();
+		
+		if(collections != null && collections.size() > 0) {
+			briefInfos = adaptCollectionListToCollectionBriefInfoList(collections);
+		}
+		
+		return briefInfos;
+	}
+	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
 			try {
@@ -929,6 +946,28 @@ public class CollectionServiceImpl implements CollectionService {
     	
     	return summaryInfo;
     }
+
+    private List<CollectionBriefInfo> adaptCollectionListToCollectionBriefInfoList(List<Collection> collections) {
+    	
+    	List<CollectionBriefInfo> collectionBriefInfos = new ArrayList<CollectionBriefInfo>();
+    	
+    	for(Collection collection : collections) {
+    		collectionBriefInfos.add(adaptCollectionToCollectionBriefInfo(collection));
+    	}
+
+    	return collectionBriefInfos;
+    }
+    
+    private CollectionBriefInfo adaptCollectionToCollectionBriefInfo(Collection collection) {
+    	
+    	CollectionBriefInfo briefInfo = new CollectionBriefInfo();
+    	briefInfo.setCollectionId(collection.getId());
+    	briefInfo.setCollectionCode(collection.getCode());
+    	briefInfo.setCollectionName(collection.getName());
+    	briefInfo.setMicromappersEnabled(collection.isMicromappersEnabled());
+    	briefInfo.setProvider(collection.getProvider().name());
+    	return briefInfo;
+    }
     
     private String getFilteredTrack(String trackToFilter) {
     	
@@ -952,4 +991,5 @@ public class CollectionServiceImpl implements CollectionService {
     	return filteredTrack.trim();
     	
     }
+
 }

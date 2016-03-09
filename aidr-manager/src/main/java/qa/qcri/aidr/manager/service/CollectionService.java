@@ -2,6 +2,7 @@ package qa.qcri.aidr.manager.service;
 
 import java.util.List;
 
+import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
@@ -87,4 +88,5 @@ public interface CollectionService {
 
 	public List<CollectionSummaryInfo> getAllCollectionData();
 	
+	public List<CollectionBriefInfo> getMicromappersFilteredCollections(boolean micromappersEnabled);
 }

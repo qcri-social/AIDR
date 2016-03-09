@@ -43,6 +43,7 @@ public class CollectionTask {
     private String statusMessage;
     private Boolean persist;
     private boolean sourceOutage;
+    private boolean saveMediaEnabled;
     /**
      *
      */
@@ -329,6 +330,7 @@ public class CollectionTask {
         newTask.setLanguageFilter(languageFilter);
         newTask.setPersist(persist);
         newTask.setSourceOutage(sourceOutage);
+        newTask.setSaveMediaEnabled(saveMediaEnabled);
         return newTask;
     }
 
@@ -393,4 +395,11 @@ public class CollectionTask {
 		this.sourceOutage = sourceOutage;
 	}
 
+	public boolean isSaveMediaEnabled() {
+		return saveMediaEnabled;
+	}
+
+	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
+		this.saveMediaEnabled = saveMediaEnabled;
+	}
 }

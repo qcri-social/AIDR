@@ -253,7 +253,44 @@ public class ReadWriteCSV<CellProcessors> {
 		return mapWriter;
 	}
 
+	public ICsvMapWriter writeClassifiedTweetIDsOnlyCSV(String[] runningHeader, ICsvMapWriter mapWriter, final List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName) {
+		// the header elements are used to map the bean values to each column (names must match)
+		//String[] runningHeader = null;
+		try {
+			if (null == mapWriter) {
+				String persisterDIR = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
+				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
+				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
+				mapWriter = getCSVMapWriter(fileToWrite);
 
+				// First write the header
+				if (runningHeader != null) mapWriter.writeHeader(runningHeader);
+				countWritten = 0;
+			}
+		} catch (Exception ex) {
+			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
+			logger.error("Exception",ex);
+			return null;
+		}
+
+		// Now write to CSV file using CsvMapWriter
+		for (final ClassifiedTweet tweet : tweetsList) {
+			try {
+				final Map<String, Object> tweetToWrite = new HashMap<String, Object>();
+				tweetToWrite.put(runningHeader[0], tweet.getTweetID());
+				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
+				mapWriter.write(tweetToWrite, runningHeader, processors);
+				++countWritten;
+			} catch (SuperCsvCellProcessorException e) {
+				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
+			} catch (IOException e) {
+				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
+			}
+		}
+		return mapWriter;
+	}
+	
+	
 	public ICsvBeanWriter writeCollectorTweetsCSV(List<Tweet> tweetsList, String collectionDIR, String fileName, ICsvBeanWriter beanWriter) {
 
 		try {

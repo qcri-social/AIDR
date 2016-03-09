@@ -476,7 +476,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 			}
 		} catch (Exception e) {
-			logger.error("Error while refreshing the count for collectionId: "+id); 
+			logger.error("Error while refreshing the count for collectionId: "+id, e); 
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(dto,true);

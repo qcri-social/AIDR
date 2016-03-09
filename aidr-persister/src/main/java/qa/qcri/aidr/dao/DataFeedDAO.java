@@ -18,7 +18,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 	
 	private static final String SELECT_DATA_FEED_BY_CODE = "SELECT "
 			+ "feed->>\'text\' AS text, "
-			+ "cast((EXTRACT(EPOCH FROM  cast(feed->>\'created_at\' as timestamp)) * 1000) AS BIGINT)AS created_at, "
+			+ "cast((EXTRACT(EPOCH FROM  cast(feed->>\'created_at\' as timestamp)) * 1000) AS BIGINT)AS created_time, "
 			+ "cast(geo as text), place->>\'full_name\' AS location,"
 			+ "aidr->\'nominal_labels\'->0->>\'label_code\' AS label_code, "
 			+ "aidr->\'nominal_labels\'->0->>\'label_name\' AS label_name, "
@@ -31,7 +31,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 	
 	private static final String SELECT_DATA_FEED_BY_CODE_AND_CONFIDENCE = "SELECT "
 			+ "feed->>\'text\' AS text, "
-			+ "cast((EXTRACT(EPOCH FROM  cast(feed->>\'created_at\' as timestamp)) * 1000) AS BIGINT)AS created_at, "
+			+ "cast((EXTRACT(EPOCH FROM  cast(feed->>\'created_at\' as timestamp)) * 1000) AS BIGINT)AS created_time, "
 			+ "cast(geo as text), place->>\'full_name\' AS location,"
 			+ "aidr->\'nominal_labels\'->0->>\'label_code\' AS label_code, "
 			+ "aidr->\'nominal_labels\'->0->>\'label_name\' AS label_name, "

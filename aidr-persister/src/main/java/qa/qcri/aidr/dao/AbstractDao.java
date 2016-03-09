@@ -47,9 +47,9 @@ public abstract class AbstractDao<E, I extends Serializable> {
 	}
 
 	
-	public void save(E e) {
+	public Serializable save(E e) {
 		Session session = getCurrentSession();
-		session.save(e);
+		return session.save(e);
 	}
 
 	@SuppressWarnings("unchecked")
