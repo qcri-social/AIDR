@@ -261,8 +261,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
-                        html: "To download full tweet by tweet-id, please refer the link and API given below.<br>" +
-                        		"<b>API:</b> https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid <br>" +
+                        html: "To download full tweet by tweet-id, please refer the following links provided below.<br>" +
+                        		"<b>API Reference:</b> https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid <br>" +
                         		"<b>Ref Link:</b> <a href=\"http://www.smartjava.org/content/access-twitter-rest-api-v11-scala-and-java-using-signpost\" target=\"_blank\">Click here</a>",
                         target: infoPanel.el,
                         width: 500,
