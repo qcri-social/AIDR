@@ -1,0 +1,496 @@
+<style type="text/css">
+    .span12 {width: 1036px;}
+    h1,h2,h3,h4,h5,h6 {font-family: 'Museo Slab', Arial, Helvetica, sans-serif;font-weight: normal;}
+    h1 {font-size: 24px; line-height: 26px;}
+    h2 {font-size: 18px; line-height: normal;}
+    h3 {font-size: 15px; line-height: normal;}
+    .alignright {float: right;}
+    .alignleft {float: left;}
+    .aligncenter {display: block; margin: 0 auto; clear: both}
+    .clearleft {clear: left;}
+    .clearright {clear: right;}
+    .clearboth {clear: both;}
+    .subheader {
+        /*margin: 10px 0 0 200px;*/
+    }
+    #iphone {
+        max-width: 100%;
+        background: url(../../../../static/img/micromappers/aerialClicker/holding-ipad.png) left top no-repeat;
+        width: 1036px;
+        height: 778px;
+        float:left;
+    }
+    #taggedimg {
+        max-width: 100%;
+        width: 700px;
+        height: 534px;
+        margin: 64px 0 0 176px;
+        float:left;
+        background-color: #111;
+    }
+    #btn-group {
+        padding: 18px 0 0 75px;
+        margin:0 auto;
+        clear: left;
+        margin-left: 295px;
+    }
+    #btn-group a.btn {
+        width:72px;
+    }
+    #tagged {
+        margin: 50px 0 0;
+        padding: 20px 0 0;
+        clear: left;
+    }
+    #tagged p {
+        text-align: center;
+    }
+    input {
+        max-width: 100%;
+    }
+    .btn {
+        margin: 0 6px 0 0;
+    }
+
+    .map_canvas label {
+        width: auto;
+        display: inline;
+    }
+    .map_canvas img {
+        max-width: none;
+    }
+
+    .olImageLoadError {
+        /* when OL encounters a 404, don't display the pink image */
+        display: none !important;
+    }
+
+    #loadingMap{
+        position:absolute;
+        z-index: 10000;
+        width: 100%;
+        height: 100%;
+        margin-top: 0px;
+        margin-left: 0px;
+        background-color: rgba(255,255,255,1);
+    }
+
+    .layersDiv label {
+        color: white;
+    }
+    .loadingPopupbox {
+        width:220px;
+        height:220px;
+        background-image:url(../../../../static/img/micromappers/aerialClicker/loading.gif);
+        background-repeat:no-repeat;
+        display: none; /* Hidden as default */
+        float: left;
+        opacity: .80;
+        position: fixed;
+        top: 30%; left: 43%;
+        z-index: 99999;
+        -webkit-box-shadow: 0px 0px 0px #000;
+        -moz-box-shadow: 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px #000;
+    }
+</style>
+<div class="span3" style="margin-left: 950px">
+    <div style="text-align:center;margin-right:170px;padding-bottom: 10px;">
+        <a class="btn btn-primary" href="../tutorial" ><i class="icon-question-sign"></i> Tutorial</a>
+        <a class="btn btn-warning"
+           onclick="window.open('http://us21.chatzy.com/51130372988175','popupWindow',
+'width=410,height=450,toolbar=no,location=no, status=no,menubar=no,scrollbars=yes,resizable=yes');return false;"
+           style="margin-top: 0px;margin-right: -120px;">
+            <i class="icon-flag"></i> Chat Room</a>
+    </div>
+    <div style="
+        margin-right: 4px;
+        padding: 7px;
+        background-color: #0FC5BA;
+        border: 1px solid #D5CECE;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    ">
+        <input type="hidden" id="task-id">
+        <p>Completed: <span id="done" class="label label-info"></span> out of
+            <span id="total" class="label label-inverse"></span> Clicks</p>
+        <p><span id="remain" class="label label-info"></span> Clicks remaining!</p>
+        <p><b>Rank : <span id="rank"></span></b></p>
+    </div>
+</div>
+<div id="happyAlert" class="oneHundredPopupbox" style="display: none" ></div>
+<div id="loadingSign" class="loadingPopupbox" style="display:block" ></div>
+<div class="span2" id="msg_warning"  style="display: none;margin-top: -140px;margin-left: 400px;">
+    <div class="alert alert-error" style="margin-top: -50px;">
+        <strong>Draw a shield first!</strong>
+    </div>
+</div>
+<div class="row">
+    <!-- Success and Error Messages for the user -->
+    <div class="span12" style="height:50px">
+        <div id="success" class="alert alert-success" style="display:none;">
+            <a class="close">×</a>
+            <strong>Well done!</strong> Your answer has been saved
+        </div>
+        <div id="taskcompleted" class="alert alert-info" style="display:none;">
+            <strong>The task has been completed!</strong> Thanks a lot!
+        </div>
+        <div id="finish" class="alert alert-success" style="display:none;">
+            <strong>Congratulations!</strong> You have participated in all available tasks!
+            <br/>
+            <div class="alert-actions">
+                <a class="btn small" href="/">Go back</a>
+                <a class="btn small" href="/app">or, Check other applications</a>
+            </div>
+        </div>
+        <div id="error" class="alert alert-error" style="display:none;">
+            <a class="close">×</a>
+            <strong>Error!</strong> Something went wrong, please contact the site administrators
+        </div>
+    </div> <!-- End Success and Error Messages for the user -->
+</div> <!-- End of Row -->
+
+<div class="row skeleton">
+    <div class="span12" style="margin-top: -180px;">
+        <div id="iphone">
+            <div id="taggedimg"></div>
+            <div id="btn-group" class="text-center">
+                <button id="skipbtn" class="btn btn-danger btn-submit" value="skip">
+                    <i class="icon-check icon-white"></i> No buildings
+                </button>
+                <button id="answerbtn" class="btn btn-success btn-submit" value="coordinates">
+                    <i class="icon-check icon-white"></i> Save and go to next
+                </button>
+            </div>
+        </div>
+        <br/>
+        <div class="clearboth"></div>
+    </div>
+</div>
+<script src="http://d3js.org/d3.v2.js"></script>
+<script src="/static/js/pybossa/pybossa.js" type="text/javascript"></script>
+<link rel="stylesheet" href="/static/micromappers/css/leaflet.css" />
+<link rel="stylesheet" href="/static/micromappers/css/pam/leaflet.draw.css" />
+<link href='/static/micromappers/css/leaflet.fullscreen.css' rel='stylesheet' />
+<!--[if lte IE 8]>
+<link rel="stylesheet" href="/static/micromappers/css/leaflet.ie.css" />
+<link rel="stylesheet" href="/static/micromappers/css/pam/leaflet.draw.ie.css" />
+<![endif]-->
+
+<script src="/static/micromappers/js/leaflet.js"></script>
+<script src="/static/micromappers/js/pam/leaflet.draw.js"></script>
+<!--<script src="/static/micromappers/js/L.LineUtil.PolylineDecorator.js"></script>-->
+<script src="/static/micromappers/js/L.Symbol.js"></script>
+<script src="/static/micromappers/js/L.PolylineDecorator.js"></script>
+<script src='/static/micromappers/js/Leaflet.fullscreen.min.js'></script>
+<!-- PyBossa interface -->
+<script>
+    var geoLayerCollection = [];
+    function loadUserProgress() {
+        pybossa.userProgress('TEMPLATE:SHORTNAME').done(function(data){
+            var completed = data.done;
+            var rankTitle = "Volunteer";
+
+            if(completed>10 && completed <= 29){
+                rankTitle = "Red Cross Intern";
+            }
+            else if(completed>30 && completed <= 59){
+                rankTitle = "New FEMA Recruit";
+            }
+            else if(completed>60 && completed <= 99){
+                rankTitle = "UN Humanitarian";
+            }
+            else if(completed>100 && completed <= 299){
+                rankTitle = "Senior UN Official";
+            }
+            else if(completed>300 && completed <= 499){
+                rankTitle = "UN Country Director";
+            }
+            else if(completed>500 && completed <= 999){
+                rankTitle = "Head of UN OCHA";
+            }
+            else if(completed>1000 ){
+                rankTitle = "UN Secretary General";
+            }
+
+            var remaining = data.total - data.done;
+            var togo = 100 - data.done%100;
+
+            var displayTotal = data.done + togo;
+
+            if(data.total < 100){
+                togo = remaining;
+                displayTotal = data.total;
+            }
+
+            $("#total").text(data.total);
+            $("#done").text(data.done);
+            $("#remain").text(togo);
+            $("#rank").text(rankTitle);
+        });
+    }
+
+
+    pybossa.taskLoaded(function(task, deferred){
+        if ( !$.isEmptyObject(task) ) {
+            var map_div = $("<div/>", {id:"map_task_" + task.id, 'class': 'span4', 'style':'margin-left:0px'});
+            var map_canvas = $("<div/>", {id: "map_" + task.id});
+            map_canvas.css("width", "700px");
+            map_canvas.css("height", "534px");
+            map_div.append(map_canvas);
+            $("#taggedimg").prepend(map_div);
+
+
+            var geoBounds = task.info.geo;
+            var geoBoundsArray ;
+
+            geoBoundsArray =  [125.00587463378906,
+                11.241715102754723,
+                125.00553131103516,
+                11.241378366973036];
+
+            var southWest = L.latLng(geoBoundsArray[3],geoBoundsArray[2]),
+                    northEast = L.latLng(geoBoundsArray[1],geoBoundsArray[0]),
+                    bounds = L.latLngBounds(southWest, northEast);
+
+            var centerPoint = bounds.getCenter();
+
+            var imageUrl = task.info.url ;
+            var imageBounds = [[geoBoundsArray[3], geoBoundsArray[2]], [geoBoundsArray[1], geoBoundsArray[0]]];
+            var map = L.map("map_" + task.id,{maxZoom: 26, minZoom:19, fullscreenControl: true}).setView([centerPoint.lat, centerPoint.lng], 21);
+
+            map.fitBounds([ [geoBoundsArray[3], geoBoundsArray[2]], [geoBoundsArray[1], geoBoundsArray[0]]]);
+
+            L.imageOverlay(imageUrl, imageBounds,{opacity: 0.7}).addTo(map);
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            }).addTo(map);
+            L.control.scale().addTo(map);
+
+            map.attributionControl.setPrefix('');
+
+            var drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+
+            var drawControl = new L.Control.Draw({
+                draw : {
+                    position : 'topleft',
+                    polyline: false,
+                    polygon: {
+                        allowIntersection: false, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#f08c09', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#f40000'
+                        },
+                        repeatMode : true
+                    },
+                    polygon2: {
+                        allowIntersection: false, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#f08c09', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#f08c09'
+                        },
+                        repeatMode : true
+                    },
+
+                    polygon3: {
+                        allowIntersection: false, // Restricts shapes to simple polygons
+                        drawError: {
+                            color: '#f08c09', // Color the shape will turn when intersects
+                            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+                        },
+                        shapeOptions: {
+                            color: '#095bf0'
+                        },
+                        repeatMode : true
+                    },
+                    polyline2:false,
+                    rectangle : false,
+                    circle : false,
+                    marker: false
+                },
+                edit: {
+                    featureGroup: drawnItems
+                }
+            });
+
+            map.addControl(drawControl);
+
+            map.on('draw:created', function (e) {
+                var type = e.layerType,
+                        layer = e.layer;
+
+                if (type === 'polygon' || type === 'polygon2' || type === 'polygon3') {
+                    geoLayerCollection.push( new layerInfo(layer,type) ) ;
+
+                    drawnItems.addLayer(layer);
+                    task.drawnItems = drawnItems;
+                }
+
+
+
+            });
+
+            map.on('draw:edited', function (e) {
+                var type = e.layerType,
+                        layer = e.layer;
+                task.drawnItems = drawnItems;
+            });
+
+            map.on('draw:deleted', function (e) {
+                var layers = e.layers;
+
+                layers.eachLayer(function(layer) {
+                    //
+                    removeSelectedLayerArrowHead(layer, map);
+
+                });
+
+                task.drawnItems = drawnItems;
+
+
+            });
+
+            map.setMaxBounds(imageBounds);
+
+            map_div.hide();
+            deferred.resolve(task);
+        }
+
+        else {
+            deferred.resolve(task);
+        }
+
+
+    });
+
+    function layerInfo(layer,layerType) {
+        this.layer=layer;
+        this.layerType = layerType;
+    }
+
+    function getLayerType(layer){
+        var type;
+        for( var i in geoLayerCollection){
+            var item = geoLayerCollection[i];
+            if(item.layer == layer) {
+                type =item.layerType;
+                break;
+
+            }
+        }
+        return type;
+    }
+
+
+    pybossa.presentTask(function(task, deferred){
+        if ( !$.isEmptyObject(task) ) {
+            $("#task-id").text(task.id);
+            loadUserProgress();
+
+
+            $("#map_task_" + task.id).show(
+                    "complete", function() {
+                        loadingLoader(false);
+                    }
+            );
+
+
+            $(".btn-submit").off('click').on('click', function(evt){
+
+                toggleSubmitButton(true);
+
+                var ctrlClicked = $(evt.target).attr("id");
+                var btnClicked = $(evt.target).attr("value");
+                var answer = [];
+
+                if(ctrlClicked == 'answerbtn'){
+                    if (task.drawnItems) {
+                        task.drawnItems.eachLayer(function (layer) {
+                            // geoLayerCollection
+                            var item = {};
+                            item ["layerType"] = getLayerType(layer);
+                            item ["layer"] = layer.toGeoJSON();
+
+                            if(typeof item ["layerType"] != 'undefined'){
+                                answer.push(item);
+                            }
+
+                        });
+                    }
+                    else{
+                        $("#msg_warning").fadeIn();
+                        $("#msg_warning").fadeOut(3000);
+                        errorDoNotSave = true;
+                        toggleSubmitButton(false);
+                    }
+                }
+
+                task.answer = {
+                    'tweet': task.info.tweet,
+                    'tweetid': task.info.tweetid,
+                    'taskid': task.id,
+                    'author': task.info.author,
+                    'url': task.info.url,
+                    'timestamp': task.info.timestamp,
+                    'lon': task.info.lon,
+                    'lat': task.info.lat,
+                    'imgurl': task.info.imgurl,
+                    'locationRef': null,
+                    'loc': answer,
+                    'geo': task.info.geo
+                };
+
+                pybossa.saveTask(task.id, task.answer).done( function(data) {
+                    loadingLoader(true);
+                    geoLayerCollection = [];
+                    answer = [];
+                    drawnItems = null;
+                    drawnItems = new L.FeatureGroup();
+                    task.drawnItems = null;
+                    $("#map_" + task.id).remove();
+                    toggleSubmitButton(false);
+                    deferred.resolve();
+                });
+
+            });
+
+        }
+        else {
+            $(".skeleton").hide();
+            $("#finish").fadeIn();
+            loadingLoader(false);
+        }
+    });
+
+
+    function toggleSubmitButton(toggle){
+        if(toggle)
+        {
+            $(".btn-submit").attr('disabled','disabled');
+
+        }
+        else{
+            $(".btn-submit").removeAttr('disabled');
+        }
+    }
+
+    function loadingLoader(loaderDown){
+        if(loaderDown){
+            $("#loadingSign").fadeIn();
+        }
+        else{
+            $("#loadingSign").fadeOut(2000);
+        }
+
+
+    }
+
+    pybossa.run('TEMPLATE:SHORTNAME');
+
+</script>

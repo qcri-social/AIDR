@@ -21,6 +21,7 @@ public class FetcherRequestDTO implements Serializable {
     private String accessTokenSecret;
     private String geoLocation, geoR;
     private String languageFilter;
+    private boolean saveMediaEnabled;
     
     public FetcherRequestDTO() {}		
     
@@ -111,4 +112,12 @@ public class FetcherRequestDTO implements Serializable {
     public void setLanguageFilter(String languageFilter) {
         this.languageFilter = languageFilter;
     }
+
+	public boolean isSaveMediaEnabled() {
+		return saveMediaEnabled;
+	}
+
+	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
+		this.saveMediaEnabled = saveMediaEnabled;
+	}
 }

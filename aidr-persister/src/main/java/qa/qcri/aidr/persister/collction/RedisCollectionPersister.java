@@ -24,7 +24,7 @@ public class RedisCollectionPersister implements Runnable {
 
     private JedisConnectionPool connObject = null;
 
-    public RedisCollectionPersister(String fileName, String channel, String collectionCode) throws InterruptedException {
+    public RedisCollectionPersister(String fileName, String channel, String collectionCode, boolean saveMediaEnabled) throws InterruptedException {
         this.fileName = fileName + collectionCode;
         this.channel = channel;
         this.collectionCode = collectionCode;
@@ -33,7 +33,7 @@ public class RedisCollectionPersister implements Runnable {
         suspendFlag = true;
         try {
             subscriberJedis = connObject.getJedisConnection();
-            subscriber = new CollectionSubscriber(fileName, channel, collectionCode);
+            subscriber = new CollectionSubscriber(fileName, channel, collectionCode, saveMediaEnabled);
         } catch (Exception e) {
             logger.error(collectionCode + ": Error in subscribing to Redis");
             PersisterErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Error in subscribing to Redis for collection: "+collectionCode);

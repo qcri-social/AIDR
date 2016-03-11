@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
+import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.TaggerCrisisType;
@@ -563,7 +564,7 @@ public class PublicController extends BaseController{
 		}
 	}
 	
-	@RequestMapping(value = "/list")
+	@RequestMapping(value = "/all")
 	@ResponseBody
 	public List<CollectionSummaryInfo> getCollections() {
 		List<CollectionSummaryInfo> summaryInfos = new ArrayList<CollectionSummaryInfo>();
@@ -576,6 +577,19 @@ public class PublicController extends BaseController{
 		}
 		
 		return summaryInfos;
+	}
+	
+	@RequestMapping(value = "/list")
+	@ResponseBody
+	public List<CollectionBriefInfo> getCollectionsBriefInfo(@RequestParam(defaultValue="false") Boolean micromappersEnabled) {
+		List<CollectionBriefInfo> briefInfos = new ArrayList<CollectionBriefInfo>();
+		try {
+			briefInfos = collectionService.getMicromappersFilteredCollections(micromappersEnabled);
+		} catch (Exception e) {
+			logger.error("Error is fetching collection list.", e);
+		}
+		
+		return briefInfos;
 	}
 	
 }

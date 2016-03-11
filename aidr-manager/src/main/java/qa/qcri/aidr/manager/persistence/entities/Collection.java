@@ -93,6 +93,9 @@ public class Collection extends BaseEntity {
     @Column(name="usage_type")
     private String usageType;
     
+    @Column(name="save_media_enabled", columnDefinition="bit default 0")
+    private boolean saveMediaEnabled;
+    
     @Transient
     private boolean isSourceOutage = false;
 
@@ -287,6 +290,14 @@ public class Collection extends BaseEntity {
 
 	public void setSourceOutage(boolean isSourceOutage) {
 		this.isSourceOutage = isSourceOutage;
+	}
+
+	public boolean isSaveMediaEnabled() {
+		return saveMediaEnabled;
+	}
+
+	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
+		this.saveMediaEnabled = saveMediaEnabled;
 	}
 	
 }

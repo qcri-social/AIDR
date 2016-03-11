@@ -1,0 +1,449 @@
+<style type="text/css">
+    .map_canvas label {
+        width: auto;
+        display: inline;
+    }
+    .layersDiv label {
+        color: white;
+    }
+    h1,h2,h3,h4,h5,h6 {font-family: 'Museo Slab', Arial, Helvetica, sans-serif;font-weight: normal;}
+    h1 {font-size: 24px; line-height: 26px;}
+    h2 {font-size: 18px; line-height: normal;}
+    h3 {font-size: 15px; line-height: normal;}
+    #map {
+        position:relative;
+    }
+    .map_canvas {
+        max-width: 100%;
+    }
+    input {
+        max-width: 100%;
+    }
+    .btn {
+        margin: 0 6px 0 0;
+    }
+    #legend{
+        position:absolute;
+        top: 110px;
+        z-index:10000;
+        border:none;
+        padding-left: 6px;
+    }
+
+    .thumbnail{
+        position: relative;
+        z-index: 0;
+        border:0px;
+    }
+    .olControlMousePosition {
+        color: red;
+        font-weight: bold;
+        padding-bottom: 5px;
+    }
+</style>
+<div class="row">
+    <!-- Success and Error Messages for the user -->
+    <div class="span8 offset2" style="height:50px">
+        <!-- Success alert box -->
+        <!-- Task completed alert box -->
+        <div id="taskcompleted" class="alert alert-info" style="display:none;">
+            <strong>The task has been completed!</strong> Thanks a lot!
+        </div>
+        <!-- Task loading alert box -->
+        <!-- Task completed alert box -->
+        <div id="finish" class="alert alert-success" style="display:none;">
+            <strong>Congratulations!</strong> You have participated in all available tasks!
+            <br/>
+            <div class="alert-actions">
+                <a class="btn small" href="/">Go back</a>
+                <a class="btn small" href="/app">or, Check other applications</a>
+            </div>
+        </div>
+    </div>
+    <!-- End of span8 offset2-->
+</div>
+<!-- End of Row-->
+
+<div class="row skeleton">
+    <div class="span12" style="margin-top: -50px;">
+        <div class="row-fluid">
+            <div class="span3">
+                <div style="text-align:center;margin-right:120px;padding-bottom: 10px;">
+                    <a class="btn btn-primary" href="../tutorial" ><i class="icon-question-sign"></i> Tutorial</a>
+                </div>
+                <div style=" margin-right: 4px; padding: 7px; background-color: #0FC5BA; border: 1px solid #D5CECE;
+               -webkit-border-radius: 4px;
+               -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+               ">
+                    <input type="hidden" id="task-id">
+                    <p>Completed: <span id="done" class="label label-info"></span> out of
+                        <span id="total" class="label label-inverse"></span> Clicks
+                    </p>
+                    <p><span id="remain" class="label label-info"></span> Clicks remaining!</p>
+                    <p><b>Rank : <span id="rank"></span></b></p>
+                </div>
+                <br>
+                <div id="controls" class="btn-group" data-toggle="buttons-checkbox">
+                    <button class="btn btn-danger" style="width: 215px;"><i class="icon-thumbs-up"></i> No Location Information</button>
+                    <br><br>
+                    <button class="btn btn-success" style="width: 215px;"><i class="icon-thumbs-up"></i> Yes Submit Location</button>
+                </div>
+            </div>
+            <div class="span9">
+                <div id="question">
+                    <div class="well well-small" style="background-color: #F5F2F2;font-size: 16px; width: 680px;margin-bottom: 10px;color:#326CA8;border-color:#A4A4A8;border-width: 2px;">
+                        <p id="tweettext" >Loading tweet...</p>
+                    </div>
+                    <input id="locationRef" autofocus  type="text" placeholder="Paste reference to location, place, town, etc. here and click Search -->" style="width:580px;">
+                    <button id="searchBtn"  class="btn" style="margin-top:-10px"><i class="icon-search"></i> Search</button>
+                    <div id="map">
+                        <div id="legend">
+                            <a class="thumbnail" href="#thumb"  id="photo-link">
+                                <input type="image" id="photo" alt="tweet" src="../../../static/img/micromappers/geoClicker/YZxRqRQ.png" style="margin-left: 0px;margin-top: 15px;margin-bottom: 5px">
+                            </a>
+                        </div>
+                    </div>
+                    <i class="icon-map-marker"></i>  Approximate damage/impact location : <strong> Longitude:</strong> <span id="lon"></span>,
+                    <strong>Latitude:</strong> <span id="lat"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+<!-- PyBossa interface -->
+<script>
+    var localtask;
+    var varCity = 'TEMPLATE:DIASTOR_LOCATION';
+
+    function loadUserProgress() {
+        pybossa.userProgress('TEMPLATE:SHORTNAME').done(function(data){
+            var pct = Math.round((data.done*100)/data.total);
+
+            $("#total").text(data.total);
+            $("#done").text(data.done);
+
+            var remaining = data.total - data.done;
+            $("#remain").text(remaining);
+
+            var completed = data.done;
+            var rankTitle = "Volunteer";
+
+            if(completed>10 && completed <= 29){
+                rankTitle = "Red Cross Intern";
+            }
+            else if(completed>30 && completed <= 59){
+                rankTitle = "New FEMA Recruit";
+            }
+            else if(completed>60 && completed <= 99){
+                rankTitle = "UN Humanitarian";
+            }
+            else if(completed>100 && completed <= 299){
+                rankTitle = "Senior UN Official";
+            }
+            else if(completed>300 && completed <= 499){
+                rankTitle = "UN Country Director";
+            }
+            else if(completed>500 && completed <= 999){
+                rankTitle = "Head of UN OCHA";
+            }
+            else if(completed>1000 ){
+                rankTitle = "UN Secretary General";
+            }
+
+            $("#rank").text(rankTitle);
+
+        });
+    }
+
+    // This function will load the marker of the city, and center the map on it
+    function addCity(task) {
+        // As this action could take some time, start the spinner
+        // Geocode the city using Nominatim OSM service
+        $.getJSON('http://nominatim.openstreetmap.org/search/' + varCity + '?format=json', function(output) {
+            if (output.length >= 1) {
+                // Clean previous markers
+                $("#navigate").addClass("active");
+                task.damageLayer.removeAllFeatures();
+                task.cityLayer.removeAllFeatures();
+                // Create a LonLat object to load the city marker
+                var lonLat = new OpenLayers.LonLat(output[0].lon, output[0].lat)
+                        .transform(
+                        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                        task.map.getProjectionObject() // to Spherical Mercator Projection
+                );
+                // Set the marker position
+                var point = new OpenLayers.Geometry.Point(lonLat.lon, lonLat.lat);
+                task.damageLayer.addFeatures([new OpenLayers.Feature.Vector(point)]);
+                // Center the map
+                task.map.setCenter(lonLat,5);
+                // Reset the lon & lat span objects
+                $("#lon").text("-");
+                $("#lat").text("-");
+            }
+            else {
+                $("#map_" + task.id).hide();
+            }
+        });
+    }
+
+
+    pybossa.taskLoaded(function(task, deferred){
+        if ( !$.isEmptyObject(task) ) {
+            var div_map = $("<div/>", {'id': "map_" + task.id, 'class': 'map_canvas'});
+            div_map.css("width", "820px");
+            div_map.css("height", "410px");
+            div_map.css("display", "none");
+
+            $("#map").append(div_map);
+
+            var map = new OpenLayers.Map('map_' + task.id, {
+                controls: [
+                    new OpenLayers.Control.Navigation(),
+                    new OpenLayers.Control.PanZoom(),
+                    new OpenLayers.Control.LayerSwitcher(),
+                    new OpenLayers.Control.MousePosition({displayProjection: new OpenLayers.Projection("EPSG:4326")}),
+                    new OpenLayers.Control.ScaleLine(),
+                    new OpenLayers.Control.Attribution()
+                ]
+            });
+
+            // Layers
+            // Open Street Map (default layer)
+            map.addLayer(new OpenLayers.Layer.OSM("Open Street Map"));
+
+            // Google Maps Satellite layer
+            map.addLayer(new OpenLayers.Layer.Google(
+                    "Google Satellite",
+                    {type: google.maps.MapTypeId.SATELLITE}
+            ));
+
+            // Google Maps Physical layer
+            map.addLayer(new OpenLayers.Layer.Google(
+                    "Google Physical",
+                    {type: google.maps.MapTypeId.TERRAIN}
+            ));
+
+            // Icon for the City Marker
+            var styleMapCity = new OpenLayers.StyleMap({
+                pointRadius: 0
+            });
+
+            // Icon for the Urban Park Marker
+            var styleMapDamage = new OpenLayers.StyleMap({
+                pointRadius: 15,
+                externalGraphic: '../../../static/img//tweet.png'
+            });
+
+            // Layer for placing the city marker
+            var cityLayer = new OpenLayers.Layer.Vector("City marker", {
+                styleMap: styleMapCity,
+                attribution: 'Marker Icons by <a href="http://mapicons.nicolasmollet.com/">Nicolas Mollet</a>'
+            });
+            map.addLayer(cityLayer);
+            task.cityLayer = cityLayer;
+
+            // Layer for placing the urban park marker
+            var damageLayer = new OpenLayers.Layer.Vector("Damage marker", {
+                styleMap: styleMapDamage,
+                attribution: 'Marker Icons by <a href="http://mapicons.nicolasmollet.com/">Nicolas Mollet</a>'
+            });
+            map.addLayer(damageLayer);
+            task.damageLayer = damageLayer;
+
+            disablePoint = function(feature) {
+                $("#lat").text(feature.geometry.y);
+                var tmp = feature.geometry.clone();
+                tmp.transform(
+                        task.map.getProjectionObject(), // from Spherical Mercator Projection
+                        new OpenLayers.Projection("EPSG:4326") // to transform from WGS 1984
+                );
+                $("#lon").text(tmp.x);
+                $("#lat").text(tmp.y);
+                task.lon = tmp.x;
+                task.lat = tmp.y;
+                task.drawControls['point'].deactivate();
+            }
+
+
+            // Default location to load the map
+            var lonLat = new OpenLayers.LonLat(-0.1279688 ,51.5077286 )
+                    .transform(
+                    new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                    new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator Projection
+            );
+
+            // Enable drag & drop in the urban park Layer
+            var drag = new OpenLayers.Control.DragFeature(damageLayer, {
+                onComplete: function() {
+                    var urbanParkPoint = task.damageLayer.features[0].geometry
+                    var tmp = urbanParkPoint.clone();
+                    tmp.transform(
+                            task.map.getProjectionObject(), // from Spherical Mercator Projection
+                            new OpenLayers.Projection("EPSG:4326") // to transform from WGS 1984
+                    );
+                    // When the marker has been dropped, update the lon & lat of the urban park
+                    $("#lon").text(tmp.x);
+                    $("#lat").text(tmp.y);
+                    task.lon = tmp.x;
+                    task.lat = tmp.y;
+
+                }
+            });
+            // Add the drag & drop control into the map
+            map.addControl(drag);
+            // Activate drag & drop
+            drag.activate();
+
+            var drawControls = {
+                point: new OpenLayers.Control.DrawFeature(damageLayer, OpenLayers.Handler.Point,
+                        { 'featureAdded': disablePoint})
+            }
+
+            // Add them to the map
+            for (var key in drawControls) {
+                map.addControl(drawControls[key]);
+            }
+            task.drawControls = drawControls;
+            task.map = map;
+            task.lon = 0;
+            task.lat = 0;
+
+            addCity(task);
+            $("#loadingTask").hide();
+            deferred.resolve(task);
+        } // End if task empty
+        else {
+            deferred.resolve(task);
+        }
+    });
+
+    pybossa.presentTask(function(task, deferred){
+        if ( !$.isEmptyObject(task) ) {
+            if (task.state=='completed') {
+                $('#controls').hide();
+                $('#disqus_thread').hide();
+                $('#taskcompleted').show();
+            }
+            loadUserProgress();
+
+            $("#task-id").text(task.id);
+            $("#tweettext").html('<img src="../../../static/img/tweet.png" width="18px"><strong> Tweet</strong> : <div style="margin-left: 85px;margin-top: -21px;font-size: 17px;">'+replaceURLWithHTMLLinks(task.info.tweet) + '</div>');
+
+
+            task.answer = {
+                'tweet': task.info.tweet,
+                'tweetid': task.info.tweetid,
+                'taskid': task.id,
+                'author': task.info.author,
+                'url': task.info.url,
+                'timestamp': task.info.timestamp,
+                'lon': task.info.lon,
+                'lat': task.info.lat,
+                'imgurl': task.info.imgurl,
+                'locationRef': null,
+                'loc': null,
+                'category' : task.info.category
+            };
+            localtask = task.answer;
+
+            $("#noPark").show();
+            $("#answerbtn").show();
+            $("#noCity").hide();
+
+            $("#loadingTask").hide();
+            $("#map_" + task.id).show();
+
+
+            if ($("#photo").hasClass("disabled")) {
+                $("#photo").removeClass("disabled");
+            }
+
+            $("#searchBtn").off('click').on('click', function(evt){
+                $("#searching").show();
+                $("#searchingError").hide();
+                if ($('#locationRef').val()) {
+                    varCity = $("#locationRef").val();
+                    console.log("varCity : " + varCity);
+                }
+                else {
+                    $("#searching").hide();
+                    alert("Please, paste the location city or country to search in the map");
+                    return
+                }
+                addCity(task);
+            });
+
+
+            $(".btn-success").off('click').on('click', function(evt){
+                var geojson = new OpenLayers.Format.GeoJSON({
+                    'internalProjection': task.map.baseLayer.projection,
+                    'externalProjection': new OpenLayers.Projection("EPSG:4326")
+                });
+
+                if ((task.damageLayer.features.length == 0) ) {
+                    task.answer.loc = "";
+                }
+                else {
+                    if ((task.damageLayer.features.length > 0) ) {
+                        task.answer.loc = JSON.parse(geojson.write(task.damageLayer.features));
+                        task.answer.locationRef = task.lat + "," + task.lon;
+                    }
+                }
+                pybossa.saveTask( task.id, task.answer).done( function(data) {
+                    $("#map_" + task.id).remove();
+                    deferred.resolve();
+                });
+            });
+
+            $(".btn-danger").off('click').on('click', function(evt){
+
+                task.answer.loc = "No Location Information";
+                task.answer.locationRef = "";
+
+                pybossa.saveTask( task.id, task.answer).done( function(data) {
+                    $("#map_" + task.id).remove();
+                    deferred.resolve();
+                });
+            });
+
+            //photo
+            $("#photo").off('click').on('click', function(){
+                //toggleControl('point');
+                task.drawControls['point'].activate();
+                $("#photo").addClass("disabled");
+            });
+
+        }
+        else {
+            $(".skeleton").hide();
+            $("#finish").fadeIn(500);
+        }
+    });
+
+    function replaceURLWithHTMLLinks(text) {
+        if(typeof text != 'undefined' ){
+            if( text.length> 5){
+                var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+                return text.replace(exp,"<a target='_blank' href='$1'>$1</a>");
+            }
+        }
+    }
+
+    function toggleControl(drawControls) {
+        for (key in drawControls) {
+            ctrl = drawControls[key];
+            ctrl.deactivate();
+        }
+    }
+
+    function addMarker(drawControls){
+        for (key in drawControls) {
+            ctrl = drawControls[key];
+            ctrl.activate();
+        }
+    }
+
+    pybossa.run('TEMPLATE:SHORTNAME');
+</script>

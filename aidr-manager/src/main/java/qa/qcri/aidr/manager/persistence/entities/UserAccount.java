@@ -22,6 +22,8 @@ public class UserAccount extends BaseEntity {
 	@Column(name="api_key", nullable=false, unique=true)
 	private String apiKey;
 
+	@Column(name="download_permitted", nullable=false, columnDefinition = "boolean default false")
+	private Boolean downloadPermitted;
 	
 	public String getApiKey() {
 		return apiKey;
@@ -61,6 +63,14 @@ public class UserAccount extends BaseEntity {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Boolean getDownloadPermitted() {
+		return downloadPermitted;
+	}
+
+	public void setDownloadPermitted(Boolean downloadPermitted) {
+		this.downloadPermitted = downloadPermitted;
 	}
 
 }

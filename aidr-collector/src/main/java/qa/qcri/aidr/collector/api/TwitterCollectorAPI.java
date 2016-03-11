@@ -100,12 +100,12 @@ public class TwitterCollectorAPI {
 			cache.setTwitterTracker(cacheKey, tracker);
 			if(task.getPersist()!=null){
 				if(task.getPersist()){
-					startPersister(collectionCode);
+					startPersister(collectionCode, task.isSaveMediaEnabled());
 				}
 			}
 			else{
 				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
-					startPersister(collectionCode);
+					startPersister(collectionCode, task.isSaveMediaEnabled());
 				}
 			}
 			response.setMessage(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_INITIALIZING));
@@ -228,13 +228,14 @@ public class TwitterCollectorAPI {
         return Response.ok(allTasks).build();
     }
 
-    private void startPersister(String collectionCode) {
+    private void startPersister(String collectionCode, boolean saveMediaEnabled) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
             WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) 
             		+ "collectionPersister/start?channel_provider="
                     + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.TAGGER_CHANNEL), "UTF-8")
-                    + "&collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
+                    + "&collection_code=" + URLEncoder.encode(collectionCode, "UTF-8")
+                    + "&saveMediaEnabled=" + saveMediaEnabled);
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
 

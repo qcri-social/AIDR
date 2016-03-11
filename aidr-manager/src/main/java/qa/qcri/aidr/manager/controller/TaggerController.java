@@ -782,36 +782,46 @@ public class TaggerController extends BaseController {
 		//logger.info("Received request for generating CSV filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
-			String userName = getAuthenticatedUserName();
-			if (null == userName) userName = "System";
 			UserAccount authenticatedUser = getAuthenticatedUser();
-			//logger.info("Received request for download from user = " + userName);
-			result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet, authenticatedUser);
-			if (result != null && result.get("url") != null) {
-				return getUIWrapper(result.get("url"),true);
-			} else {
-				return getUIWrapper(false, "Something wrong - no file generated!");
+			String userName = authenticatedUser.getUserName();
+			//if (null == userName) userName = "System";
+			if(authenticatedUser.getDownloadPermitted()){
+				result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet);
+				if (result != null && result.get("url") != null) {
+					return getUIWrapper(result.get("url"),true);
+				} else {
+					return getUIWrapper(false, "Something wrong - no file generated!");
+				}
 			}
+			else{
+				return getUIWrapper(false, "User is not permitted to download full tweets csv");
+			}
+			
 		} catch (Exception e) {
 			logger.error("Error while generating CSV filtered link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
 
-	// Added by koushik
 	@RequestMapping(value = "/taggerGenerateTweetIdsFilteredLink.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsFilteredLink(@RequestParam String code,
+			@RequestParam Integer count,
+			@RequestParam boolean removeRetweet,
 			String queryString) throws Exception {
-		//logger.info("Received request for generating tweetIDs filtered link for Collection: " + code);
+		
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
 			
-			result = taggerService.generateTweetIdsFilteredLink(code, queryString, userName);
+			//Uncomment to fetch TweetIds with classifier info 
+			//result = taggerService.generateTweetIdsFilteredLink(code, queryString, userName);
+			
+			//Fetch TweetIds only
+			result = taggerService.generateTweetIdsOnlyFilteredLink(code, queryString, userName, count, removeRetweet);
+			
 			if (result != null && result.get("url") != null) {
-				//System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
 				return getUIWrapper(false, "Something wrong - no file generated!");
@@ -820,8 +830,6 @@ public class TaggerController extends BaseController {
 			logger.error("Error while generating tweetIDs filtered link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
-		//return getUIWrapper(result,true);
 	}
 
 
@@ -835,14 +843,19 @@ public class TaggerController extends BaseController {
 		//logger.info("Received request for generating JSON filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
-			String userName = getAuthenticatedUserName();
-			if (null == userName) userName = "System";
-			
-			result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName, count, removeRetweet);
-			if (result != null && result.get("url") != null) {
-				return getUIWrapper(result.get("url"),true);
-			} else {
-				return getUIWrapper(false, "Something wrong - no file generated!");
+			UserAccount authenticatedUser = getAuthenticatedUser();
+			String userName = authenticatedUser.getUserName();
+//			if (null == userName) userName = "System";
+			if(authenticatedUser.getDownloadPermitted()){
+				result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName, count, removeRetweet);
+				if (result != null && result.get("url") != null) {
+					return getUIWrapper(result.get("url"),true);
+				} else {
+					return getUIWrapper(false, "Something wrong - no file generated!");
+				}
+			}
+			else{
+				return getUIWrapper(false, "User is not permitted to download full tweets Json");
 			}
 		} catch (Exception e) {
 			logger.error("Error while generating JSON filtered link for colection: "+code +"/t"+e.getStackTrace());
@@ -851,19 +864,23 @@ public class TaggerController extends BaseController {
 		//return getUIWrapper(result,true);
 	}
 
-	// Added by koushik
 	@RequestMapping(value = "/taggerGenerateJsonTweetIdsFilteredLink.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> generateJsonTweetIdsFilteredLink(@RequestParam String code,
-			String queryString,
+			String queryString, @RequestParam boolean removeRetweet, @RequestParam Integer count,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		//logger.info("Received request for generating JSON TweetIds filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
+			//Uncomment to fetch TweetIds with classifier info 
+			//result = taggerService.generateJsonTweetIdsFilteredLink(code, queryString, jsonType, userName);
 			
-			result = taggerService.generateJsonTweetIdsFilteredLink(code, queryString, jsonType, userName);
+			//Fetch TweetIds only
+			result = taggerService.generateJsonTweetIdsOnlyFilteredLink(code, queryString, jsonType, userName, count, removeRetweet);
+			
+			
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {

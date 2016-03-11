@@ -134,8 +134,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
 		this.downloadFormat = Ext.create('Ext.form.RadioGroup', {
 			fieldLabel: 'Format',
-			labelWidth: 55,
-			columns: [150, 210, 240],
+			labelWidth: 100,
+			columns: [180, 250, 250],
 			items: [
 			        {
 			        	boxLabel: 'Spreadsheet (.csv)',
@@ -163,8 +163,33 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			}
 		});
 		
-		this.downloadContents = Ext.create('Ext.container.Container', {
-			label: 'Full Tweets',
+		this.downloadContents = Ext.create('Ext.form.RadioGroup', {
+			fieldLabel: 'Contents',
+			labelWidth: 100,
+			columns: [230, 90],
+			items: [
+			        {
+			        	boxLabel: 'Full tweets (max. 50K items)',
+			        	name: 'contents',
+			        	inputValue: 'full',
+			        	checked: true
+			        },
+			        {
+			        	boxLabel: 'Ids only',
+			        	name: 'contents',
+			        	inputValue: 'ids'
+			        }
+			        ],
+	        listeners: {
+				change: function(ctl, val) {
+					Ext.suspendLayouts();
+					Ext.getCmp('downloadLink').hide();
+				}
+			}
+		});
+
+		this.downloadConfig = Ext.create('Ext.container.Container', {
+		//	label: 'Full Tweets',
 		    layout: {
 		        type: 'hbox'
 		    },
@@ -173,24 +198,19 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			items:[
 			{
 				xtype: 'fieldcontainer',
-				fieldLabel: 'Full ' + Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]),
-				labelWidth: 100,
+				fieldLabel: 'Max. Download',
+				//labelWidth: 100,
+				labelAlign: 'bottom',
 				layout: 'hbox',
 				items: [
-			{
-				xtype: 'label',
-				text: 'Max.',
-				labelAlign: 'bottom'
-			},
 			{ 
 				xtype: 'splitter'
 			},
 			{
 		        xtype:'combo',
-				queryMode:'local',
+				mode:'local',
 				store:['1500','3000','10000', '50000'],
 				value: '1500',
-				displayField:'division',
 				editable: false,
 			   	autoSelect:true,
 			   	forceSelection:true,
@@ -232,8 +252,29 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		    
 		});
 		
-
-
+		this.fullTweetInfo =  Ext.create('Ext.form.Label', {
+            height: 22,
+            width: 22,
+            html: '<img src="/AIDRFetchManager/resources/img/info.png" width="18" height="18"/>' ,
+            margin: '3 0 0 20',
+            listeners: {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "To download full tweet by tweet-id, please refer the following links provided below.<br>" +
+                        		"<b>API Reference:</b> https://dev.twitter.com/rest/reference/get/statuses/show/%3Aid <br>" +
+                        		"<b>Ref Link:</b> <a href=\"http://www.smartjava.org/content/access-twitter-rest-api-v11-scala-and-java-using-signpost\" target=\"_blank\">Click here</a>",
+                        target: infoPanel.el,
+                        width: 500,
+                        focusOnToFront: true,
+                        dismissDelay: 0,
+                        autoHide: false,
+                        closable: false,
+                    });
+                }
+            }
+        });
+		
 		this.downloadButton = Ext.create('Ext.Button', {
 			text: 'Generate Downloadable File',
 			cls:'btn btn-blueSmall',
@@ -321,9 +362,17 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			items: [
 			        this.downloadTweetsL,
 			        this.downloadTweetsDescription,
-			        this.downloadFormat,
-			        this.downloadContents,
+			        {
+			        	xtype: 'container',
+			        	layout: 'hbox',
+			        		items: [
+									this.downloadFormat,
+									this.fullTweetInfo,
+			        	        ]
+			        },
 			        
+			        this.downloadContents,
+			        this.downloadConfig,
 			        {
 			        	xtype: 'container',
 			        	layout: 'hbox',

@@ -1,0 +1,460 @@
+<style type="text/css">
+
+    h1,h2,h3,h4,h5,h6 {font-family: 'Museo Slab', Arial, Helvetica, sans-serif;font-weight: normal;}
+    h1 {font-size: 24px; line-height: 26px;}
+    h2 {font-size: 18px; line-height: normal;}
+    h3 {font-size: 15px; line-height: normal;}
+    .alignright {float: right;}
+    .alignleft {float: left;}
+    .aligncenter {display: block; margin: 0 auto; clear: both}
+    .clearleft {clear: left;}
+    .clearright {clear: right;}
+    .clearboth {clear: both;}
+    .subheader {
+        margin: 10px 0 0 200px;
+    }
+    #iphone {
+        max-width: 100%;
+        background: url(../../../static/img/micromappers/imageClicker/lpoT2x4.png) left top no-repeat;
+        width: 618px;
+        height: 455px;
+        margin-top: -28px;
+        float:left;
+        border: 0px;
+    }
+    #taggedimg {
+        min-width: 355px;
+        min-height: 280px;
+        padding: 59px 0 0 175px;
+        float:left;
+    }
+    ul#damage {
+        padding: 59px 0 0 10px;
+        margin:0;
+        float:left;
+    }
+    ul#damage>a>li {
+        padding: 0 0 36px 0;
+        list-style: none;
+    }
+    ul#damage>a>li.none {
+        background: url(../../../static/img/micromappers/imageClicker/JPqxj2S.png) left top no-repeat;
+        width: 58px;
+        height: 69px;
+    }
+    ul#damage>a>li.mild {
+        background: url(../../../static/img/micromappers/imageClicker/Vrijj2Z.png) left top no-repeat;
+        width: 57px;
+        height: 71px;
+    }
+    ul#damage>a>li.severe {
+        background: url(../../../static/img/micromappers/imageClicker/JI2aZ52.png) left top no-repeat;
+        width: 57px;
+        height: 67px;
+    }
+    ul#damage>a>li:hover.none {
+        background: url(../../../static/img/micromappers/imageClicker/hSzWKrN.png) left top no-repeat;
+        width: 58px;
+        height: 69px;
+        cursor: pointer;
+    }
+    ul#damage>a>li:hover.mild {
+        background: url(../../../static/img/micromappers/imageClicker/dMPYuJC.png) left top no-repeat;
+        width: 57px;
+        height: 71px;
+        cursor: pointer;
+    }
+    ul#damage>a>li:hover.severe {
+        background: url(../../../static/img/micromappers/imageClicker/kZDwZMK.png) left top no-repeat;
+        width: 57px;
+        height: 67px;
+        cursor: pointer;
+    }
+
+    ul#damage>a>li:active.none {
+        background: url(../../../static/img/micromappers/imageClicker/hSzWKrN.png) left top no-repeat;
+        width: 58px;
+        height: 69px;
+        cursor: pointer;
+        filter: hue-rotate(110deg);
+        -webkit-filter: hue-rotate(110deg);
+        -moz-filter: hue-rotate(110deg);
+        -o-filter: hue-rotate(110deg);
+        -ms-filter: hue-rotate(110deg);
+    }
+
+    ul#damage>a>li:active.mild {
+        background: url(../../../static/img/micromappers/imageClicker/dMPYuJC.png) left top no-repeat;
+        width: 57px;
+        height: 71px;
+        cursor: pointer;
+        filter: hue-rotate(110deg);
+        -webkit-filter: hue-rotate(110deg);
+        -moz-filter: hue-rotate(110deg);
+        -o-filter: hue-rotate(110deg);
+        -ms-filter: hue-rotate(110deg);
+    }
+    ul#damage>a>li:active.severe {
+        background: url(../../../static/img/micromappers/imageClicker/kZDwZMK.png) left top no-repeat;
+        width: 57px;
+        height: 67px;
+        cursor: pointer;
+        filter: hue-rotate(110deg);
+        -webkit-filter: hue-rotate(110deg);
+        -moz-filter: hue-rotate(110deg);
+        -o-filter: hue-rotate(110deg);
+        -ms-filter: hue-rotate(110deg);
+    }
+
+    #tagged {
+        margin: -90px 0 0 324px;
+        float:left;
+    }
+    input {
+        max-width: 100%;
+    }
+    .btn {
+        margin: 0 6px 0 0;
+    }
+
+    .thumbnail{
+        position: relative;
+        z-index: 0;
+        border: 0px;
+    }
+
+    .thumbnail:hover{
+        background-color: transparent;
+        z-index: 50;
+    }
+
+    .thumbnail span{ /*CSS for enlarged image*/
+        position: absolute;
+        background-color: #ffffff;
+        padding: 0px;
+        left: -1000px;
+        border: 3px solid;
+        visibility: hidden;
+        color: black;
+        text-decoration: none;
+    }
+
+    .thumbnail span img{ /*CSS for enlarged image*/
+        border-width: 0;
+        padding: 0px;
+
+    }
+
+    .thumbnail:hover span{ /*CSS for enlarged image on hover*/
+        visibility: visible;
+        top: 0;
+        left: 0px; /*position where enlarged image should offset horizontally */
+
+    }
+
+</style>
+
+
+
+<div class="row">
+    <!-- Success and Error Messages for the user -->
+    <div class="span6 offset2" style="height:50px">
+
+        <div id="taskcompleted" class="alert alert-info" style="display:none;">
+            <strong>The task has been completed!</strong> Thanks a lot!
+        </div>
+        <div id="finish" class="alert alert-success" style="display:none;">
+            <strong>Congratulations!</strong> You have participated in all available tasks!
+            <br/>
+            <div class="alert-actions">
+                <a class="btn small" href="/">Go back</a>
+                <a class="btn small" href="/app">or, Check other applications</a>
+            </div>
+        </div>
+        <div id="error" class="alert alert-error" style="display:none;">
+            <a class="close">×</a>
+            <strong>Error!</strong> Something went wrong, please contact the site administrators
+        </div>
+        <div id="loading" style="padding: 25px 0 0 325px;float:left;">
+            <img src="http://aidr.qcri.org/img/ajax-loader.gif">
+        </div>
+    </div> <!-- End Success and Error Messages for the user -->
+</div> <!-- End of Row -->
+
+<!--
+    Task DOM for loading the Tweets
+    It uses the class="skeleton" to identify the elements that belong to the
+    task.
+
+
+<div class="row">
+    <div class="span12" style="background-color: #ffffff; border: 0px;padding-bottom: 10px;margin-top: -100px;">
+         <h1><a href="/app/MM_ImageClicker/">Image Clicker</a> : MicroMappers</h1>
+     </div>
+</div>-->
+<div class="row skeleton"> <!-- Start Skeleton Row-->
+    <div class="span12" style="margin-top: -50px;"><!-- Start of Question and Submission DIV (column) -->
+
+        <div class="row-fluid" >
+
+            <div class="span3">
+
+                <div style="text-align:center;margin-right:170px;padding-bottom: 10px;">
+                    <a class="btn btn-primary" href="../tutorial" ><i class="icon-question-sign"></i> Tutorial</a>
+                    <a class="btn btn-warning"
+                       onclick="window.open('http://us21.chatzy.com/58276503808679','popupWindow',
+'width=410,height=450,toolbar=no,location=no, status=no,menubar=no,scrollbars=yes,resizable=yes');return false;"
+                       style="margin-top: 0px;margin-right: -120px;">
+                        <i class="icon-flag"></i> Chat Room</a>
+                </div>
+
+                <div style="
+    margin-right: 4px;
+    padding: 7px;
+    background-color: #0FC5BA;
+    border: 1px solid #D5CECE;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+">
+                    <input type="hidden" id="task-id">
+                    <p>Completed: <span id="done" class="label label-info"></span> out of
+                        <span id="total" class="label label-inverse"></span> Clicks</p>
+                    <p><span id="remain" class="label label-info"></span> Clicks remaining!</p>
+                    <p><b>Rank : <span id="rank"></span></b></p>
+                </div>
+                <br>
+                <a class="btn btn-warning"
+                   onclick="window.open('http://goo.gl/DAl0y6','popupWindow',
+'width=410,height=450,toolbar=no,location=no, status=no,menubar=no,scrollbars=yes,resizable=yes');return false;"
+                   style="margin-top: 0px;margin-right: -120px;">
+                    <i class="icon-flag"></i> Image Clicker feedback</a>
+
+
+
+            </div>
+            <div class="span9">
+
+                <div class="row">
+                    <div>
+                        <h2 class="subheader">How much damage do you see in this picture:</h2>
+                        <div id="iphone">
+                            <div id="taggedimg" class="thumbnail">
+                                <a href="#thumb" id="photo-link"></a>
+                            </div>
+
+                            <ul id="damage">
+                                <a href="#"><li value="severe" class="none btn-answer" ></li></a>
+                                <a href="#"><li value="mild"  class="mild btn-answer" ></li></a>
+                                <a href="#"><li value="none" class="severe btn-answer" ></li></a>
+                            </ul>
+                        </div>
+                        <br/>
+                        <br/>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="span12" style="bottom: 0px;">
+        <div style="margin-top:100px;width: 0%;color: #ffffff">
+
+        </div>
+    </div>
+
+
+    <!-- Feedback items for the user -->
+
+</div><!-- End of Skeleton Row -->
+
+
+<script>
+    var localtask;
+    var currentTaskItem;
+    var previousTaskItem;
+
+    function loadUserProgress() {
+        pybossa.userProgress('TEMPLATE:SHORTNAME').done(function(data){
+            var pct = Math.round((data.done*100)/data.total);
+
+            var remaining = data.total - data.done;
+            $("#total").text(data.total);
+            $("#done").text(data.done);
+            $("#remain").text(remaining);
+
+            var completed = data.done;
+            var rankTitle = "Volunteer";
+
+            if(completed>10 && completed <= 29){
+                rankTitle = "Red Cross Intern";
+            }
+            else if(completed>30 && completed <= 59){
+                rankTitle = "New FEMA Recruit";
+            }
+            else if(completed>60 && completed <= 99){
+                rankTitle = "UN Humanitarian";
+            }
+            else if(completed>100 && completed <= 299){
+                rankTitle = "Senior UN Official";
+            }
+            else if(completed>300 && completed <= 499){
+                rankTitle = "UN Country Director";
+            }
+            else if(completed>500 && completed <= 999){
+                rankTitle = "Head of UN OCHA";
+            }
+            else if(completed>1000 ){
+                rankTitle = "UN Secretary General";
+            }
+
+            $("#rank").text(rankTitle);
+
+        });
+    }
+
+    function imgError(image) {
+        image.onerror = "";
+        image.src = "../../../static/img/micromappers/imageClicker/mm_pleaseclicknone.png";
+        return true;
+    }
+
+    pybossa.taskLoaded(function(task, deferred) {
+        if ( !$.isEmptyObject(task) ) {
+            console.log("taskLoaded");
+            console.log("taskLoaded : " + task.id);
+            if(typeof localtask != 'undefined'){
+                if(localtask.taskid == task.id){
+                    console.log(localtask);
+                    console.log(task);
+                    console.log(previousTaskItem);
+                    saveRenderedData();
+                }
+            }
+            var img = $('<img name="tweetphoto" onerror="imgError(this);"/>');
+
+            img.attr('src', task.info.imgurl).css( {'height': '260px',
+                'width': '260px',
+                'margin-left': '42px',
+                'margin-top': '5px'});
+            img.addClass('img-polaroid');
+
+            //  task.info.image = img;
+            task.image = img;
+            task.answer = {'category': null,
+                'tweet': task.info.tweet,
+                'tweetid': task.info.tweetid,
+                'taskid': task.id,
+                'author': task.info.author,
+                'url': task.info.url,
+                'timestamp': task.info.timestamp,
+                'lon': task.info.lon,
+                'lat': task.info.lat,
+                'imgurl': task.info.imgurl
+            };
+
+            img.load(function() {
+                // continue as soon as the image is loaded
+                deferred.resolve(task);
+            });
+
+        }
+        else {
+            deferred.resolve(task);
+        }
+    });
+
+    pybossa.presentTask(function(task, deferred) {
+        if ( !$.isEmptyObject(task) ) {
+
+            loadUserProgress();
+            currentTaskItem = task;
+            localtask = task.answer;
+            $('#photo-link').html('').append(task.image);
+
+            $("#photo-link").attr("href", task.info.imgurl);
+            $("#photo-link").append('<span ><img id="fsize" width="530" height="530" onerror="imgError(this);"/></span>');
+            $("#fsize").attr("src", task.info.imgurl);
+            $('#task-id').html(task.id);
+            $(window).one('keydown', function(e) {
+                console.log(e.keyCode);
+                if (e.type == "keydown") {
+                    saveTaggingData(true, e, deferred);
+                }
+
+            });
+            $('.btn-answer').off('click').on('click', function(evt) {
+                saveTaggingData(false, evt, deferred)
+            });
+            $("#loading").hide();
+        }
+        else {
+            $(".skeleton").hide();
+            $("#loading").hide();
+            $("#finish").fadeIn(500);
+        }
+    });
+
+    function saveRenderedData(){
+        pybossa.newTask("TEMPLATE:SHORTNAME").done( function( data ) {
+
+            if ( !$.isEmptyObject(data.task) ) {
+                window.location.pathname = "/project/TEMPLATE:SHORTNAME/task/" + data.task.id;
+            }
+
+        });
+
+        $("#loading").fadeIn(500);
+    }
+
+    function saveTaggingData(isKeyPressed, e, deferred){
+        if(isKeyPressed){
+            if(e.keyCode == 51) {
+                localtask.category = 'severe';
+                pybossa.saveTask(localtask.taskid, localtask).done(function() {
+                    deferred.resolve();
+                    previousTaskItem = localtask;
+                });
+                $("#loading").fadeIn(500);
+            }
+            if (e.keyCode == 50) {
+                localtask.category = 'mild';
+                pybossa.saveTask(localtask.taskid, localtask).done(function() {
+                    deferred.resolve();
+                    previousTaskItem = localtask;
+                });
+                $("#loading").fadeIn(500);
+            }
+            if (e.keyCode == 49) {
+                localtask.category = 'none';
+                pybossa.saveTask(localtask.taskid, localtask).done(function() {
+                    deferred.resolve();
+                    previousTaskItem = localtask;
+                });
+                $("#loading").fadeIn(500);
+            }
+        }
+        else{
+            var selectedValue = $(e.target).attr("class");
+            selectedValue = selectedValue.replace("btn-answer","");
+            console.log(selectedValue);
+            localtask.category = selectedValue;
+            if (typeof selectedValue != 'undefined') {
+                pybossa.saveTask(localtask.taskid, localtask).done(function() {
+                    $("#loading").fadeIn(500);
+                    deferred.resolve();
+                    previousTaskItem = localtask;
+                });
+
+            } else {
+                $("#error").show();
+            }
+        }
+    }
+
+    pybossa.run('TEMPLATE:SHORTNAME');
+
+
+</script>

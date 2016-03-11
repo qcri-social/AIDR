@@ -13,21 +13,21 @@ import qa.qcri.aidr.entity.DataFeed;
 import qa.qcri.aidr.utils.DataFeedInfo;
 
 @Service
-@Transactional(readOnly = false)
 public class DataFeedService{
 
     protected static Logger logger = Logger.getLogger(DataFeedService.class);
 
     @Autowired
     DataFeedDAO dataFeedDAO;
-    
-    public void persist(DataFeed twitterJson){
+
+    @Transactional(readOnly = false)
+    public Long persist(DataFeed twitterJson){
     	twitterJson.setUpdatedAt(new Date());
     	if(twitterJson.getId()==null){
     		twitterJson.setCreatedAt(twitterJson.getUpdatedAt());
     	}
-    	dataFeedDAO.save(twitterJson);
-    	logger.info("Data saved");
+    	Long dataFeedId = (Long) dataFeedDAO.save(twitterJson);
+    	return dataFeedId;
     }
     
     public List<DataFeedInfo> findbyCollectionCode(String code, Integer offset, Integer limit ) {
