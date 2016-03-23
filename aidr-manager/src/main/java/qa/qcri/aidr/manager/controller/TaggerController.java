@@ -785,7 +785,7 @@ public class TaggerController extends BaseController {
 			UserAccount authenticatedUser = getAuthenticatedUser();
 			String userName = authenticatedUser.getUserName();
 			//if (null == userName) userName = "System";
-			if(authenticatedUser.getDownloadPermitted()){
+			if(authenticatedUser.isDownloadPermitted()){
 				result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet);
 				if (result != null && result.get("url") != null) {
 					return getUIWrapper(result.get("url"),true);
@@ -846,7 +846,7 @@ public class TaggerController extends BaseController {
 			UserAccount authenticatedUser = getAuthenticatedUser();
 			String userName = authenticatedUser.getUserName();
 //			if (null == userName) userName = "System";
-			if(authenticatedUser.getDownloadPermitted()){
+			if(authenticatedUser.isDownloadPermitted()){
 				result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName, count, removeRetweet);
 				if (result != null && result.get("url") != null) {
 					return getUIWrapper(result.get("url"),true);
