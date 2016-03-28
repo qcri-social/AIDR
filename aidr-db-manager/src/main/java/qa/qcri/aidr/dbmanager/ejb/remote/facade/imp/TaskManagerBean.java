@@ -7,6 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -26,11 +28,15 @@ import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelIdDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
@@ -79,6 +85,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
+	@EJB
+	private ModelFamilyResourceFacade modelFamilyResourceFacade;
 	protected static Logger logger = Logger.getLogger(TaskManagerBean.class);
 
 	private static Object lockObject = new Object();
@@ -1194,6 +1202,74 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		
 		return success;
+	}
+
+	@Override
+	@Asynchronous
+	public void importTrainingDataForClassifier(Long targetCollectionId, Long sourceCollectionId, Long nominalAttributeId) {
+		try {
+			
+			List<Long> nominalLabelIds = remoteNominalLabelEJB.getNominalLabelIdsByAttributeID(nominalAttributeId);
+			List<DocumentDTO> documentDTOs = remoteDocumentEJB.getDocumentForNominalLabelAndCrisis(nominalLabelIds, sourceCollectionId);
+			
+			CollectionDTO collectionDTO = remoteCrisisEJB.findCrisisByID(targetCollectionId);
+			CollectionDTO sourceCollection = remoteCrisisEJB.findCrisisByID(sourceCollectionId);
+			
+			ModelFamilyDTO modelFamilyDTO = new ModelFamilyDTO();
+			modelFamilyDTO.setCrisisDTO(collectionDTO);
+			NominalAttributeDTO attributeDTO = new NominalAttributeDTO();
+			attributeDTO.setNominalAttributeId(nominalAttributeId);
+			modelFamilyDTO.setNominalAttributeDTO(attributeDTO);
+			boolean success = modelFamilyResourceFacade.addCrisisAttribute(modelFamilyDTO);
+			
+			if(success) {
+				for(DocumentDTO documentDTO : documentDTOs) {
+					DocumentDTO documentToSave = new DocumentDTO();
+					documentToSave.setCrisisDTO(collectionDTO);
+					documentToSave.setData(documentDTO.getData());
+					documentToSave.setGeoFeatures(documentDTO.getGeoFeatures());
+					documentToSave.setDoctype(documentDTO.getDoctype());
+					documentToSave.setHasHumanLabels(true);
+					documentToSave.setLanguage(documentDTO.getLanguage());
+					documentToSave.setWordFeatures(documentDTO.getWordFeatures());
+					documentToSave.setValueAsTrainingSample(documentDTO.getValueAsTrainingSample());
+					documentToSave.setIsEvaluationSet(documentDTO.getIsEvaluationSet());
+					documentToSave.setReceivedAt(documentDTO.getReceivedAt());
+					documentToSave.setSourceCollection(sourceCollection);
+					
+					DocumentDTO newDocument = remoteDocumentEJB.addDocument(documentToSave);
+					
+					List<DocumentNominalLabelDTO> documentNominalLabelDTOs = remoteDocumentNominalLabelEJB.findLabeledDocumentListByID(documentDTO.getDocumentID());
+					
+					if(documentNominalLabelDTOs != null) {
+						for(DocumentNominalLabelDTO documentNominalLabelDTO : documentNominalLabelDTOs) {
+							DocumentNominalLabelDTO labelDTOToSave = new DocumentNominalLabelDTO();
+							labelDTOToSave.setDocumentDTO(newDocument);
+							labelDTOToSave.setNominalLabelDTO(documentNominalLabelDTO.getNominalLabelDTO());
+							labelDTOToSave.setIdDTO(new DocumentNominalLabelIdDTO(newDocument.getDocumentID(), 
+											documentNominalLabelDTO.getIdDTO().getNominalLabelId(), documentNominalLabelDTO.getIdDTO().getUserId()));
+							this.saveDocumentNominalLabel(labelDTOToSave);
+						}
+					}
+					
+					List<TaskAnswerDTO> answers = remoteTaskAnswerEJB.getTaskAnswer(documentDTO.getDocumentID());
+					for(TaskAnswerDTO answer : answers) {
+						TaskAnswerDTO answerToSave = new TaskAnswerDTO();
+						answerToSave.setAnswer(answer.getAnswer());
+						answerToSave.setDocumentID(newDocument.getDocumentID());
+						
+						logger.error("userId : " + answer.getUserID());
+						answerToSave.setUserID(answer.getUserID());
+						answerToSave.setTimestamp(new Date());
+						remoteTaskAnswerEJB.insertTaskAnswer(answerToSave);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error in importing training data for collection id : " + sourceCollectionId +
+					" and attribute : " + nominalAttributeId, e);
+			
+		}
 	}
 	
 	private class DocumentComparator implements Comparator<Document> {

@@ -1,21 +1,17 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.trainer.api.service.TemplateService;
 import qa.qcri.aidr.trainer.api.template.CrisisApplicationListModel;
 import qa.qcri.aidr.trainer.api.template.CrisisLandingHtmlModel;
 import qa.qcri.aidr.trainer.api.template.CrisisLandingStatusModel;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,8 +20,8 @@ import java.util.List;
  * Time: 3:05 PM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/template")
-@Component
+@RequestMapping("/template")
+@RestController
 public class TemplateController {
 	
 	protected static Logger logger = Logger.getLogger(TemplateController.class);
@@ -33,59 +29,45 @@ public class TemplateController {
     @Autowired
     private TemplateService templateService;
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/app/id/{crisisid}")
-    public List<CrisisApplicationListModel> getCrisisByID(@PathParam("crisisid") Long crisisid){
+    @RequestMapping("/app/id/{crisisid}")
+    public List<CrisisApplicationListModel> getCrisisByID(@PathVariable("crisisid") Long crisisid){
 
        return templateService.getApplicationListHtmlByCrisisID(crisisid);
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/app/code/{code}")
-    public List<CrisisApplicationListModel> getCrisisByCode(@PathParam("code") String code){
+    @RequestMapping("/app/code/{code}")
+    public List<CrisisApplicationListModel> getCrisisByCode(@PathVariable("code") String code){
 
         return templateService.getApplicationListHtmlByCrisisCode(code);
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/crisis/code/{code}")
-    public CrisisLandingHtmlModel getCrisisTemplateByCode(@PathParam("code") String code){
+    @RequestMapping("/crisis/code/{code}")
+    public CrisisLandingHtmlModel getCrisisTemplateByCode(@PathVariable("code") String code){
 
         return templateService.getCrisisLandingHtmlByCrisisCode(code);
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/crisis/id/{crisisid}")
-    public CrisisLandingHtmlModel getCrisisTemplateByID(@PathParam("crisisid") Long crisisid){
+    @RequestMapping("/crisis/id/{crisisid}")
+    public CrisisLandingHtmlModel getCrisisTemplateByID(@PathVariable("crisisid") Long crisisid){
 
         return templateService.getCrisisLandingHtmlByCrisisID(crisisid);
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/status/crisis/code/{code}")
-    public CrisisLandingStatusModel getCrisisTemplateByID(@PathParam("code") String code){
+    @RequestMapping("/status/crisis/code/{code}")
+    public CrisisLandingStatusModel getCrisisTemplateByID(@PathVariable("code") String code){
     	logger.info("[getCrisisTemplateByID] received request for code = " + code);
     	return templateService.getCrisisLandingStatusByCrisisCode(code);
     }
 
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/JSONP/crisis/id/{crisisid}")
-    public String getCrisisTemplateJSONPByID(@PathParam("crisisid") Long crisisid){
+    @RequestMapping("/JSONP/crisis/id/{crisisid}")
+    public String getCrisisTemplateJSONPByID(@PathVariable("crisisid") Long crisisid){
 
         return templateService.getCrisisLandingJSONPByCrisisID(crisisid);
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/JSONP/crisis/code/{crisisCode}")
-    public String getCrisisTemplateJSONPByCode(@PathParam("crisisCode") String crisisCode ){
+    @RequestMapping("/JSONP/crisis/code/{crisisCode}")
+    public String getCrisisTemplateJSONPByCode(@PathVariable("crisisCode") String crisisCode ){
 
         return templateService.getCrisisLandingJSONPByCrisisCode(crisisCode);
     }

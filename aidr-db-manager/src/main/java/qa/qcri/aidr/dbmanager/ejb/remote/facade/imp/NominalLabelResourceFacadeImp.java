@@ -164,6 +164,19 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 		
 		return dtoList;
 	}
+	
+	@Override
+	public List<Long> getNominalLabelIdsByAttributeID(Long attributeID) throws Exception {
+		List<NominalLabel> nominalLabels = this.getAllByCriteria(Restrictions.eq("nominalAttribute.nominalAttributeId", attributeID));
+		List<Long> idList = new ArrayList<Long>();
+		if (nominalLabels != null && !nominalLabels.isEmpty()) {
+			for (NominalLabel nb: nominalLabels) {
+				idList.add(nb.getNominalLabelId());
+			}
+		}
+		
+		return idList;
+	}
 
 	@Override
 	public Long getNominalLabelCountForCollectionID(Long collectionId) throws Exception {

@@ -50,7 +50,11 @@ public class Document implements java.io.Serializable {
 	@JoinColumn(name = "crisisID", nullable = false)
 	@JsonBackReference
 	private Collection collection;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "source_colllection_id", nullable = true)
+	private Collection sourceCollection;
+
 	@Column(name = "isEvaluationSet", nullable = false)
 	private boolean isEvaluationSet;
 	
@@ -240,5 +244,13 @@ public class Document implements java.io.Serializable {
 
 	public boolean hasDocumentNominalLabels() {
 		return Hibernate.isInitialized(this.documentNominalLabels);
+	}
+
+	public Collection getSourceCollection() {
+		return sourceCollection;
+	}
+
+	public void setSourceCollection(Collection sourceCollection) {
+		this.sourceCollection = sourceCollection;
 	}
 }

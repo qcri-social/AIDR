@@ -1,13 +1,12 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
 
@@ -18,8 +17,8 @@ import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
  * Time: 8:37 AM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/taskanswer")
-@Component
+@RequestMapping("/taskanswer")
+@RestController
 public class TaskAnswerController {
 
     protected static Logger logger = Logger.getLogger(TaskAnswerController.class);
@@ -27,10 +26,8 @@ public class TaskAnswerController {
     @Autowired
     private TaskAnswerService taskAnswerService;
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/save")
-    public void saveTaskAnswer(String data){
+    @RequestMapping(value = "/save", method={RequestMethod.POST})
+    public void saveTaskAnswer(@RequestBody String data){
         //logger.info("saveTaskAnswer start: " + new Date());
         //logger.info("saveTaskAnswer..: " + data);
         //System.out.println("saveTaskAnswer start: " + new Date());
@@ -42,21 +39,5 @@ public class TaskAnswerController {
         catch(Exception e){
             logger.error("Error while saving Task Answer",e);
         }
-
-        // below is non transaction block
-       /**
-        try{
-            TaskAnswerResponse taskAnswerResponse =  taskAnswerService.getTaskAnswerResponseData(data);
-            taskAnswerService.markOnHasHumanTag(taskAnswerResponse.getDocumentID());
-            taskAnswerService.addToTaskAnswer( taskAnswerResponse);
-            taskAnswerService.addToDocumentNominalLabel(taskAnswerResponse);
-            taskAnswerService.removeTaskAssignment(taskAnswerResponse);
-            taskAnswerService.pushTaskAnswerToJedis(taskAnswerResponse);
-
-        }
-        catch(Exception e){
-            System.out.println("saveTaskAnswer : " +  e);
-        }  **/
-
     }
 }

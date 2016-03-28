@@ -30,5 +30,4 @@ public interface ModelFamilyResourceFacade extends CoreDBServiceFacade<ModelFami
     
     //TODO for Koushik - convert to Hibernate query and remove TaggerForCodes & TaggerForCodesRequest DTOs from db-manager eventually
     public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
-    
 }

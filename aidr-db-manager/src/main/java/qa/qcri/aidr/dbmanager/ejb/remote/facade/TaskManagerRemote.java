@@ -113,4 +113,6 @@ public interface TaskManagerRemote<T, Serializable> {
 	public String pingRemoteEJB();
 
 	public boolean deleteTask(Long crisisID, Long userID);
+	
+	public void importTrainingDataForClassifier(Long targetCollectionId, Long sourceCollectionId, Long nominalAttributeId);
 }

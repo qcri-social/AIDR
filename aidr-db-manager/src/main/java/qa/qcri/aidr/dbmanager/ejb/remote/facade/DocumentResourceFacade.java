@@ -8,7 +8,6 @@ import javax.ejb.Remote;
 
 import org.hibernate.criterion.Criterion;
 
-import qa.qcri.aidr.common.exception.AidrException;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
@@ -33,7 +32,6 @@ public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Lo
 	public boolean isDocumentExists(Long id) throws PropertyNotSetException;
 
 	public List<DocumentDTO> getAllDocuments() throws PropertyNotSetException; 
-
 
 	public void updateHasHumanLabel(DocumentDTO document);
 
@@ -64,4 +62,6 @@ public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Lo
 	public boolean deleteDocuments(List<DocumentDTO> documents);
 
 	public List<Long> getUnassignedDocumentIDsByCrisisID(Long crisisID, Integer count);
+	
+	public List<DocumentDTO> getDocumentForNominalLabelAndCrisis(List<Long> nominalLabelID, Long crisisId);
 }
