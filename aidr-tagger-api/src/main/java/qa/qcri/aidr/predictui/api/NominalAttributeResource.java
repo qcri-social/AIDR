@@ -25,8 +25,10 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
 import qa.qcri.aidr.predictui.facade.NominalAttributeFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
@@ -45,6 +47,9 @@ public class NominalAttributeResource {
 	private UriInfo context;
 	@EJB
 	private NominalAttributeFacade attributeLocalEJB;
+	
+	@EJB
+	private CollectionResourceFacade collectionResourceFacade;
 
 	public NominalAttributeResource() {
 	}
@@ -138,4 +143,16 @@ public class NominalAttributeResource {
 		String response = "{\"code\":\"" + code + "\", \"nominalAttributeID\":\"" + attributeID + "\"}";
 		return Response.ok(response).build();
 	}
+	
+	@GET
+    @Produces("application/json")
+    @Path("/{attributeID}/collections")
+    public Response getCrisisForNominalAttributeById(@PathParam("attributeID") Integer attributeID, @QueryParam("crisisType") Integer crisisType, @QueryParam("langFilters") String languageFilters) {
+     
+		List<CollectionBriefInfo> crisisList = collectionResourceFacade.getCrisisForNominalAttributeById(attributeID, crisisType, languageFilters);
+        ResponseWrapper response = new ResponseWrapper();
+        response.setMessage("SUCCESS");
+        response.setDataObject(crisisList);
+        return Response.ok(response).build();
+    }
 }

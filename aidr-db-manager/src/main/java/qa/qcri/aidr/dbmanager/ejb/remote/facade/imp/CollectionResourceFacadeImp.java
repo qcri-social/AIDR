@@ -11,18 +11,22 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
@@ -288,4 +292,56 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 		} 
 		return 0;
 	}
+	
+	@Override
+	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID,Integer crisis_type,String lang_filters)  throws PropertyNotSetException {
+		List<CollectionBriefInfo> result = new ArrayList<CollectionBriefInfo>();
+		
+		String sql = "SELECT c.name as crisisName,"+
+				"a.user_name as creatorName,"+
+				"c.code as crisisCode,"+
+				"c.lang_filters as langFilter,"+
+				"count(1) as trainingExampleCount"+
+				" FROM document doc"+
+				" JOIN document_nominal_label dnl"+
+				" ON doc.documentID = dnl.documentID"+
+				" JOIN nominal_label nl"+
+				" ON dnl.nominalLabelID = nl.nominalLabelID"+
+				" JOIN collection c"+
+				" ON doc.crisisID = c.id"+
+				" JOIN account a "+
+				" ON c.owner_id = a.id"+
+				" WHERE nl.nominalAttributeID = :nominalAttributeID"+
+				" AND c.crisis_type = :crisis_type GROUP BY doc.crisisID";
+		
+			Session session = getCurrentSession();
+			Query query = em.createNativeQuery(sql);
+			query.setParameter("nominalAttributeID", attributeID);
+			query.setParameter("crisis_type", crisis_type);
+		
+		List<Object[]> rows = null;
+		try {
+			rows = query.getResultList();
+		} catch (NoResultException e) {
+			logger.warn("No result for NominalAttributeId : " + attributeID);
+			return null;
+		}
+		catch (EJBTransactionRolledbackException e) {
+			logger.warn("No result for NominalAttributeId : " + attributeID+"***"+e);
+			return null;
+		}
+		
+		for (Object[] row : rows) {
+			CollectionBriefInfo collectionBriefInfo = new CollectionBriefInfo();
+			collectionBriefInfo.setName((String) row[0]);
+			collectionBriefInfo.setOwner((String) row[1]);
+			collectionBriefInfo.setCode((String) row[2]);
+			collectionBriefInfo.setLanguage((String) row[3]);
+			collectionBriefInfo.setTrainingCount(((BigInteger) row[4]).intValue());
+			result.add(collectionBriefInfo);
+		}
+
+		return result;
+	}
+
 }
