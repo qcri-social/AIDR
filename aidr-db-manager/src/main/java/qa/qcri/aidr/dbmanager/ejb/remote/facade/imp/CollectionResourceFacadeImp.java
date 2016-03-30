@@ -39,6 +39,23 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 
 	private static final Logger logger = Logger.getLogger("db-manager-log");
 
+	private static final String SELECT_COLLECTION_FOR_ATTRIBUTE_CRISIS_TYPE = "SELECT c.name as name,"+
+			" a.user_name as owner,"+
+			" c.code as code,"+
+			" c.lang_filters as langFilter,"+
+			" count(1) as trainingCount"+
+			" FROM collection c "+
+			" JOIN document doc " +
+			" ON doc.crisisID = c.id "+ 
+			" JOIN document_nominal_label dnl"+
+			" ON doc.documentID = dnl.documentID"+
+			" JOIN nominal_label nl"+
+			" ON dnl.nominalLabelID = nl.nominalLabelID"+
+			" JOIN account a "+
+			" ON c.owner_id = a.id"+
+			" WHERE nl.nominalAttributeID = :nominalAttributeID"+
+			" AND c.crisis_type = :crisis_type ";
+	
 	@EJB
 	private UsersResourceFacade userLocalEJB;
 
@@ -294,53 +311,48 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 	}
 	
 	@Override
-	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID,Integer crisis_type,String lang_filters)  throws PropertyNotSetException {
+	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID, Integer crisis_type, String lang_filters) throws PropertyNotSetException {
 		List<CollectionBriefInfo> result = new ArrayList<CollectionBriefInfo>();
 		
-		String sql = "SELECT c.name as crisisName,"+
-				"a.user_name as creatorName,"+
-				"c.code as crisisCode,"+
-				"c.lang_filters as langFilter,"+
-				"count(1) as trainingExampleCount"+
-				" FROM document doc"+
-				" JOIN document_nominal_label dnl"+
-				" ON doc.documentID = dnl.documentID"+
-				" JOIN nominal_label nl"+
-				" ON dnl.nominalLabelID = nl.nominalLabelID"+
-				" JOIN collection c"+
-				" ON doc.crisisID = c.id"+
-				" JOIN account a "+
-				" ON c.owner_id = a.id"+
-				" WHERE nl.nominalAttributeID = :nominalAttributeID"+
-				" AND c.crisis_type = :crisis_type GROUP BY doc.crisisID";
+		String finalSQLQuery = SELECT_COLLECTION_FOR_ATTRIBUTE_CRISIS_TYPE;
 		
-			Session session = getCurrentSession();
-			Query query = em.createNativeQuery(sql);
-			query.setParameter("nominalAttributeID", attributeID);
-			query.setParameter("crisis_type", crisis_type);
+		String intermediateCriteria = "";
+		if(lang_filters != null && !lang_filters.isEmpty()) {
+			String[] languageList = lang_filters.split(",");
+			for(int index = 0; index < languageList.length; index++) {
+				if(index == 0) {
+					intermediateCriteria += " AND ";
+				}
+				intermediateCriteria += " FIND_IN_SET('" + languageList[index] + "' , c.lang_filters )";
+				if(index != languageList.length - 1) {
+					intermediateCriteria += " OR";
+				}
+			}
+		}
 		
+		finalSQLQuery = finalSQLQuery + intermediateCriteria + " GROUP BY doc.crisisID";;
+		
+		Query query = em.createNativeQuery(finalSQLQuery);
+		query.setParameter("nominalAttributeID", attributeID);
+		query.setParameter("crisis_type", crisis_type);
+	
 		List<Object[]> rows = null;
 		try {
 			rows = query.getResultList();
-		} catch (NoResultException e) {
-			logger.warn("No result for NominalAttributeId : " + attributeID);
-			return null;
-		}
-		catch (EJBTransactionRolledbackException e) {
-			logger.warn("No result for NominalAttributeId : " + attributeID+"***"+e);
-			return null;
+			for (Object[] row : rows) {
+				CollectionBriefInfo collectionBriefInfo = new CollectionBriefInfo();
+				collectionBriefInfo.setName((String) row[0]);
+				collectionBriefInfo.setOwner((String) row[1]);
+				collectionBriefInfo.setCode((String) row[2]);
+				collectionBriefInfo.setLanguage((String) row[3]);
+				collectionBriefInfo.setTrainingCount(((BigInteger) row[4]).intValue());
+				result.add(collectionBriefInfo);
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error in fetching collections for attribute : " + attributeID, e);
 		}
 		
-		for (Object[] row : rows) {
-			CollectionBriefInfo collectionBriefInfo = new CollectionBriefInfo();
-			collectionBriefInfo.setName((String) row[0]);
-			collectionBriefInfo.setOwner((String) row[1]);
-			collectionBriefInfo.setCode((String) row[2]);
-			collectionBriefInfo.setLanguage((String) row[3]);
-			collectionBriefInfo.setTrainingCount(((BigInteger) row[4]).intValue());
-			result.add(collectionBriefInfo);
-		}
-
 		return result;
 	}
 
