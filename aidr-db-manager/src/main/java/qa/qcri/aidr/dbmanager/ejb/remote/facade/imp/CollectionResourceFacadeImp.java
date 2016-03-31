@@ -319,19 +319,25 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 		String intermediateCriteria = "";
 		if(lang_filters != null && !lang_filters.isEmpty()) {
 			String[] languageList = lang_filters.split(",");
+			
 			for(int index = 0; index < languageList.length; index++) {
-				if(index == 0) {
-					intermediateCriteria += " AND ";
+
+				if(!languageList[index].isEmpty()) {
+					intermediateCriteria += " FIND_IN_SET('" + languageList[index] + "' , c.lang_filters )";
+					if(index != languageList.length - 1) {
+						intermediateCriteria += " OR";
+					}
 				}
-				intermediateCriteria += " FIND_IN_SET('" + languageList[index] + "' , c.lang_filters )";
-				if(index != languageList.length - 1) {
-					intermediateCriteria += " OR";
-				}
+			}
+			
+			if(!intermediateCriteria.isEmpty()) {
+				intermediateCriteria =  " AND (" + intermediateCriteria + " OR c.lang_filters = '')";
 			}
 		}
 		
 		finalSQLQuery = finalSQLQuery + intermediateCriteria + " GROUP BY doc.crisisID";;
 		
+		logger.error("Final Query ::: " + finalSQLQuery);
 		Query query = em.createNativeQuery(finalSQLQuery);
 		query.setParameter("nominalAttributeID", attributeID);
 		query.setParameter("crisis_type", crisis_type);
