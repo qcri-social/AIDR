@@ -14,6 +14,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projection;
+import org.hibernate.sql.JoinType;
 
 @Local
 public interface CoreDBServiceFacade<E, I extends Serializable> {
@@ -50,5 +51,5 @@ public interface CoreDBServiceFacade<E, I extends Serializable> {
 
 	public Criteria createCriteria(Criterion criterion,
 			String order, String[] orderBy, Integer count, String aliasTable,
-			Criterion aliasCriterion, Projection[] projections);
+			Criterion aliasCriterion, Projection[] projections, JoinType joinType);
 }

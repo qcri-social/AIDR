@@ -1,14 +1,11 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-import org.springframework.stereotype.Component;
-import qa.qcri.aidr.trainer.api.store.CodeLookUp;
-import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,13 +14,11 @@ import javax.ws.rs.core.Response;
  * Time: 3:42 PM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/util")
-@Component
+@RequestMapping("/util")
+@RestController
 public class ServiceController {
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/ping/heartbeat")
+	@RequestMapping("/ping/heartbeat")
     public Response getHeartbeat() {
         String returnValue = "{\"status\":200}";
         return Response.status(CodeLookUp.APP_STATUS_ALIVE).entity(returnValue).build();

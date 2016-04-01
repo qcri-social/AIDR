@@ -63,6 +63,8 @@ public class DocumentDTO implements Serializable {
 	@XmlElement
 	private String geoFeatures;
 
+	private CollectionDTO sourceCollection;
+	
 	@XmlElement
 	private List<TaskAssignmentDTO> taskAssignmentsDTO = null;
 
@@ -317,6 +319,19 @@ public class DocumentDTO implements Serializable {
 		if (this.getTaskAssignmentsDTO() != null) {
 			doc.setTaskAssignments(this.toTaskAssignmentList(getTaskAssignmentsDTO()));
 		}
+		
+		if(this.getSourceCollection() != null) {
+			doc.setSourceCollection(this.sourceCollection.toEntity());
+		}
+		
 		return doc;
+	}
+
+	public CollectionDTO getSourceCollection() {
+		return sourceCollection;
+	}
+
+	public void setSourceCollection(CollectionDTO sourceCollection) {
+		this.sourceCollection = sourceCollection;
 	}
 }

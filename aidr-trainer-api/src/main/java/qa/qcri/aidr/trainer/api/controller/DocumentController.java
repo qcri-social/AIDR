@@ -1,20 +1,20 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,33 +23,30 @@ import java.util.List;
  * Time: 9:17 PM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/document")
-@Component
+@RequestMapping("/document")
+@RestController
 public class DocumentController {
-    protected static Logger logger = Logger.getLogger("DocumentController");
+
+	protected static Logger logger = Logger.getLogger("DocumentController");
 
     @Autowired
     private DocumentService documentService;
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/getbatchtaskbuffer/{userName}/{crisisID}/{maxresult}")
+    @RequestMapping("/getbatchtaskbuffer/{userName}/{crisisID}/{maxresult}")
     public List<DocumentDTO> getAllTaskBufferToAssign(
-            @PathParam("userName") String userName,
-            @PathParam("crisisID") String crisisID,
-            @PathParam("maxresult") String maxresult){
+            @PathVariable("userName") String userName,
+            @PathVariable("crisisID") String crisisID,
+            @PathVariable("maxresult") String maxresult){
 
     	logger.info("Request for batch task fetch, crisisID = " + crisisID + ", user = " + userName + ", count = " + maxresult);
         return documentService.getDocumentForTask(new Long(crisisID), Integer.valueOf(maxresult), userName);
 
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/getassignabletask/{userName}/{crisisID}/{maxresult}")
-    public List<TaskBufferJsonModel> getOneTaskBufferToAssign(@PathParam("crisisID") String crisisID,
-                                                              @PathParam("userName") String userName,
-                                                              @PathParam("maxresult") String maxresult){
+    @RequestMapping("/getassignabletask/{userName}/{crisisID}/{maxresult}")
+    public List<TaskBufferJsonModel> getOneTaskBufferToAssign(@PathVariable("crisisID") String crisisID,
+                                                              @PathVariable("userName") String userName,
+                                                              @PathVariable("maxresult") String maxresult){
 
         DocumentDTO document = null;
         Long id = new Long(crisisID);
@@ -61,7 +58,7 @@ public class DocumentController {
                     document = documents.get(0);
                     logger.info("Fetched document for internal tagging task: " + document.getDocumentID() + ", for crisisID = " + document.getCrisisDTO().getCrisisID());
                 }
-            }
+            }	
 
         }
         List<TaskBufferJsonModel> jsonData = documentService.findOneDocumentForTaskByCririsID(document, id);
@@ -69,5 +66,18 @@ public class DocumentController {
         	logger.info("To be returned json Data, documentID = " + jsonData.get(i).getDocumentID() + ", for crisisID = " + jsonData.get(i).getCrisisID() );
         }
         return jsonData;
+    }
+    
+    @RequestMapping(value = "/import/training-set", method={RequestMethod.POST})
+    public String importTrainingData(@RequestParam @NotNull Long targetCollectionId,
+    		@RequestParam Long sourceCollectionId, @RequestParam Long attributeId) {
+    	
+    	if(targetCollectionId == null || sourceCollectionId == null || attributeId == null
+    			|| targetCollectionId == 0 || sourceCollectionId == 0 || attributeId == 0
+    			|| targetCollectionId == -1 || sourceCollectionId == -1 || attributeId == -1) {
+    		return "FAILURE";
+    	}
+    	documentService.importTrainingData(targetCollectionId, sourceCollectionId, attributeId);
+    	return "SUCCESS";
     }
 }

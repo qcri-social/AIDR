@@ -23,4 +23,6 @@ public interface DocumentService {
     //public List<Document> getAvailableDocument(long crisisID, int maxresult);
     public List<DocumentDTO> getAvailableDocument(Long crisisID, Integer maxresult);
     public List<DocumentDTO> getDocumentForOneTask(Long crisisID, int count, String userName);
+    
+    public void importTrainingData(Long targetCollectionId, Long sourceCollectionId, Long attributeId);
 }

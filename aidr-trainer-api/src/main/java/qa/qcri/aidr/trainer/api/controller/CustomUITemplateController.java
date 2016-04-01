@@ -2,19 +2,15 @@ package qa.qcri.aidr.trainer.api.controller;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
 import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
@@ -28,8 +24,8 @@ import qa.qcri.aidr.trainer.api.store.CodeLookUp;
  * Time: 5:24 PM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/customUI")
-@Component
+@RequestMapping("/customUI")
+@RestController
 public class CustomUITemplateController {
 
     protected static Logger logger = Logger.getLogger(CustomUITemplateController.class);
@@ -37,25 +33,19 @@ public class CustomUITemplateController {
     @Autowired
     private CustomUITemplateService customUITemplateService;
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/get/LandingPage/{crisisID}")
-    public List<CustomUiTemplate> getLandingUIByID(@PathParam("crisisID") Long crisisID){
+    @RequestMapping("/get/LandingPage/{crisisID}")
+    public List<CustomUiTemplate> getLandingUIByID(@PathVariable("crisisID") Long crisisID){
         return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/get/customUI/{crisisID}")
-    public List<CustomUiTemplate> getCustomUIByID(@PathParam("crisisID") Long crisisID){
+    @RequestMapping("/get/customUI/{crisisID}")
+    public List<CustomUiTemplate> getCustomUIByID(@PathVariable("crisisID") Long crisisID){
         logger.info("[getCustomUIByID] Received request for crisisID = " + crisisID);
     	return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/welcome/update")
-    public void updateWelcomePage(String data){
+    @RequestMapping(value = "/welcome/update", method={RequestMethod.POST})
+    public void updateWelcomePage(@RequestBody String data){
         //logger.debug("updateWelcomePage start: " + new Date());
         //logger.debug("updateWelcomePage..: " + data);
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
@@ -88,10 +78,8 @@ public class CustomUITemplateController {
     }
 
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/tutorial/update")
-    public void updateTutorial(String data){
+    @RequestMapping(value = "/tutorial/update", method={RequestMethod.POST})
+    public void updateTutorial(@RequestBody String data){
         //logger.debug("updateTutorial start: " + new Date());
         //logger.debug("updateTutorial..: " + data);
 
@@ -123,10 +111,8 @@ public class CustomUITemplateController {
 
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/skin/update")
-    public void updateSkin(String data){
+    @RequestMapping(value = "/skin/update", method={RequestMethod.POST})
+    public void updateSkin(@RequestBody String data){
         //logger.debug("updateSkin start: " + new Date());
         //logger.debug("updateSkin..: " + data);
 
@@ -153,13 +139,5 @@ public class CustomUITemplateController {
         catch(Exception e){
             logger.debug("Exception while updating skin " + data,e);
         }
-
-        //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
-
     }
-
-
-    // update landing page
-    // update tutorial
-    // update long description
 }

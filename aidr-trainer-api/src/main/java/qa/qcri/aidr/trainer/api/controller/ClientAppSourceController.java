@@ -1,9 +1,5 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
@@ -11,7 +7,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.trainer.api.service.ClientAppSourceService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
@@ -24,8 +23,8 @@ import qa.qcri.aidr.trainer.api.store.StatusCodeType;
  * Time: 9:28 AM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/source")
-@Component
+@RequestMapping("/source")
+@RestController
 public class ClientAppSourceController {
 
     protected static Logger logger = Logger.getLogger(ClientAppSourceController.class);
@@ -33,10 +32,8 @@ public class ClientAppSourceController {
     @Autowired
     private ClientAppSourceService clientAppSourceService;
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/save")
-    public Response saveAppSource(String data){
+    @RequestMapping(value = "/save", method={RequestMethod.POST})
+    public Response saveAppSource(@RequestBody String data){
         String returnValue = StatusCodeType.RETURN_SUCCESS;
 
         logger.info("saveAppSource : " + data );
