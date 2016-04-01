@@ -1215,6 +1215,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			CollectionDTO collectionDTO = remoteCrisisEJB.findCrisisByID(targetCollectionId);
 			CollectionDTO sourceCollection = remoteCrisisEJB.findCrisisByID(sourceCollectionId);
 			
+			// save model family
 			ModelFamilyDTO modelFamilyDTO = new ModelFamilyDTO();
 			modelFamilyDTO.setCrisisDTO(collectionDTO);
 			NominalAttributeDTO attributeDTO = new NominalAttributeDTO();
@@ -1223,6 +1224,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			boolean success = modelFamilyResourceFacade.addCrisisAttribute(modelFamilyDTO);
 			
 			if(success) {
+				
+				// iterate through each tagged document 
 				for(DocumentDTO documentDTO : documentDTOs) {
 					DocumentDTO documentToSave = new DocumentDTO();
 					documentToSave.setCrisisDTO(collectionDTO);
@@ -1237,10 +1240,13 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					documentToSave.setReceivedAt(documentDTO.getReceivedAt());
 					documentToSave.setSourceCollection(sourceCollection);
 					
+					// save new document
 					DocumentDTO newDocument = remoteDocumentEJB.addDocument(documentToSave);
 					
+					// fetch document nominal label for existing doc
 					List<DocumentNominalLabelDTO> documentNominalLabelDTOs = remoteDocumentNominalLabelEJB.findLabeledDocumentListByID(documentDTO.getDocumentID());
 					
+					// add new document labels
 					if(documentNominalLabelDTOs != null) {
 						for(DocumentNominalLabelDTO documentNominalLabelDTO : documentNominalLabelDTOs) {
 							DocumentNominalLabelDTO labelDTOToSave = new DocumentNominalLabelDTO();
@@ -1252,13 +1258,15 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 						}
 					}
 					
+					// fetch task answers for existing doc
 					List<TaskAnswerDTO> answers = remoteTaskAnswerEJB.getTaskAnswer(documentDTO.getDocumentID());
+					
+					// save task answers 
 					for(TaskAnswerDTO answer : answers) {
 						TaskAnswerDTO answerToSave = new TaskAnswerDTO();
 						answerToSave.setAnswer(answer.getAnswer());
 						answerToSave.setDocumentID(newDocument.getDocumentID());
 						
-						logger.error("userId : " + answer.getUserID());
 						answerToSave.setUserID(answer.getUserID());
 						answerToSave.setTimestamp(new Date());
 						remoteTaskAnswerEJB.insertTaskAnswer(answerToSave);

@@ -32,22 +32,28 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 
 	@Override
 	public TaskAnswerDTO insertTaskAnswer(TaskAnswerDTO taskAnswer) {
+		
+		TaskAnswerDTO answer = null;
+		
 		if (taskAnswer != null) {
 			logger.debug("Going to insert answer = " + taskAnswer.getAnswer() + " for  taskId = " + taskAnswer.getDocumentID());
 			try {
-				TaskAnswer t = taskAnswer.toEntity();
-				em.persist(t);
-				em.flush();			
-				
-				return getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
+				answer = getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
+				if(answer == null) {
+					TaskAnswer t = taskAnswer.toEntity();
+					em.persist(t);
+					em.flush();			
+					
+					answer = getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
+				}
 			} catch (Exception e) {
 				logger.error("Unable to save taskAnswer: " + taskAnswer.getDocumentID() + ", " + taskAnswer.getUserID() + ", " + taskAnswer.getAnswer(), e);
-				return null;
 			}
 		} else {
 			logger.warn("Warning! Attempted to insert null task answer!");
-			return null;
 		}
+		
+		return answer;
 	}
 
 	@Override
