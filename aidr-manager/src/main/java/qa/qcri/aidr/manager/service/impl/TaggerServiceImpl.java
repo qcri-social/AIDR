@@ -23,6 +23,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
@@ -1111,7 +1112,8 @@ public class TaggerServiceImpl implements TaggerService {
 			//logger.info("saveTaskAnswer - response status : "
 				//	+ clientResponse.getStatus());
 
-			return clientResponse.getStatus() == 204;
+			return clientResponse.getStatus() == 200 
+					|| clientResponse.getStatus() == 204;
 		} catch (Exception e) {
 			logger.error("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
 			return true;
