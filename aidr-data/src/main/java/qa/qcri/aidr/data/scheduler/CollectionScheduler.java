@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.data.config.Configurations;
@@ -22,12 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class CollectionScheduler {
 
-	private Logger logger = Logger.getLogger(CollectionScheduler.class);
+	private final Logger logger = Logger.getLogger(CollectionScheduler.class);
 	
 	@Autowired
 	private CollectionSummaryService collectionSummaryService;
 	
-	//@Scheduled(fixedDelay = 60 * 60 * 1000) // 10 minutes - in milliseconds
+	@Scheduled(fixedDelay = 60 * 60 * 1000) // 10 minutes - in milliseconds
 	private void scheduledTaskUpdateAidrData() {
 
 		HttpURLConnection con = null;
