@@ -1,7 +1,13 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
 import qa.qcri.aidr.trainer.api.entity.ClientAppAnswer;
 import qa.qcri.aidr.trainer.api.entity.ClientAppDeployment;
@@ -10,14 +16,6 @@ import qa.qcri.aidr.trainer.api.service.ClientAppDeploymentService;
 import qa.qcri.aidr.trainer.api.service.ClientAppService;
 import qa.qcri.aidr.trainer.api.template.ClientAppDeploymentModel;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  * User: jlucas
@@ -25,8 +23,8 @@ import java.util.List;
  * Time: 3:01 PM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/deployment")
-@Component
+@RequestMapping("/deployment")
+@RestController
 public class ClientAppDeploymentController {
 
     @Autowired
@@ -39,10 +37,8 @@ public class ClientAppDeploymentController {
     ClientAppService appService;
 
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/active/type/{typeID}")
-    public ClientAppDeploymentModel getActiveByType(@PathParam("typeID") Integer typeID){
+    @RequestMapping("/active/type/{typeID}")
+    public ClientAppDeploymentModel getActiveByType(@PathVariable("typeID") Integer typeID){
         ClientAppDeployment deploy=  clientAppDeploymentService.getActiveDeploymentForAppType(typeID);
         if(deploy != null){
             ClientAppAnswer cAns = appAnswerService.getClientAppAnswer(deploy.getClientAppID()) ;
@@ -55,9 +51,7 @@ public class ClientAppDeploymentController {
         return null;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/active")
+    @RequestMapping("/active")
     public List<ClientAppDeploymentModel> getActive(){
         List<ClientAppDeployment> cDeploys = clientAppDeploymentService.getActiveDeployment();
 
@@ -77,9 +71,7 @@ public class ClientAppDeploymentController {
         return null ;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/active/mobile")
+    @RequestMapping("/active/mobile")
     public List<ClientAppDeploymentModel> getMobileActive(){
         List<ClientAppDeployment> cDeploys = clientAppDeploymentService.getMobileActiveDeployment();
 

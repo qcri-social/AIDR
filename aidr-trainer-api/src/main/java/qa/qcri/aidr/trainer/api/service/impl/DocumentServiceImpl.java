@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -176,6 +177,18 @@ public class DocumentServiceImpl implements DocumentService {
 		List<DocumentDTO> docList = getAvailableDocument(crisisID, null);
 		return (docList != null) ? docList.size() : 0;
 
+	}
+
+	@Override
+	public void importTrainingData(Long targetCollectionId,
+			Long sourceCollectionId, Long attributeId) {
+
+		try {
+			taskManager.importTrainingDataForClassifier(targetCollectionId, sourceCollectionId, attributeId);
+		
+		} catch(Exception e) {
+			logger.error("Error in importing data for attribute : " + attributeId, e);
+		}
 	}
 
 }

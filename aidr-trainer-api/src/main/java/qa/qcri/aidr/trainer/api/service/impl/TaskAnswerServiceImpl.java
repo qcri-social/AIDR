@@ -198,7 +198,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			}
 		}
 		catch(Exception e){
-			logger.error("Exception for saving task answer data : " + data+"\t"+e.getStackTrace());
+ 			logger.error("Exception for saving task answer data : " + data+"\t", e);
 		}
 
 	}

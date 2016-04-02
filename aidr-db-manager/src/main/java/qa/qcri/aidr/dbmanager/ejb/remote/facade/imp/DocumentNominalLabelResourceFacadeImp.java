@@ -62,8 +62,6 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 
 	@Override
 	public DocumentNominalLabelDTO addDocument(DocumentNominalLabelDTO doc) throws PropertyNotSetException {
-		Session session = getCurrentSession();
-		Transaction tx = session.beginTransaction();
 		DocumentNominalLabel d = doc.toEntity();
 		try {
 			em.persist(d);
@@ -72,7 +70,6 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 			logger.debug("Success in saving to document_nominal_label table, doc = " + doc.getIdDTO().getDocumentId());
 		} catch (Exception e) {
 			logger.error("Error in saving document nominal label for document = " + doc.getIdDTO().getDocumentId(), e);
-			tx.rollback();
 			return null;
 		}
 		Document labeledDoc = null;
@@ -81,12 +78,10 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 			labeledDoc.setHasHumanLabels(true);
 			em.merge(labeledDoc);
 			em.flush();
-			if (!tx.wasCommitted()) tx.commit();
 			logger.debug("Success in updating hashumanLabels field in document table, doc = " + labeledDoc.getDocumentId());
 			return new DocumentNominalLabelDTO(d);
 		} catch (Exception e) {
 			logger.error("Error in updating hasHumanLabel field of labeled document = " + labeledDoc.getDocumentId() +", rolling back transaction (delete from document_nominal_label)...");
-			tx.rollback();
 			return null;
 		}
 	}

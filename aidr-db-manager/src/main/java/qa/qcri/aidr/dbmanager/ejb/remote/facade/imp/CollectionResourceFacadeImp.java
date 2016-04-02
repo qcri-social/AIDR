@@ -11,18 +11,22 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
@@ -35,6 +39,23 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 
 	private static final Logger logger = Logger.getLogger("db-manager-log");
 
+	private static final String SELECT_COLLECTION_FOR_ATTRIBUTE_CRISIS_TYPE = "SELECT c.name as name,"+
+			" a.user_name as owner,"+
+			" c.code as code,"+
+			" c.lang_filters as langFilter,"+
+			" count(1) as trainingCount"+
+			" FROM collection c "+
+			" JOIN document doc " +
+			" ON doc.crisisID = c.id "+ 
+			" JOIN document_nominal_label dnl"+
+			" ON doc.documentID = dnl.documentID"+
+			" JOIN nominal_label nl"+
+			" ON dnl.nominalLabelID = nl.nominalLabelID"+
+			" JOIN account a "+
+			" ON c.owner_id = a.id"+
+			" WHERE nl.nominalAttributeID = :nominalAttributeID"+
+			" AND c.crisis_type = :crisis_type ";
+	
 	@EJB
 	private UsersResourceFacade userLocalEJB;
 
@@ -288,4 +309,57 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 		} 
 		return 0;
 	}
+	
+	@Override
+	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID, Integer crisis_type, String lang_filters) throws PropertyNotSetException {
+		List<CollectionBriefInfo> result = new ArrayList<CollectionBriefInfo>();
+		
+		String finalSQLQuery = SELECT_COLLECTION_FOR_ATTRIBUTE_CRISIS_TYPE;
+		
+		String intermediateCriteria = "";
+		if(lang_filters != null && !lang_filters.isEmpty()) {
+			String[] languageList = lang_filters.split(",");
+			
+			for(int index = 0; index < languageList.length; index++) {
+
+				if(!languageList[index].isEmpty()) {
+					intermediateCriteria += " FIND_IN_SET('" + languageList[index] + "' , c.lang_filters )";
+					if(index != languageList.length - 1) {
+						intermediateCriteria += " OR";
+					}
+				}
+			}
+			
+			if(!intermediateCriteria.isEmpty()) {
+				intermediateCriteria =  " AND (" + intermediateCriteria + " OR c.lang_filters = '')";
+			}
+		}
+		
+		finalSQLQuery = finalSQLQuery + intermediateCriteria + " GROUP BY doc.crisisID";;
+		
+		logger.error("Final Query ::: " + finalSQLQuery);
+		Query query = em.createNativeQuery(finalSQLQuery);
+		query.setParameter("nominalAttributeID", attributeID);
+		query.setParameter("crisis_type", crisis_type);
+	
+		List<Object[]> rows = null;
+		try {
+			rows = query.getResultList();
+			for (Object[] row : rows) {
+				CollectionBriefInfo collectionBriefInfo = new CollectionBriefInfo();
+				collectionBriefInfo.setName((String) row[0]);
+				collectionBriefInfo.setOwner((String) row[1]);
+				collectionBriefInfo.setCode((String) row[2]);
+				collectionBriefInfo.setLanguage((String) row[3]);
+				collectionBriefInfo.setTrainingCount(((BigInteger) row[4]).intValue());
+				result.add(collectionBriefInfo);
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error in fetching collections for attribute : " + attributeID, e);
+		}
+		
+		return result;
+	}
+
 }
