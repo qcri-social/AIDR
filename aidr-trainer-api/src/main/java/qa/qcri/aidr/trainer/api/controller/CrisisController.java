@@ -3,17 +3,13 @@ package qa.qcri.aidr.trainer.api.controller;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
@@ -28,8 +24,8 @@ import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
  * Time: 2:49 PM
  * To change this template use File | Settings | File Templates.
  */
-@Path("/crisis")
-@Component
+@RequestMapping("/crisis")
+@RestController
 public class CrisisController {
 	
 	protected static Logger logger = Logger.getLogger(CrisisController.class);
@@ -37,10 +33,8 @@ public class CrisisController {
 	@Autowired
 	private CrisisService crisisService;
 
-	@GET
-	@Produces( MediaType.APPLICATION_JSON )
-	@Path("/id/{crisisid}")
-	public CrisisJsonModel getCrisisByID(@PathParam("crisisid") Long crisisid){
+	@RequestMapping("/id/{crisisid}")
+	public CrisisJsonModel getCrisisByID(@PathVariable("crisisid") Long crisisid){
 		logger.info("received request for crisisId = " + crisisid);
 		try {
 			return  crisisService.findByOptimizedCrisisID(crisisid);
@@ -50,31 +44,23 @@ public class CrisisController {
 		return null;
 	}
 
-	@GET
-	@Produces( MediaType.APPLICATION_JSON )
-	@Path("/getallactive")
+	@RequestMapping("/getallactive")
 	public List getAllActiveCrisis(){
 		return crisisService.findAllActiveCrisis(); 
 	}
 
-	@GET
-	@Produces( MediaType.APPLICATION_JSON )
-	@Path("/get/active")
+	@RequestMapping("/get/active")
 	public List<CollectionDTO> getActiveCrisis(){
 		return crisisService.findActiveCrisisInfo();
 	}
 
-	@GET
-	@Produces( MediaType.APPLICATION_JSON )
-	@Path("/getnominalAttribute")
+	@RequestMapping("/getnominalAttribute")
 	public List<CrisisNominalAttributeModel> getAllActiveCrisisNominalAttribute(){
 		return  crisisService.getAllActiveCrisisNominalAttribute();
 	}
 
-	@GET
-	@Produces( MediaType.APPLICATION_JSON )
-	@Path("/getnominalLabels/{crisisid}/{nominalAttributeID}")
-	public String getAllActiveCrisisNominalAttribute(@PathParam("crisisid") Long crisisID, @PathParam("nominalAttributeID") Long nominalAttributeID){
+	@RequestMapping("/getnominalLabels/{crisisid}/{nominalAttributeID}")
+	public String getAllActiveCrisisNominalAttribute(@PathVariable("crisisid") Long crisisID, @PathVariable("nominalAttributeID") Long nominalAttributeID){
 		JSONArray labelJsonArrary = new JSONArray();
 
 		Set<NominalLabelDTO> nominalLabels =  crisisService.getNominalLabelByCrisisID(crisisID, nominalAttributeID) ;

@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 
 /**
@@ -19,5 +20,5 @@ public interface CollectionResourceFacade {
     
    public List<Collection> getAllRunningCollectionsByUserID(int userID); 
    
-    
+   public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID,Integer crisis_type,String lang_filters);
 }
