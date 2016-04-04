@@ -15,10 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.dao.TaskTranslationDao;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
-import qa.qcri.aidr.trainer.pybossa.service.ClientAppResponseService;
-import qa.qcri.aidr.trainer.pybossa.service.ClientAppService;
-import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
-import qa.qcri.aidr.trainer.pybossa.service.TranslationService;
+import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationResponseModel;
+import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
 import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
@@ -53,6 +51,10 @@ public class TWBTranslationServiceImpl implements TranslationService {
     @Autowired
     private ClientAppService clientAppService;
 
+    @Autowired
+    private ClientAppEventService clientAppEventService;
+
+
     final private static int MAX_BATCH_SIZE = 1000;  //
     final private static long MAX_WAIT_TIME_MILLIS = 300000; // 5 minutes
     private static long timeOfLastTranslationProcessingMillis = System.currentTimeMillis(); //initialize at startup
@@ -64,8 +66,17 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     public Map processTranslations(ClientApp clientApp) {
         Long tcProjectId = clientApp.getTcProjectId();
+       // processReceivedTranslations(clientApp.getClientAppID(), MAX_BATCH_SIZE);
         pullAllTranslationResponses(clientApp.getClientAppID(), tcProjectId);
         return pushAllTranslations(clientApp.getClientAppID(), tcProjectId, MAX_WAIT_TIME_MILLIS, MAX_BATCH_SIZE);
+    }
+
+    public void processReceivedTranslations(Long clientAppId, int maxBatchSize){
+        List<TaskTranslation> translations = findAllTranslationsByClientAppIdAndStatus(clientAppId, TaskTranslation.STATUS_RECEIVED, maxBatchSize);
+
+        for (TaskTranslation t : translations){
+            processMicroMappers(t, t.getAnswerCode());
+        }
     }
 
     public Map pushAllTranslations(Long clientAppId, Long twbProjectId, long maxTimeToWait, int maxBatchSize) {
@@ -74,9 +85,11 @@ public class TWBTranslationServiceImpl implements TranslationService {
         Map result = null;
         boolean forceProcessingByTime = false;
         long currentTimeMillis = System.currentTimeMillis();
+
         if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= maxTimeToWait) {
             forceProcessingByTime = true;
         }
+
         if ((forceProcessingByTime || translations.size() >= maxBatchSize) && (translations.size() > 0)) {
             while (true) {
                 logger.info("pushAllTranslations start at : " + new Date());
@@ -88,9 +101,9 @@ public class TWBTranslationServiceImpl implements TranslationService {
                 model.setTargetLanguages(targets);
                 model.setSourceWordCount(100); //random test
                 model.setInstructions("Please translate according to ...");
-                model.setDeadline(new Date(System.currentTimeMillis()+ PybossaConf.TWB_TRANSLATE_DEADLINE));
+                model.setDeadline(new Date(System.currentTimeMillis() + PybossaConf.TWB_TRANSLATE_DEADLINE));
                 model.setUrgency("high");
-
+                model.setProjectId(twbProjectId);
                 model.setCallbackURL("https://www.example.com/my-callback-url");
                 model.setTranslationList(translations);
 
@@ -159,7 +172,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
                     throw new RuntimeException("No documents were found for order id: " + orderId + ", project id:" + projectId);
                 }
             } catch (Exception ex) {
-                logger.debug(ex.toString());
+                logger.debug(" processTranslationResponses : " + ex.toString());
             }
 
         }
@@ -207,58 +220,101 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     public void updateTranslation(Integer orderId, Long taskId, String sourceTranslation, String finalTranslation, String code) throws Exception {
         TaskTranslation taskTranslation = findByTaskId(taskId);
+
+        if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_COMPLETE)){
+            return;
+        }
+
+        if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_RECEIVED)){
+            this.processMicroMappers( taskTranslation, code);
+            return;
+        }
+
         if (taskTranslation == null) {
+            logger.error("No translation task found for id:" + taskId);
             throw new RuntimeException("No translation task found for id:" + taskId);
         } else if (taskTranslation.getTwbOrderId() == null) {
+            logger.error("No TWB order number found for id:" + taskId);
             throw new RuntimeException("No TWB order number found for id:" + taskId);
         } else if (taskTranslation.getTwbOrderId().intValue() != orderId.intValue()) {
-            throw new RuntimeException("TWB order number does not match");
+            logger.error("TWB order number does not match : TwbOrderId: " + taskTranslation.getTwbOrderId().intValue() + " - Order ID : " + orderId.intValue());
+            throw new RuntimeException("TWB order number does not match : TwbOrderId: " + taskTranslation.getTwbOrderId().intValue() + " - Order ID : " + orderId.intValue());
         }
         taskTranslation.setTranslatedText(finalTranslation);
         taskTranslation.setAnswerCode(code);
         taskTranslation.setStatus(TaskTranslation.STATUS_RECEIVED);
         updateTranslation(taskTranslation);
 
-        List<TaskQueueResponse> taskResp = clientAppResponseService.getTaskQueueResponse(taskTranslation.getTaskQueueID());
-
-        if(taskResp.size() > 0){
-           String taskInfo = taskResp.get(0).getTaskInfo();
-            JSONParser parser = new JSONParser();
-            JSONArray jsonObject = (JSONArray) parser.parse(taskInfo);
-            Iterator itr= jsonObject.iterator();
-            JSONArray jsonObjectCopy = new JSONArray();
-
-            while(itr.hasNext()){
-                JSONObject featureJsonObj = (JSONObject)itr.next();
-                JSONObject info = (JSONObject)featureJsonObj.get("info");
-                info.put("category", code);
-
-                jsonObjectCopy.add(featureJsonObj)  ;
-            }
-
-            this.processAIDRPushing(taskTranslation, jsonObjectCopy);
-            this.processReportTemplatePushing(taskTranslation, parser, code);
-
-        }
-
+        this.processMicroMappers(taskTranslation, code);
     }
 
 
-    private void processReportTemplatePushing(TaskTranslation taskTranslation, JSONParser parser, String userAnswer){
+    private void processMicroMappers(TaskTranslation taskTranslation, String code){
         try{
-            ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(Long.parseLong(taskTranslation.getClientAppId()));
 
-            String[] activeAnswers = this.getActiveAnswerKey(clientAppAnswer, parser) ;
+            if(code.equals(null) && !taskTranslation.getAnswerCode().equals(null)){
+                code = taskTranslation.getAnswerCode();
+            }
 
-            for(int a=0; a < activeAnswers.length; a++){
-                if(activeAnswers[a].equalsIgnoreCase(userAnswer)){
-                    ReportTemplate template = new ReportTemplate(taskTranslation.getTaskQueueID(),
-                            taskTranslation.getTaskId(), taskTranslation.getTweetID(), taskTranslation.getTranslatedText(),
-                            taskTranslation.getAuthor(), taskTranslation.getLat(), taskTranslation.getLon(),
-                            taskTranslation.getUrl(), taskTranslation.getCreated(), taskTranslation.getAnswerCode(), LookupCode.TEMPLATE_IS_READY_FOR_EXPORT, Long.parseLong(taskTranslation.getClientAppId()));
-                    reportTemplateService.saveReportItem(template);
+            if(taskTranslation.getDocumentId() == null){
+                List<TaskQueueResponse> taskResp = clientAppResponseService.getTaskQueueResponse(taskTranslation.getTaskQueueID());
+
+                if(taskResp.size() > 0){
+                    String taskInfo = taskResp.get(0).getTaskInfo();
+                    JSONParser parser = new JSONParser();
+                    JSONArray jsonObject = (JSONArray) parser.parse(taskInfo);
+                    Iterator itr= jsonObject.iterator();
+                    JSONArray jsonObjectCopy = new JSONArray();
+
+                    while(itr.hasNext()){
+                        JSONObject featureJsonObj = (JSONObject)itr.next();
+                        JSONObject info = (JSONObject)featureJsonObj.get("info");
+                        info.put("category", code);
+
+                        jsonObjectCopy.add(featureJsonObj)  ;
+                    }
+
+                    this.processAIDRPushing(taskTranslation, jsonObjectCopy);
+
                 }
             }
+
+            else{
+                ClientApp app =  clientAppService.findClientAppByID("clientAppID", taskTranslation.getClientAppId());
+                TranslationResponseModel taskRespModel = new TranslationResponseModel(taskTranslation,app,code);
+                this.processAIDRPushing(taskTranslation, taskRespModel.getTaskResponse());
+            }
+
+            this.processReportTemplatePushing(taskTranslation, code);
+
+        }
+        catch(Exception e){
+            logger.error("processAIDR:" + e);
+            throw new RuntimeException("processAIDR:" + e);
+        }
+    }
+
+    private void processReportTemplatePushing(TaskTranslation taskTranslation, String userAnswer){
+        try{
+            if(clientAppEventService.getNextSequenceClientAppEvent(taskTranslation.getClientAppId()) != null){
+
+                JSONParser parser = new JSONParser();
+
+                ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(taskTranslation.getClientAppId());
+
+                String[] activeAnswers = this.getActiveAnswerKey(clientAppAnswer, parser) ;
+
+                for(int a=0; a < activeAnswers.length; a++){
+                    if(activeAnswers[a].equalsIgnoreCase(userAnswer)){
+                        ReportTemplate template = new ReportTemplate(taskTranslation.getTaskQueueID(),
+                                taskTranslation.getTaskId(), taskTranslation.getTweetID(), taskTranslation.getTranslatedText(),
+                                taskTranslation.getAuthor(), taskTranslation.getLat(), taskTranslation.getLon(),
+                                taskTranslation.getUrl(), taskTranslation.getCreated().toString(), taskTranslation.getAnswerCode(), LookupCode.TEMPLATE_IS_READY_FOR_EXPORT, taskTranslation.getClientAppId());
+                        reportTemplateService.saveReportItem(template);
+                    }
+                }
+            }
+
         }
         catch(Exception e){
             throw new RuntimeException("TWB processReportTemplatePushing");
@@ -268,13 +324,17 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     private void processAIDRPushing(TaskTranslation taskTranslation, JSONArray jsonObjectCopy)
     {
-        long appID = Long.parseLong(taskTranslation.getClientAppId());
+        long appID = taskTranslation.getClientAppId();
         ClientApp app =  clientAppService.findClientAppByID("clientAppID", appID);
         String AIDR_TASK_ANSWER_URL = app.getClient().getAidrHostURL() + URLPrefixCode.TASK_ANSWER_SAVE;
 
         pybossaCommunicator.sendPost(jsonObjectCopy.toJSONString(), AIDR_TASK_ANSWER_URL);
 
+        taskTranslation.setStatus(TaskTranslation.STATUS_COMPLETE);
+        updateTranslation(taskTranslation);
+
     }
+
     private String[] getActiveAnswerKey(ClientAppAnswer clientAppAnswer, JSONParser parser) throws ParseException {
 
         String answerKey =   clientAppAnswer.getActiveAnswerKey();
@@ -330,7 +390,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
             if(translations.size() > 0)
                 taskTranslation = translations.get(0);
         }
-        System.out.println("findByTaskId : taskTranslation " + taskTranslation);
+        logger.debug("findByTaskId : taskTranslation " + taskTranslation);
         return taskTranslation;
     }
 

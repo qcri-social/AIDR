@@ -6,11 +6,8 @@ package qa.qcri.aidr.trainer.pybossa.entity;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 
 @Entity
@@ -18,7 +15,7 @@ import javax.persistence.Table;
 public class TaskTranslation {
 	    
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique=true, nullable = false)
     private Long translationId;
 
@@ -26,7 +23,10 @@ public class TaskTranslation {
     private Long taskId;
     
     @Column(name = "client_app_id")
-    private String clientAppId;
+    private Long clientAppId;
+
+    @Column(name = "document_id")
+    private Long documentId;
 
     @Column(name = "tweet_id", nullable = false)
     private String tweetID;
@@ -58,8 +58,8 @@ public class TaskTranslation {
     @Column(name = "answer_code")
     private String answerCode;
 
-    @Column(name = "created", nullable = false)
-    private String created;
+    @Column(name = "created")
+    private Date created;
 
     @Column(name = "status")
     private String status = STATUS_NEW;
@@ -74,7 +74,23 @@ public class TaskTranslation {
 
     }
 
-    public TaskTranslation(Long taskId, String clientAppId, String tweetID, String author, String lat, String lon, String url, Long taskQueueID, String originalText, String status) {
+    public TaskTranslation(long clientAppId, long documentId,  String tweetID, String author, String originalText, String status) {
+        this.clientAppId = clientAppId;
+        this.tweetID = tweetID;
+        this.author = (author==null)? "":author;
+        this.originalText = originalText;
+        this.status = status;
+        this.documentId = documentId;
+        this.lat = "";
+        this.lon = "";
+        this.url = "";
+        this.created = new Date();
+        this.taskId = documentId;
+        this.taskQueueID = documentId;
+    }
+
+
+    public TaskTranslation(Long taskId, Long clientAppId, String tweetID, String author, String lat, String lon, String url, Long taskQueueID, String originalText, String status) {
         this.taskId = taskId;
         this.clientAppId = clientAppId;
         this.tweetID = tweetID;
@@ -85,6 +101,7 @@ public class TaskTranslation {
         this.taskQueueID = taskQueueID;
         this.originalText = originalText;
         this.status = status;
+        this.created = new Date();
     }
 
 
@@ -96,8 +113,15 @@ public class TaskTranslation {
 		this.translationId = translationId;
 	}
 
+    public Long getDocumentId() {
+        return documentId;
+    }
 
-	public Long getTwbOrderId() {
+    public void setDocumentId(Long documentId) {
+        this.documentId = documentId;
+    }
+
+    public Long getTwbOrderId() {
 		return twbOrderId;
 	}
 
@@ -141,11 +165,11 @@ public class TaskTranslation {
 		this.taskId = taskId;
 	}
 
-	public String getClientAppId() {
+	public Long getClientAppId() {
 		return clientAppId;
 	}
 
-	public void setClientAppId(String clientAppId) {
+	public void setClientAppId(Long clientAppId) {
 		this.clientAppId = clientAppId;
 	}
 
@@ -207,7 +231,7 @@ public class TaskTranslation {
     }
 
 
-    public String getCreated() {
+    public Date getCreated() {
         return created;
     }
 

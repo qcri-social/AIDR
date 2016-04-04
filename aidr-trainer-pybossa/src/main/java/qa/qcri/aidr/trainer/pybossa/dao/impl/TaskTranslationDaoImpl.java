@@ -42,7 +42,7 @@ public class TaskTranslationDaoImpl extends AbstractDaoImpl<TaskTranslation, Str
 
     public List<TaskTranslation> findAllTranslationsByClientAppIdAndStatus(Long clientAppId, String status, Integer count) {
         Map map = new HashMap();
-        map.put("clientAppId", clientAppId.toString());
+        map.put("clientAppId", clientAppId);
         map.put("status", status);
         List<TaskTranslation> list = findByCriteria(Restrictions.allEq(map), count);
         return list;
