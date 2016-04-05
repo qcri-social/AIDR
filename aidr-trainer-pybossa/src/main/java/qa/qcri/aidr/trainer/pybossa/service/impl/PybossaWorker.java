@@ -187,23 +187,32 @@ public class PybossaWorker implements ClientAppRunWorker {
                     itemIndexEnd  = inputDataSize;
                 }
                 if((itemIndexStart < itemIndexEnd) && (itemIndexEnd <= inputDataSize)) {
-                    List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishFormWithIndex(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
-                    int itemLoopEnd = itemIndexEnd - itemIndexStart;
-                    for(int i = 0; i < itemLoopEnd; i++){
-                        String temp = aidr_data.get(i);
-                        String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-                        if(!response.startsWith("Exception") && !response.contains("exception_cls")){
-                            addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
+
+                    // if translate is required, let's go directly
+                    if(currentClientApp.getTcProjectId() != null){
+                        pybossaFormatter.setTranslationService(translationService);
+                        pybossaFormatter.publicTaskTranslationTaskPublishForm(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
+                    }
+                    else{
+                        List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishFormWithIndex(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
+                        int itemLoopEnd = itemIndexEnd - itemIndexStart;
+                        for(int i = 0; i < itemLoopEnd; i++){
+                            String temp = aidr_data.get(i);
+                            String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
+                            if(!response.startsWith("Exception") && !response.contains("exception_cls")){
+                                addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
+                            }
+                            else{
+                                addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
+                            }
                         }
-                        else{
-                            addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
+                        itemIndexStart = itemIndexEnd;
+                        itemIndexEnd = itemIndexEnd + itemsPerApp;
+                        if(itemIndexEnd > inputDataSize && itemIndexStart < inputDataSize){
+                            itemIndexEnd = itemIndexStart + (inputDataSize - itemIndexStart);
                         }
                     }
-                    itemIndexStart = itemIndexEnd;
-                    itemIndexEnd = itemIndexEnd + itemsPerApp;
-                    if(itemIndexEnd > inputDataSize && itemIndexStart < inputDataSize){
-                        itemIndexEnd = itemIndexStart + (inputDataSize - itemIndexStart);
-                    }
+
                 }
 
 
@@ -241,6 +250,7 @@ public class PybossaWorker implements ClientAppRunWorker {
 
                     } catch (Exception e) {
                         System.out.println("Error for processTaskRunPerClientAppImport: " + clientApp.getShortName());
+                        System.out.println("Error for processTaskRunPerClientAppImport: taskID" + taskID);
 
                     }
                // }

@@ -14,6 +14,7 @@ import java.util.List;
 public interface TaskLogDao extends AbstractDao<TaskLog, String>  {
 
     void createTaskLog(TaskLog taskLog);
+    void saveOrUpdateTaskLog(TaskLog taskLog);
     List<TaskLog> getTaskLog(Long taskQueueID);
     List<TaskLog> getTaskLogByStatus(Long taskQueueID, int status);
     void deleteTaskLog(Long taskQueueID);

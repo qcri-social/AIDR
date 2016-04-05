@@ -1,5 +1,6 @@
 package qa.qcri.aidr.trainer.api.template;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -142,7 +143,18 @@ public class PybossaTemplate {
 
         JSONObject utilJson = new JSONObject();
         utilJson.put("clientuserID",featureJsonObj.get("user_id")) ;
-        utilJson.put("datetimelog",featureJsonObj.get("dateHistory")) ;
+        
+        if(featureJsonObj.get("dateHistory") == null) {
+        	JSONObject dateHistory = new JSONObject();
+        	String dateString = (new Date()).toString();
+    		dateHistory.put("taskcreated", dateString);
+    		dateHistory.put("taskcompleted", dateString);
+    		dateHistory.put("taskpresented", dateString);
+    		dateHistory.put("taskpulled", dateString);
+    		utilJson.put("datetimelog", dateHistory);
+        } else {
+        	utilJson.put("datetimelog",featureJsonObj.get("dateHistory")) ;
+        }
 
         return utilJson;
     }

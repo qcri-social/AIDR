@@ -25,8 +25,8 @@ import java.util.Iterator;
 @ContextConfiguration(locations = {"classpath:spring/applicationContext.xml", "classpath:spring/hibernateContext.xml"})
 public class ClientAppCreateWorkerTest {
 
- //   @Autowired
- //   private ClientAppCreateWorker clientAppCreateWorker;
+    @Autowired
+    private ClientAppCreateWorker clientAppCreateWorker;
 
   //  @Autowired
   //  private ClientAppService clientAppService;
@@ -34,7 +34,7 @@ public class ClientAppCreateWorkerTest {
     @Test
     public void testDoCreateApp() throws Exception {
 
-     //   clientAppCreateWorker.doCreateApp();
+      //  clientAppCreateWorker.doCreateApp();
       // clientAppCreateWorker.doCreateApp();
     //    ClientApp clientApp = clientAppService.findClientAppByCriteria("shortName", "clex_20131201_related_v1");
     //    clientAppCreateWorker.doAppTemplateUpdate(clientApp, clientApp.getNominalAttributeID());

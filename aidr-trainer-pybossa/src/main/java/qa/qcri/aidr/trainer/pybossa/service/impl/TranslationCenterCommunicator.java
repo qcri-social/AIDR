@@ -26,25 +26,35 @@ public class TranslationCenterCommunicator {
 
 
     public static Map pushTranslationRequest(TranslationRequestModel request) {
-        Map documentResult = pushDocumentForRequest(request);
-        // maybe throw exceptions
-        if (documentResult == null) {
-            return null;
+        ResponseEntity<Map> response = null;
+        try{
+            Map documentResult = pushDocumentForRequest(request);
+            // maybe throw exceptions
+            if (documentResult == null) {
+                return null;
+            }
+
+            long documentIds[] = new long[1];
+            documentIds[0] = ((Integer)documentResult.get("document_id")).longValue();
+            request.setSourceDocumentIds(documentIds);
+            final String url= PybossaConf.BASE_URL+"/orders";
+            HttpHeaders requestHeaders=new HttpHeaders();
+            requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
+            requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+            RestTemplate restTemplate=new RestTemplate();
+            //restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            HttpEntity entity = new HttpEntity(getJsonForRequest(request), requestHeaders);
+
+            response=restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+            logger.debug(response);
+            System.out.println("response : " + response);
+        }
+        catch(Exception e){
+            logger.debug("pushTranslationRequest : " + e);
+            System.out.println("pushTranslationRequest failed : " + e);
+            System.out.println("pushTranslationRequest failed : " + response);
         }
 
-        long documentIds[] = new long[1];
-        documentIds[0] = ((Integer)documentResult.get("document_id")).longValue();
-        request.setSourceDocumentIds(documentIds);
-        final String url= PybossaConf.BASE_URL+"/orders";
-        HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        RestTemplate restTemplate=new RestTemplate();
-        //restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        HttpEntity entity = new HttpEntity(getJsonForRequest(request), requestHeaders);
-
-        ResponseEntity<Map> response=restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
-        logger.debug(response);
         return response.getBody();
 
     }
@@ -73,33 +83,40 @@ public class TranslationCenterCommunicator {
     }
 
     public static Map pushDocumentForRequest(TranslationRequestModel request) {
-        String filename = "TWB_Source_"+System.currentTimeMillis()+".csv";
+        ResponseEntity<Map> result = null;
+        try{
+            String filename = "TWB_Source_"+System.currentTimeMillis()+".csv";
 
-        //decide whether its better to send file or content
-        String content = getCSVData(request.getTranslationList());
-        //generateCsvFile(filename, request.getTranslationList());
+            //decide whether its better to send file or content
+            String content = getCSVData(request.getTranslationList());
+            //generateCsvFile(filename, request.getTranslationList());
+            System.out.println("content : " + content);
+            final String url=PybossaConf.BASE_URL+"/documents";
+            HttpHeaders requestHeaders=new HttpHeaders();
+            requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
 
-        final String url=PybossaConf.BASE_URL+"/documents";
-        HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
+            requestHeaders.setContentType(new MediaType("multipart", "form-data"));
+            RestTemplate restTemplate=new RestTemplate();
+            restTemplate.getMessageConverters()
+                    .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-        requestHeaders.setContentType(new MediaType("multipart","form-data"));
-        RestTemplate restTemplate=new RestTemplate();
-        restTemplate.getMessageConverters()
-                .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+            map.add("document", content.getBytes(StandardCharsets.UTF_8));
+            map.add("name", "translation_source.csv");
 
-        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-        map.add("document", content.getBytes(StandardCharsets.UTF_8));
-        map.add("name", "translation_source.csv");
+            HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
+                    map, requestHeaders);
 
-        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
-                map, requestHeaders);
+            result = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
+            logger.debug("Result of document push:"+result.getBody());
 
-        ResponseEntity<Map> result = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-        logger.debug("Result of document push:"+result.getBody());
+        }
+        catch(Exception e){
+            logger.debug("pushDocumentForRequest : " + e);
+        }
+
         return result.getBody();
-
     }
 
     public static void updateTranslationOrder(String selfLink, String status, String comment) {
@@ -133,7 +150,14 @@ public class TranslationCenterCommunicator {
             Iterator<TaskTranslation> iterator = list.iterator();
             while (iterator.hasNext()) {
                 TaskTranslation translation = iterator.next();
-                buffer.append(Long.toString(translation.getTaskId()));
+
+                if(translation.getTaskId() == null){
+                    buffer.append(Long.toString(translation.getTranslationId()));
+                }
+                else{
+                    buffer.append(Long.toString(translation.getTaskId()));
+                }
+
                 buffer.append(",");
                 buffer.append(translation.getCSVFormattedOriginalText());
                 buffer.append(",");
@@ -196,9 +220,11 @@ public class TranslationCenterCommunicator {
         RestTemplate restTemplate=new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<String>(requestHeaders), String.class);
-        System.out.println("ResponseEntity : response body - " + response.getBody());
-        System.out.println("ResponseEntity : response code - " + response.getStatusCode());
+
+        logger.debug("ResponseEntity : response body - " + response.getBody());
+        logger.debug("ResponseEntity : response code - " + response.getStatusCode());
         logger.debug(response.getBody());
+
         return response.getBody();
     }
 

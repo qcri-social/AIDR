@@ -5,6 +5,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,13 +19,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:spring/applicationContext.xml", "classpath:spring/hibernateContext.xml"})
 public class ClientAppServiceTest {
 
-   // @Autowired
-   // private ClientAppService clientAppService;
+    @Autowired
+    private ClientAppService clientAppService;
 
     @Test
     public void testGetAllCrisis() throws Exception {
-      /**
-       List<ClientApp> clientAppList =   clientAppService.getAllCrisis();
+
+       List<ClientApp> clientAppList =   clientAppService.findClientAppByStatus(0);
+       /**
         for (int i = 0; i < clientAppList.size(); i++) {
             Object obj =  clientAppList.get(i);
 
@@ -40,9 +43,8 @@ public class ClientAppServiceTest {
                 }
             }
         }
-       System.out.print("clientAppList: " + clientAppList);    **/
-
-
+        **/
+       System.out.print("clientAppList: " + clientAppList.size());
 
 
     }
