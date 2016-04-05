@@ -1,11 +1,13 @@
 package qa.qcri.aidr.trainer.pybossa.dao.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.pybossa.dao.TaskLogDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,7 +25,18 @@ public class TaskLogDaoImpl extends AbstractDaoImpl<TaskLog, String> implements 
 
     @Override
     public void createTaskLog(TaskLog taskLog) {
+    	if(taskLog.getCreated() == null){
+    		taskLog.setCreated(new Date());
+    	}
         save(taskLog);
+    }
+    
+    @Override
+    public void saveOrUpdateTaskLog(TaskLog taskLog) {
+    	if(taskLog.getCreated()!=null){
+    		taskLog.setCreated(new Date());
+    	}
+    	saveOrUpdate(taskLog);
     }
 
     @Override

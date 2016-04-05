@@ -1,11 +1,13 @@
 package qa.qcri.aidr.trainer.pybossa.dao.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.pybossa.dao.TaskQueueResponseDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskQueueResponse;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,6 +26,9 @@ public class TaskQueueResponseDaoImpl extends AbstractDaoImpl<TaskQueueResponse,
     @Override
     public void addTaskQueueResponse(TaskQueueResponse taskQueueResponse) {
         //To change body of implemented methods use File | Settings | File Templates.
+    	if(taskQueueResponse.getCreated()==null){
+    		taskQueueResponse.setCreated(new Date());
+    	}
         saveOrUpdate(taskQueueResponse);
     }
 
