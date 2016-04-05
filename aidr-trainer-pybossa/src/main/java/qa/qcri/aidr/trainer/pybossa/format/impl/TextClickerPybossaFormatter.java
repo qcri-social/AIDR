@@ -203,7 +203,7 @@ public class TextClickerPybossaFormatter {
 
         System.out.println("createTaskTranslation is called : " + taskQueueID);
 
-        TaskTranslation translation = new TaskTranslation(taskID, clientAppAnswer.getClientAppID().toString(), tweetID, author, lat, lon, url, taskQueueID, tweet, TaskTranslation.STATUS_NEW);
+        TaskTranslation translation = new TaskTranslation(taskID, clientAppAnswer.getClientAppID(), tweetID, author, lat, lon, url, taskQueueID, tweet, TaskTranslation.STATUS_NEW);
         translationService.createTranslation(translation);
 
 
@@ -450,6 +450,38 @@ public class TextClickerPybossaFormatter {
         }
 
         return outputFormatData;
+    }
+
+    public void publicTaskTranslationTaskPublishForm(String inputData, ClientApp clientApp, int indexStart, int indexEnd) throws Exception{
+        try{
+            List<TaskTranslation> outputFormatData = new ArrayList<TaskTranslation>();
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(inputData);
+
+            JSONArray jsonObject = (JSONArray) obj;
+
+            for(int i = indexStart; i < indexEnd; i++){
+                JSONObject featureJsonObj = (JSONObject)jsonObject.get(i);
+                JSONObject data = (JSONObject) parser.parse((String) featureJsonObj.get("data"));
+
+                Long documentID =  (Long)featureJsonObj.get("documentID");
+                JSONObject usr =  (JSONObject)data.get("user");
+                String userName = (String)usr.get("name");
+                String tweetTxt = (String)data.get("text");
+                String tweetID =  String.valueOf(data.get("id"));
+
+                TaskTranslation task = new TaskTranslation(clientApp.getClientAppID(),documentID, tweetID, userName, tweetTxt, TaskTranslation.STATUS_NEW);
+                //outputFormatData.add(task);
+                translationService.createTranslation(task);
+
+            }
+        }
+        catch(Exception e){
+            System.out.println("publicTaskTranslationTaskPublishForm : " + e);
+        }
+
+
+       // return outputFormatData;
     }
 
     public String generateClientAppTemplateLabel(JSONArray labelModel){

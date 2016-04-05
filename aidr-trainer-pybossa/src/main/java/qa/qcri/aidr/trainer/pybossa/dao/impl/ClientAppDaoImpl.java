@@ -1,11 +1,13 @@
 package qa.qcri.aidr.trainer.pybossa.dao.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.pybossa.dao.ClientAppDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,6 +26,9 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
     @Override
     public void createClientApp(ClientApp clientApp) {
         try{
+        	if(clientApp.getCreated()==null){
+        		clientApp.setCreated(new Date());
+        	}
             saveOrUpdate(clientApp);
         }
         catch(Exception e){
@@ -34,6 +39,9 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
 
     @Override
     public void updateClientApp(ClientApp clientApp) {
+    	if(clientApp.getCreated()==null){
+    		clientApp.setCreated(new Date());
+    	}
         saveOrUpdate(clientApp);
     }
 

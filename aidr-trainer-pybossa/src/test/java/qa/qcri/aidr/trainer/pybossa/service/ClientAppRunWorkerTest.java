@@ -6,13 +6,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
-import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.LatLngUtils;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,14 +21,13 @@ import java.util.List;
 @ContextConfiguration(locations = {"classpath:spring/applicationContext.xml", "classpath:spring/hibernateContext.xml"})
 public class ClientAppRunWorkerTest {
 
-   // @Autowired
-   // private ClientAppRunWorker clientAppRunWorker;
+    @Autowired
+    private ClientAppRunWorker clientAppRunWorker;
 
     @Test
     public void testProcessTaskPublish() throws Exception {
-       // clientAppRunWorker.processTaskRunImport();
-        //clientAppRunWorker.processTaskPublish();
-
+        //clientAppRunWorker.processTaskRunImport();
+       // clientAppRunWorker.processTaskPublish();
     }
 
 

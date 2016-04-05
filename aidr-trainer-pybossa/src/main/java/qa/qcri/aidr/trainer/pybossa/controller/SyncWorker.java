@@ -38,7 +38,7 @@ public class SyncWorker implements Worker {
         System.out.println("************************************ Scheduler is starting : " + threadName + " - " + new Date());
         try {
 
-           // microMapperWorker.processTaskExport();
+            microMapperWorker.processTaskExport();
             clientAppRunWorker.processTaskRunImport();
             clientAppRunWorker.processTaskPublish();
             pybossaWorker.doCreateApp();
