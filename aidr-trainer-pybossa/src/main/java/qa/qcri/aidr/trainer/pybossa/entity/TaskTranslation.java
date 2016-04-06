@@ -84,7 +84,7 @@ public class TaskTranslation {
         this.lat = "";
         this.lon = "";
         this.url = "";
-        this.created = new Date();
+        this.setCreated(new Date());
         this.taskId = documentId;
         this.taskQueueID = documentId;
     }
@@ -101,7 +101,7 @@ public class TaskTranslation {
         this.taskQueueID = taskQueueID;
         this.originalText = originalText;
         this.status = status;
-        this.created = new Date();
+        this.setCreated(new Date());
     }
 
 
@@ -234,6 +234,10 @@ public class TaskTranslation {
     public Date getCreated() {
         return created;
     }
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
 
 
 

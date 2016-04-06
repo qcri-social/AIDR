@@ -3,9 +3,11 @@ package qa.qcri.aidr.trainer.pybossa.dao.impl;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.pybossa.dao.TaskQueueDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskQueue;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +26,11 @@ public class TaskQueueDaoImpl extends AbstractDaoImpl<TaskQueue, String> impleme
 
     @Override
     public void createTaskQueue(TaskQueue taskQueue) {
+    	Date date = new Date();
+    	if(taskQueue.getTaskQueueID() == null || taskQueue.getCreated() == null){
+			taskQueue.setCreated(date);
+    	}
+    	taskQueue.setUpdated(date);
         saveOrUpdate(taskQueue);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.pybossa.dao.TaskTranslationDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,5 +54,21 @@ public class TaskTranslationDaoImpl extends AbstractDaoImpl<TaskTranslation, Str
         return criteria.list();
 
     }
+
+	@Override
+	public void createTaskTranslation(TaskTranslation taskTranslation) {
+		if(taskTranslation.getCreated() == null){
+			taskTranslation.setCreated(new Date());
+		}
+		save(taskTranslation);
+	}
+
+	@Override
+	public void saveOrUpdateTaskTranslation( TaskTranslation taskTranslation) {
+		if(taskTranslation.getCreated() == null){
+			taskTranslation.setCreated(new Date());
+		}
+		saveOrUpdate(taskTranslation);
+	}
 
 }

@@ -358,7 +358,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void createTranslation(TaskTranslation translation) {
-        taskTranslationDao.save(translation);
+        taskTranslationDao.createTaskTranslation(translation);
         Session session = sessionFactory.getCurrentSession();
         session.flush();
 
@@ -367,7 +367,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
     @Override
     @Transactional
     public void updateTranslation(TaskTranslation translation) {
-        taskTranslationDao.saveOrUpdate(translation);
+        taskTranslationDao.saveOrUpdateTaskTranslation(translation);
     }
 
     @Override

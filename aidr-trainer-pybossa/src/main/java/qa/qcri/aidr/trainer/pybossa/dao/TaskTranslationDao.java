@@ -16,5 +16,6 @@ public interface TaskTranslationDao extends AbstractDao<TaskTranslation, String>
     List<TaskTranslation> findAllTranslationsByClientAppIdAndStatus(Long clientAppId, String status, Integer count);
     List<TaskTranslation> findAllTranslations();
     List<TaskTranslation> findAllTranslationsByTaskID(Long taskId);
-
+    void createTaskTranslation(TaskTranslation taskTranslation);
+    void saveOrUpdateTaskTranslation(TaskTranslation taskTranslation);
 }
