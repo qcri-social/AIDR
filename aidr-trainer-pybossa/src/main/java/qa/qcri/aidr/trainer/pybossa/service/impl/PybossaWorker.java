@@ -124,15 +124,19 @@ public class PybossaWorker implements ClientAppRunWorker {
             int pushTaskNumber = calculateMinNumber(appList);
 
             if( pushTaskNumber > 0 ){
-             //   System.out.println(AIDR_API_URL + id + "/" + pushTaskNumber);
-                String inputData = pybossaCommunicator.sendGet(AIDR_API_URL + appList.get(0).getCrisisID() + "/" +pushTaskNumber);
+            	
+            	String api = AIDR_API_URL + appList.get(0).getCrisisID() + "/" + pushTaskNumber;
+            	
+            	logger.warn("Send request :: " + api);
+                String inputData = pybossaCommunicator.sendGet(api);
 
+                logger.warn("Input data :: " + inputData);
                 if(DataFormatValidator.isValidateJson(inputData)){
                     try {
                         processNonGroupPushing(appList, inputData, pushTaskNumber)  ;
 
                     } catch (Exception e) {
-                        logger.error(e.getMessage());
+                        logger.error("error in publishing data", e);
                     }
                 }
             }
