@@ -340,6 +340,7 @@ public class PybossaWorker implements ClientAppRunWorker {
         taskLogService.createTaskLog(taskLog);
     }
 
+
     private int calculateMinNumber(ClientApp obj){
         int min = MAX_PENDING_QUEUE_SIZE;
 
