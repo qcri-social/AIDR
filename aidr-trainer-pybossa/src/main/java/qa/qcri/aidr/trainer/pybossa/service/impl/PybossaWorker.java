@@ -17,6 +17,7 @@ import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service("pybossaWorker")
@@ -366,16 +367,36 @@ public class PybossaWorker implements ClientAppRunWorker {
         int min = MAX_PENDING_QUEUE_SIZE;
         for (int i = 0; i < clientAppList.size(); i++) {
             ClientApp obj = clientAppList.get(i);
-            int currentPendingTask =  taskQueueService.getCountTaskQeueByStatusAndClientApp(obj.getClientAppID(), LookupCode.AIDR_ONLY);
 
-            int numQueue = MAX_PENDING_QUEUE_SIZE - currentPendingTask;
-            if(numQueue < 0) {
+            if(obj.getTcProjectId()== null){
+                int currentPendingTask =  taskQueueService.getCountTaskQeueByStatusAndClientApp(obj.getClientAppID(), LookupCode.AIDR_ONLY);
+                int numQueue = MAX_PENDING_QUEUE_SIZE - currentPendingTask;
+                if(numQueue < 0) {
                     min =  0;
+                }
+                else{
+                    min =  numQueue;
+                }
             }
             else{
-                    min =  numQueue;
-            }
+                Calendar calendar = Calendar.getInstance();
+                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
+                if(dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY || dayOfWeek == Calendar.FRIDAY ){
+                    min = 1000 ;
+                    List<TaskTranslation> taskTranslations = translationService.findAllTranslationsByClientAppIdAndStatus(obj.getClientAppID(), TaskTranslation.STATUS_IN_PROGRESS, min);
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+                    String rightNow = sdf.format(new Date());
+                    String recordDate = sdf.format(taskTranslations.get(0).getCreated())   ;
+                    if(rightNow.equalsIgnoreCase(recordDate)){
+                        min = 0;
+                    }
+
+                } else {
+                    min = 0;
+                }
+            }
         }
         return min;
     }

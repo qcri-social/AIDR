@@ -23,10 +23,7 @@ import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -56,7 +53,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
 
     final private static int MAX_BATCH_SIZE = 1000;  //
-    final private static long MAX_WAIT_TIME_MILLIS = 300000; // 5 minutes
+    final private static long MAX_WAIT_TIME_MILLIS = 172800000; // 48 hours
     private static long timeOfLastTranslationProcessingMillis = System.currentTimeMillis(); //initialize at startup
 
     private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
@@ -87,7 +84,12 @@ public class TWBTranslationServiceImpl implements TranslationService {
         long currentTimeMillis = System.currentTimeMillis();
 
         if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= maxTimeToWait) {
-            forceProcessingByTime = true;
+            Calendar calendar = Calendar.getInstance();
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+            if(dayOfWeek != Calendar.MONDAY && dayOfWeek != Calendar.WEDNESDAY && dayOfWeek != Calendar.FRIDAY ) {
+                forceProcessingByTime = true;
+            }
         }
 
         if ((forceProcessingByTime || translations.size() >= maxBatchSize) && (translations.size() > 0)) {
