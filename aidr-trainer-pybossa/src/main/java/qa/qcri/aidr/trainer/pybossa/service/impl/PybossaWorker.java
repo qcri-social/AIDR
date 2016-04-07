@@ -115,32 +115,34 @@ public class PybossaWorker implements ClientAppRunWorker {
     @Override
     public void processTaskPublish() throws Exception{
         System.out.println("processTaskPublish : Start : " + new Date());
-        List<ClientApp> crisisID = clientAppService.getAllCrisis();
         List<ClientApp> appList = clientAppService.findClientAppByStatus(LookupCode.AIDR_ONLY)  ;
 
-        if(appList.size() > 0){
-            this.setClassVariable(appList.get(0).getClient());
+        for (int index = 0; index < appList.size() ; index++){
 
-            int pushTaskNumber = calculateMinNumber(appList);
+            this.setClassVariable(appList.get(index).getClient());
+
+            int pushTaskNumber = calculateMinNumber(appList.get(index));
 
             if( pushTaskNumber > 0 ){
-            	
-            	String api = AIDR_API_URL + appList.get(0).getCrisisID() + "/" + pushTaskNumber;
-            	
-            	logger.warn("Send request :: " + api);
+
+                String api = AIDR_API_URL + appList.get(index).getCrisisID() + "/" + pushTaskNumber;
+
+                logger.warn("Send request :: " + api);
                 String inputData = pybossaCommunicator.sendGet(api);
 
                 logger.warn("Input data :: " + inputData);
                 if(DataFormatValidator.isValidateJson(inputData)){
                     try {
-                        processNonGroupPushing(appList, inputData, pushTaskNumber)  ;
+                        processNonGroupPushing(appList.get(index), inputData, pushTaskNumber)  ;
 
                     } catch (Exception e) {
                         logger.error("error in publishing data", e);
                     }
                 }
             }
+
         }
+
 
     }
 
@@ -149,79 +151,50 @@ public class PybossaWorker implements ClientAppRunWorker {
     }
 
 
-    public void processGroupPushing(List<ClientApp> appList, String inputData){
-        try{
-            for (int index = 0; index < appList.size() ; index++){
-                ClientApp currentClientApp = appList.get(index);
-                List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishForm(inputData, currentClientApp);
-
-                for(String temp : aidr_data) {
-                    String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-
-                    if(!response.startsWith("Exception") && !response.contains("exception_cls")){
-                        addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
-                    }
-                    else{
-                        addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
-                    }
-                }
-
-            }
-        }
-        catch(Exception e){
-            logger.error(e.getMessage());
-        }
-
-    }
-
-    public void processNonGroupPushing(List<ClientApp> appList, String inputData, int pushTaskNumber){
+    public void processNonGroupPushing(ClientApp currentClientApp, String inputData, int pushTaskNumber){
         try{
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(inputData);
             JSONArray jsonObject = (JSONArray) obj;
             int inputDataSize =  jsonObject.size();
 
-            int itemsPerApp = (int)(inputDataSize / appList.size());
+            int itemsPerApp = inputDataSize;
             int itemIndexStart = 0;
             int itemIndexEnd = itemsPerApp;
 
-            for (int index = 0; index < appList.size() ; index++){
-                ClientApp currentClientApp = appList.get(index);
 
-                if(itemIndexEnd > inputDataSize){
-                    itemIndexEnd  = inputDataSize;
+            if(itemIndexEnd > inputDataSize){
+                itemIndexEnd  = inputDataSize;
+            }
+            if((itemIndexStart < itemIndexEnd) && (itemIndexEnd <= inputDataSize)) {
+
+                // if translate is required, let's go directly
+                if(currentClientApp.getTcProjectId() != null){
+                    pybossaFormatter.setTranslationService(translationService);
+                    pybossaFormatter.publicTaskTranslationTaskPublishForm(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
                 }
-                if((itemIndexStart < itemIndexEnd) && (itemIndexEnd <= inputDataSize)) {
-
-                    // if translate is required, let's go directly
-                    if(currentClientApp.getTcProjectId() != null){
-                        pybossaFormatter.setTranslationService(translationService);
-                        pybossaFormatter.publicTaskTranslationTaskPublishForm(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
-                    }
-                    else{
-                        List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishFormWithIndex(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
-                        int itemLoopEnd = itemIndexEnd - itemIndexStart;
-                        for(int i = 0; i < itemLoopEnd; i++){
-                            String temp = aidr_data.get(i);
-                            String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-                            if(!response.startsWith("Exception") && !response.contains("exception_cls")){
-                                addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
-                            }
-                            else{
-                                addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
-                            }
+                else{
+                    List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishFormWithIndex(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
+                    int itemLoopEnd = itemIndexEnd - itemIndexStart;
+                    for(int i = 0; i < itemLoopEnd; i++){
+                        String temp = aidr_data.get(i);
+                        String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
+                        if(!response.startsWith("Exception") && !response.contains("exception_cls")){
+                            addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
                         }
-                        itemIndexStart = itemIndexEnd;
-                        itemIndexEnd = itemIndexEnd + itemsPerApp;
-                        if(itemIndexEnd > inputDataSize && itemIndexStart < inputDataSize){
-                            itemIndexEnd = itemIndexStart + (inputDataSize - itemIndexStart);
+                        else{
+                            addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
                         }
                     }
-
+                    itemIndexStart = itemIndexEnd;
+                    itemIndexEnd = itemIndexEnd + itemsPerApp;
+                    if(itemIndexEnd > inputDataSize && itemIndexStart < inputDataSize){
+                        itemIndexEnd = itemIndexStart + (inputDataSize - itemIndexStart);
+                    }
                 }
-
 
             }
+
         }
         catch(Exception e){
             logger.error(e.getMessage());
@@ -367,41 +340,39 @@ public class PybossaWorker implements ClientAppRunWorker {
         taskLogService.createTaskLog(taskLog);
     }
 
-    private int calculateMinNumber(List<ClientApp> clientAppList){
+    private int calculateMinNumber(ClientApp obj){
         int min = MAX_PENDING_QUEUE_SIZE;
-        for (int i = 0; i < clientAppList.size(); i++) {
-            ClientApp obj = clientAppList.get(i);
 
-            if(obj.getTcProjectId()== null){
-                int currentPendingTask =  taskQueueService.getCountTaskQeueByStatusAndClientApp(obj.getClientAppID(), LookupCode.AIDR_ONLY);
-                int numQueue = MAX_PENDING_QUEUE_SIZE - currentPendingTask;
-                if(numQueue < 0) {
-                    min =  0;
-                }
-                else{
-                    min =  numQueue;
-                }
+        if(obj.getTcProjectId()== null){
+            int currentPendingTask =  taskQueueService.getCountTaskQeueByStatusAndClientApp(obj.getClientAppID(), LookupCode.AIDR_ONLY);
+            int numQueue = MAX_PENDING_QUEUE_SIZE - currentPendingTask;
+            if(numQueue < 0) {
+                min =  0;
             }
             else{
-                Calendar calendar = Calendar.getInstance();
-                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
-                if(dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY || dayOfWeek == Calendar.FRIDAY ){
-                    min = 1000 ;
-                    List<TaskTranslation> taskTranslations = translationService.findAllTranslationsByClientAppIdAndStatus(obj.getClientAppID(), TaskTranslation.STATUS_IN_PROGRESS, min);
-
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
-                    String rightNow = sdf.format(new Date());
-                    String recordDate = sdf.format(taskTranslations.get(0).getCreated())   ;
-                    if(rightNow.equalsIgnoreCase(recordDate)){
-                        min = 0;
-                    }
-
-                } else {
-                    min = 0;
-                }
+                min =  numQueue;
             }
         }
+        else{
+            Calendar calendar = Calendar.getInstance();
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+            if(dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY || dayOfWeek == Calendar.FRIDAY ){
+                min = 1000 ;
+                List<TaskTranslation> taskTranslations = translationService.findAllTranslationsByClientAppIdAndStatus(obj.getClientAppID(), TaskTranslation.STATUS_IN_PROGRESS, min);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+                String rightNow = sdf.format(new Date());
+                String recordDate = sdf.format(taskTranslations.get(0).getCreated())   ;
+                if(rightNow.equalsIgnoreCase(recordDate)){
+                    min = 0;
+                }
+
+            } else {
+                min = 0;
+            }
+        }
+
         return min;
     }
 
