@@ -69,7 +69,7 @@ public class ClientAppSource implements Serializable {
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name = "id", nullable = false)
     private Long clientAppSourceID;
 
