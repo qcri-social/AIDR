@@ -115,21 +115,21 @@ public class PybossaWorker implements ClientAppRunWorker {
     @Override
     public void processTaskPublish() throws Exception{
         System.out.println("processTaskPublish : Start : " + new Date());
-        List<ClientApp> crisisID = clientAppService.getAllCrisis();
-        List<ClientApp> appList = clientAppService.findClientAppByStatus(LookupCode.AIDR_ONLY)  ;
 
-        if(appList.size() > 0){
+        List<ClientApp> appList = clientAppService.findClientAppByStatus(LookupCode.AIDR_ONLY)  ;
+        for (int index = 0; index < appList.size() ; index++) {
+
             this.setClassVariable(appList.get(0).getClient());
 
             int pushTaskNumber = calculateMinNumber(appList);
 
             if( pushTaskNumber > 0 ){
-             //   System.out.println(AIDR_API_URL + id + "/" + pushTaskNumber);
-                String inputData = pybossaCommunicator.sendGet(AIDR_API_URL + appList.get(0).getCrisisID() + "/" +pushTaskNumber);
+                //   System.out.println(AIDR_API_URL + id + "/" + pushTaskNumber);
+                String inputData = pybossaCommunicator.sendGet(AIDR_API_URL + appList.get(index).getCrisisID() + "/" +pushTaskNumber);
 
                 if(DataFormatValidator.isValidateJson(inputData)){
                     try {
-                        processNonGroupPushing(appList, inputData, pushTaskNumber)  ;
+                        processNonGroupPushing(appList.get(index), inputData, pushTaskNumber)  ;
 
                     } catch (Exception e) {
                         logger.error(e.getMessage());
@@ -145,77 +145,47 @@ public class PybossaWorker implements ClientAppRunWorker {
     }
 
 
-    public void processGroupPushing(List<ClientApp> appList, String inputData){
-        try{
-            for (int index = 0; index < appList.size() ; index++){
-                ClientApp currentClientApp = appList.get(index);
-                List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishForm(inputData, currentClientApp);
-
-                for(String temp : aidr_data) {
-                    String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-
-                    if(!response.startsWith("Exception") && !response.contains("exception_cls")){
-                        addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
-                    }
-                    else{
-                        addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
-                    }
-                }
-
-            }
-        }
-        catch(Exception e){
-            logger.error(e.getMessage());
-        }
-
-    }
-
-    public void processNonGroupPushing(List<ClientApp> appList, String inputData, int pushTaskNumber){
+    public void processNonGroupPushing(ClientApp currentClientApp, String inputData, int pushTaskNumber){
         try{
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(inputData);
             JSONArray jsonObject = (JSONArray) obj;
             int inputDataSize =  jsonObject.size();
 
-            int itemsPerApp = (int)(inputDataSize / appList.size());
+            int itemsPerApp = inputDataSize;
             int itemIndexStart = 0;
             int itemIndexEnd = itemsPerApp;
 
-            for (int index = 0; index < appList.size() ; index++){
-                ClientApp currentClientApp = appList.get(index);
 
-                if(itemIndexEnd > inputDataSize){
-                    itemIndexEnd  = inputDataSize;
+            if(itemIndexEnd > inputDataSize){
+                itemIndexEnd  = inputDataSize;
+            }
+
+            if((itemIndexStart < itemIndexEnd) && (itemIndexEnd <= inputDataSize)) {
+
+                if(currentClientApp.getTcProjectId() != null){
+                    pybossaFormatter.setTranslationService(translationService);
+                    pybossaFormatter.publicTaskTranslationTaskPublishForm(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
                 }
-                if((itemIndexStart < itemIndexEnd) && (itemIndexEnd <= inputDataSize)) {
-
-                    // if translate is required, let's go directly
-                    if(currentClientApp.getTcProjectId() != null){
-                        pybossaFormatter.setTranslationService(translationService);
-                        pybossaFormatter.publicTaskTranslationTaskPublishForm(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
-                    }
-                    else{
-                        List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishFormWithIndex(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
-                        int itemLoopEnd = itemIndexEnd - itemIndexStart;
-                        for(int i = 0; i < itemLoopEnd; i++){
-                            String temp = aidr_data.get(i);
-                            String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-                            if(!response.startsWith("Exception") && !response.contains("exception_cls")){
-                                addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
-                            }
-                            else{
-                                addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
-                            }
+                else{
+                    List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishFormWithIndex(inputData, currentClientApp, itemIndexStart, itemIndexEnd);
+                    int itemLoopEnd = itemIndexEnd - itemIndexStart;
+                    for(int i = 0; i < itemLoopEnd; i++){
+                        String temp = aidr_data.get(i);
+                        String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
+                        if(!response.startsWith("Exception") && !response.contains("exception_cls")){
+                            addToTaskQueue(response, currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED) ;
                         }
-                        itemIndexStart = itemIndexEnd;
-                        itemIndexEnd = itemIndexEnd + itemsPerApp;
-                        if(itemIndexEnd > inputDataSize && itemIndexStart < inputDataSize){
-                            itemIndexEnd = itemIndexStart + (inputDataSize - itemIndexStart);
+                        else{
+                            addToTaskQueue(temp, currentClientApp.getClientAppID(), LookupCode.Task_NOT_PUBLISHED) ;
                         }
                     }
-
+                    itemIndexStart = itemIndexEnd;
+                    itemIndexEnd = itemIndexEnd + itemsPerApp;
+                    if(itemIndexEnd > inputDataSize && itemIndexStart < inputDataSize){
+                        itemIndexEnd = itemIndexStart + (inputDataSize - itemIndexStart);
+                    }
                 }
-
 
             }
         }
