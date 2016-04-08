@@ -54,6 +54,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     final private static int MAX_BATCH_SIZE = 1000;  //
     final private static long MAX_WAIT_TIME_MILLIS = 172800000; // 48 hours
+    final private static long MAX_CHECK_TIME_MILLIS = 43200000;  // 12 hours
     private static long timeOfLastTranslationProcessingMillis = System.currentTimeMillis(); //initialize at startup
 
     private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
@@ -63,7 +64,6 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     public Map processTranslations(ClientApp clientApp) {
         Long tcProjectId = clientApp.getTcProjectId();
-       // processReceivedTranslations(clientApp.getClientAppID(), MAX_BATCH_SIZE);
         pullAllTranslationResponses(clientApp.getClientAppID(), tcProjectId);
         return pushAllTranslations(clientApp.getClientAppID(), tcProjectId, MAX_WAIT_TIME_MILLIS, MAX_BATCH_SIZE);
     }
@@ -82,12 +82,12 @@ public class TWBTranslationServiceImpl implements TranslationService {
         Map result = null;
         boolean forceProcessingByTime = false;
         long currentTimeMillis = System.currentTimeMillis();
-
-        if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= maxTimeToWait) {
+         // every 12hours
+        if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= MAX_CHECK_TIME_MILLIS) {
             Calendar calendar = Calendar.getInstance();
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
-            if(dayOfWeek != Calendar.MONDAY && dayOfWeek != Calendar.WEDNESDAY && dayOfWeek != Calendar.FRIDAY ) {
+            if(dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY || dayOfWeek == Calendar.FRIDAY ) {
                 forceProcessingByTime = true;
             }
         }
