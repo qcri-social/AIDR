@@ -117,30 +117,31 @@ public class PybossaWorker implements ClientAppRunWorker {
         System.out.println("processTaskPublish : Start : " + new Date());
         List<ClientApp> appList = clientAppService.findClientAppByStatus(LookupCode.AIDR_ONLY)  ;
 
-        for (int index = 0; index < appList.size() ; index++){
-
-            this.setClassVariable(appList.get(index).getClient());
-
-            int pushTaskNumber = calculateMinNumber(appList.get(index));
-
-            if( pushTaskNumber > 0 ){
-
-                String api = AIDR_API_URL + appList.get(index).getCrisisID() + "/" + pushTaskNumber;
-
-                logger.warn("Send request :: " + api);
-                String inputData = pybossaCommunicator.sendGet(api);
-
-                logger.warn("Input data :: " + inputData);
-                if(DataFormatValidator.isValidateJson(inputData)){
-                    try {
-                        processNonGroupPushing(appList.get(index), inputData, pushTaskNumber)  ;
-
-                    } catch (Exception e) {
-                        logger.error("error in publishing data", e);
-                    }
-                }
-            }
-
+        if(appList != null) {
+	        for (int index = 0; index < appList.size() ; index++){
+	
+	            this.setClassVariable(appList.get(index).getClient());
+	
+	            int pushTaskNumber = calculateMinNumber(appList.get(index));
+	
+	            if( pushTaskNumber > 0 ){
+	
+	                String api = AIDR_API_URL + appList.get(index).getCrisisID() + "/" + pushTaskNumber;
+	
+	                logger.warn("Send request :: " + api);
+	                String inputData = pybossaCommunicator.sendGet(api);
+	
+	                logger.warn("Input data :: " + inputData);
+	                if(DataFormatValidator.isValidateJson(inputData)){
+	                    try {
+	                        processNonGroupPushing(appList.get(index), inputData, pushTaskNumber)  ;
+	
+	                    } catch (Exception e) {
+	                        logger.error("error in publishing data", e);
+	                    }
+	                }
+	            }
+	        }
         }
 
 
