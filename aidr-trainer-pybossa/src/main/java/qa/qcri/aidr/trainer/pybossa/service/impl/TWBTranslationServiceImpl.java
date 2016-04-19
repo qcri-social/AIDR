@@ -185,7 +185,12 @@ public class TWBTranslationServiceImpl implements TranslationService {
     private void processTranslationDocument(String download_link, String selfLink, Integer orderId, Integer projectId) throws Exception {
         try {
             String content = TranslationCenterCommunicator.getTranslationDocumentContent(download_link);
-            processResponseDocumentContent(content, orderId, projectId);
+
+          /**  if(orderId== 43513 || orderId == 43678 )
+            {
+                processResponseDocumentContent(content, orderId, projectId);
+            }
+              **/
             TranslationCenterCommunicator.updateTranslationOrder(selfLink, "accepted", "Translation was accepted");
         } catch (Exception exception) {
             logger.debug("Exception caught: " + exception.toString());
@@ -223,18 +228,23 @@ public class TWBTranslationServiceImpl implements TranslationService {
     public void updateTranslation(Integer orderId, Long taskId, String sourceTranslation, String finalTranslation, String code) throws Exception {
         TaskTranslation taskTranslation = findByTaskId(taskId);
 
-        if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_COMPLETE)){
-            return;
+        if (taskTranslation != null)
+        {
+            if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_COMPLETE)){
+                return;
+            }
+
+            if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_RECEIVED)){
+                this.processMicroMappers( taskTranslation, code);
+                return;
+            }
         }
 
-        if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_RECEIVED)){
-            this.processMicroMappers( taskTranslation, code);
-            return;
-        }
 
         if (taskTranslation == null) {
             logger.error("No translation task found for id:" + taskId);
-            throw new RuntimeException("No translation task found for id:" + taskId);
+            return;
+            //throw new RuntimeException("No translation task found for id:" + taskId);
         } else if (taskTranslation.getTwbOrderId() == null) {
             logger.error("No TWB order number found for id:" + taskId);
             throw new RuntimeException("No TWB order number found for id:" + taskId);
