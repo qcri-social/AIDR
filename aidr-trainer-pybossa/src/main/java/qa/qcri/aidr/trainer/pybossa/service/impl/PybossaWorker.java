@@ -123,7 +123,7 @@ public class PybossaWorker implements ClientAppRunWorker {
 	            this.setClassVariable(appList.get(index).getClient());
 	
 	            int pushTaskNumber = calculateMinNumber(appList.get(index));
-	
+                //pushTaskNumber =30;
 	            if( pushTaskNumber > 0 ){
 	
 	                String api = AIDR_API_URL + appList.get(index).getCrisisID() + "/" + pushTaskNumber;
@@ -363,12 +363,18 @@ public class PybossaWorker implements ClientAppRunWorker {
                 min = 1000 ;
                 List<TaskTranslation> taskTranslations = translationService.findAllTranslationsByClientAppIdAndStatus(obj.getClientAppID(), TaskTranslation.STATUS_IN_PROGRESS, min);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
-                String rightNow = sdf.format(new Date());
-                String recordDate = sdf.format(taskTranslations.get(0).getCreated())   ;
-                if(rightNow.equalsIgnoreCase(recordDate)){
-                    min = 0;
+                if(taskTranslations.size() > 0){
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+                    String rightNow = sdf.format(new Date());
+                    String recordDate = sdf.format(taskTranslations.get(0).getCreated())   ;
+                    if(rightNow.equalsIgnoreCase(recordDate)){
+                        min = 1000 - taskTranslations.size();
+                    }
                 }
+                else{
+                    min = 1000;
+                }
+
 
             } else {
                 min = 0;
