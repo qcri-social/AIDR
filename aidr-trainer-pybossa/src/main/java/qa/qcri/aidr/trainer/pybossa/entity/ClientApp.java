@@ -212,4 +212,8 @@ public class ClientApp implements Serializable {
     }
 
     public Long getTcProjectId() { return tcProjectId;}
+
+    public void setTcProjectId(Long tcProjectId) {
+        this.tcProjectId = tcProjectId;
+    }
 }
