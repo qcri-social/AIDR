@@ -35,8 +35,8 @@ public class PybossaConf {
     public static long DEFAULT_CATEGORY_ID = 3;
 
     public final static String BASE_URL = "https://twb.translationcenter.org/api/v1";
-    public final static String API_KEY = "niptz15xao0w";
+    public final static String API_KEY = "Rvb0fz35heok";
    // testing
    // public final static String API_KEY = "jk26fh2yzwo4";
-    public final static long TWB_TRANSLATE_DEADLINE = 3600000l; //in milli 1 hour
+    public final static long TWB_TRANSLATE_DEADLINE = 172800000; //in milli 48 hour
 }

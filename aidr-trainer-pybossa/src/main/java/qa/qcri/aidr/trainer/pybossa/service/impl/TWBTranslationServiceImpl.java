@@ -23,10 +23,7 @@ import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -56,7 +53,8 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
 
     final private static int MAX_BATCH_SIZE = 1000;  //
-    final private static long MAX_WAIT_TIME_MILLIS = 300000; // 5 minutes
+    final private static long MAX_WAIT_TIME_MILLIS = 172800000; // 48 hours
+    final private static long MAX_CHECK_TIME_MILLIS = 43200000;  // 12 hours
     private static long timeOfLastTranslationProcessingMillis = System.currentTimeMillis(); //initialize at startup
 
     private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
@@ -66,7 +64,6 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     public Map processTranslations(ClientApp clientApp) {
         Long tcProjectId = clientApp.getTcProjectId();
-       // processReceivedTranslations(clientApp.getClientAppID(), MAX_BATCH_SIZE);
         pullAllTranslationResponses(clientApp.getClientAppID(), tcProjectId);
         return pushAllTranslations(clientApp.getClientAppID(), tcProjectId, MAX_WAIT_TIME_MILLIS, MAX_BATCH_SIZE);
     }
@@ -85,9 +82,14 @@ public class TWBTranslationServiceImpl implements TranslationService {
         Map result = null;
         boolean forceProcessingByTime = false;
         long currentTimeMillis = System.currentTimeMillis();
+         // every 12hours
+        if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= MAX_CHECK_TIME_MILLIS) {
+            Calendar calendar = Calendar.getInstance();
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
-        if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= maxTimeToWait) {
-            forceProcessingByTime = true;
+            if(dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY || dayOfWeek == Calendar.FRIDAY ) {
+                forceProcessingByTime = true;
+            }
         }
 
         if ((forceProcessingByTime || translations.size() >= maxBatchSize) && (translations.size() > 0)) {
@@ -183,7 +185,12 @@ public class TWBTranslationServiceImpl implements TranslationService {
     private void processTranslationDocument(String download_link, String selfLink, Integer orderId, Integer projectId) throws Exception {
         try {
             String content = TranslationCenterCommunicator.getTranslationDocumentContent(download_link);
-            processResponseDocumentContent(content, orderId, projectId);
+
+          /**  if(orderId== 43513 || orderId == 43678 )
+            {
+                processResponseDocumentContent(content, orderId, projectId);
+            }
+              **/
             TranslationCenterCommunicator.updateTranslationOrder(selfLink, "accepted", "Translation was accepted");
         } catch (Exception exception) {
             logger.debug("Exception caught: " + exception.toString());
@@ -221,18 +228,23 @@ public class TWBTranslationServiceImpl implements TranslationService {
     public void updateTranslation(Integer orderId, Long taskId, String sourceTranslation, String finalTranslation, String code) throws Exception {
         TaskTranslation taskTranslation = findByTaskId(taskId);
 
-        if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_COMPLETE)){
-            return;
+        if (taskTranslation != null)
+        {
+            if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_COMPLETE)){
+                return;
+            }
+
+            if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_RECEIVED)){
+                this.processMicroMappers( taskTranslation, code);
+                return;
+            }
         }
 
-        if(taskTranslation.getStatus().equalsIgnoreCase(TaskTranslation.STATUS_RECEIVED)){
-            this.processMicroMappers( taskTranslation, code);
-            return;
-        }
 
         if (taskTranslation == null) {
             logger.error("No translation task found for id:" + taskId);
-            throw new RuntimeException("No translation task found for id:" + taskId);
+            return;
+            //throw new RuntimeException("No translation task found for id:" + taskId);
         } else if (taskTranslation.getTwbOrderId() == null) {
             logger.error("No TWB order number found for id:" + taskId);
             throw new RuntimeException("No TWB order number found for id:" + taskId);

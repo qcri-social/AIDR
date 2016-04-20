@@ -1,6 +1,7 @@
 package qa.qcri.aidr.trainer.pybossa.entity;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 
 /**
@@ -16,7 +17,7 @@ public class ClientAppDeployment implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "deploymentID")
     private Long deploymentID;
 

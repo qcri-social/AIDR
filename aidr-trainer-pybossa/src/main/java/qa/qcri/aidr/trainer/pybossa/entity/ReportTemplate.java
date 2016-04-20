@@ -1,6 +1,13 @@
 package qa.qcri.aidr.trainer.pybossa.entity;
 
-import javax.persistence.*;
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,10 +18,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "report_template")
-public class ReportTemplate {
+public class ReportTemplate implements Serializable{
 
-    @Id
-    @GeneratedValue
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5848888932530475595L;
+
+	@Id
+	@GeneratedValue( strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long reportTemplateID;
 

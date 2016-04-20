@@ -1,12 +1,8 @@
 package qa.qcri.aidr.trainer.pybossa.util;
 
-import org.json.simple.JSONArray;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,6 +12,9 @@ import java.util.TreeMap;
  * To change this template use File | Settings | File Templates.
  */
 public class DataFormatValidator {
+	
+	protected static Logger logger = Logger.getLogger(DataFormatValidator.class);
+	
     public static boolean isValidateJson(String inputDataString)
     {
         boolean isVaildJsonObject = true;
@@ -24,6 +23,7 @@ public class DataFormatValidator {
         }
         catch(Exception e){
             isVaildJsonObject = false;
+            logger.warn("Invalid JSON : " + inputDataString);
         }
 
         return isVaildJsonObject;

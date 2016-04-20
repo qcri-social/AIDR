@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.pybossa.entity;
 import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ public class ClientApp implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long clientAppID;
 
@@ -211,4 +212,8 @@ public class ClientApp implements Serializable {
     }
 
     public Long getTcProjectId() { return tcProjectId;}
+
+    public void setTcProjectId(Long tcProjectId) {
+        this.tcProjectId = tcProjectId;
+    }
 }
