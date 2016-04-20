@@ -12,7 +12,6 @@ import javax.ejb.Remote;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 
-import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
@@ -106,8 +105,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception;
 	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception;
 
-	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, final int count, final String userName, final int remainingCount,
-													final TrainingDataFetchType fetchType);
+	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, final int count, final String userName, final int remainingCount);
 	
 	// for testing purpose
 	public String pingRemoteEJB();

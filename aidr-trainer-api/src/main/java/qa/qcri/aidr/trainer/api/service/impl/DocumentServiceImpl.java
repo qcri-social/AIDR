@@ -9,13 +9,11 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
@@ -104,7 +102,7 @@ public class DocumentServiceImpl implements DocumentService {
 			count = CodeLookUp.DOCUMENT_MAX_FETCH_COUNT;
 		}
 		
-		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, CodeLookUp.DOCUMENT_REMAINING_COUNT, TrainingDataFetchType.INTERNAL_TRAINING);
+		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, CodeLookUp.DOCUMENT_REMAINING_COUNT);
 		logger.info("For crisisID = " + crisisID + ", user = " + userName + ", documents available for tagging: " + (documents != null ? documents.size() : "empty list"));
 		return documents;  
 	}
@@ -125,7 +123,7 @@ public class DocumentServiceImpl implements DocumentService {
 			}
 		}
 		*/
-		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, 0, TrainingDataFetchType.INTERNAL_TRAINING);
+		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, 0);
 		logger.info("For crisisID = " + crisisID + ", user = " + userName + ", documents available for tagging: " + (documents != null ? documents.size() : "empty list"));
 		return documents;  //To change body of implemented methods use File | Settings | File Templates.
 	}
