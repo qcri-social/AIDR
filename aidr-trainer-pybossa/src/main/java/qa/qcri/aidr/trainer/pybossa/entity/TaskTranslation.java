@@ -4,17 +4,29 @@ package qa.qcri.aidr.trainer.pybossa.entity;
  * Created by kamal on 3/22/15.
  */
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 
 
 @Entity
 @Table(name = "task_translation")
-public class TaskTranslation {
+public class TaskTranslation implements Serializable{
 	    
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1486657246782287765L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique=true, nullable = false)
     private Long translationId;

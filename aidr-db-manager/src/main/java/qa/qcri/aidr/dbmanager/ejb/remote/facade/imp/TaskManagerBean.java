@@ -24,7 +24,6 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
@@ -670,7 +669,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	// Trainer API Task Assignment related APIs
 	////////////////////////////////////////////////////////////
 	@Override
-	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, int count, final String userName, final int remainingCount, final TrainingDataFetchType fetchType) {
+	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, int count, final String userName, final int remainingCount) {
 		UsersDTO users = null;
 		try {
 			users = remoteUsersEJB.getUserByName(userName);
@@ -681,15 +680,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		if (users != null) {
 			int fetchedSize = 0;
-			Integer fetchCount = count;
-			if (TrainingDataFetchType.BATCH_FETCH.equals(fetchType)) {
-				fetchCount = null;		// fetch all available tasks
-			}
 			//while (!lock.tryLock()) {}// spin-loop wait
 			synchronized(lockObject) {
 				++inCS;
 				try {
-					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, fetchCount, "DESC", null);
+					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, count, "DESC", null);
 					if (dtoList != null) {
 						fetchedSize = dtoList.size();
 					}

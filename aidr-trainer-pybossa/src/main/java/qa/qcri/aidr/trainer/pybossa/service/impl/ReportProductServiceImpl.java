@@ -76,7 +76,6 @@ public class ReportProductServiceImpl implements ReportProductService {
                 String sTemp = reformatFileName(clientApp.getShortName()) ;
 
                 String fileName = PybossaConf.DEFAULT_TRAINER_FILE_PATH + sTemp;
-                String mmFetchFileName = URLPrefixCode.MM_GEO_SOURCE_PATH +sTemp;
 
                 CSVWriter writer = formatter.instanceToOutput(fileName);
 
@@ -94,16 +93,6 @@ public class ReportProductServiceImpl implements ReportProductService {
                 if(targetClinetApp != null ){
                     ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClientAppID(), LookupCode.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
                     clientAppSourceService.insertNewClientAppSource(appSource);
-
-                    JSONArray jsonArray = new JSONArray();
-                    JSONObject obj= new JSONObject();
-                    obj.put("fileURL",mmFetchFileName);
-                    obj.put("appID",targetClinetApp.getClientAppID());
-
-                    jsonArray.add(obj);
-
-                    String returnValue = pybossaCommunicator.sendPostGet(jsonArray.toJSONString(), URLPrefixCode.MICROMAPPER_API_SOURCE_SAVE_URL);
-
                 }
 
             }

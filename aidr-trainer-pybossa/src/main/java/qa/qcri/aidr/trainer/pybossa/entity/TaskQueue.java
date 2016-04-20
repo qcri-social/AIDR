@@ -1,6 +1,7 @@
 package qa.qcri.aidr.trainer.pybossa.entity;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,7 +18,7 @@ public class TaskQueue implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long taskQueueID;
 
