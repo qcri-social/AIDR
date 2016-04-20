@@ -99,7 +99,12 @@ public class DocumentServiceImpl implements DocumentService {
 			}
 		}
 		*/
-		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, CodeLookUp.DOCUMENT_REMAINING_COUNT, TrainingDataFetchType.BATCH_FETCH);
+		
+		if(count>CodeLookUp.DOCUMENT_MAX_FETCH_COUNT){
+			count = CodeLookUp.DOCUMENT_MAX_FETCH_COUNT;
+		}
+		
+		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, CodeLookUp.DOCUMENT_REMAINING_COUNT, TrainingDataFetchType.INTERNAL_TRAINING);
 		logger.info("For crisisID = " + crisisID + ", user = " + userName + ", documents available for tagging: " + (documents != null ? documents.size() : "empty list"));
 		return documents;  
 	}
