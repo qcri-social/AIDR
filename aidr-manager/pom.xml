@@ -36,12 +36,7 @@
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-entitymanager</artifactId>
-				</exclusion>
-			</exclusions>
+			
 			
 		</dependency>
 

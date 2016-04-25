@@ -35,13 +35,6 @@ public class TaskAnswerServiceTest {
         String[] categorySet = category.split("\\,");
 
         System.out.println(categorySet.length);
-       // PybossaTemplate pybossaTemplate = new PybossaTemplate();
-       // TaskAnswerResponse taskAnswer = pybossaTemplate.getPybossaTaskAnswer(data2, crisisService);
-
-        String data3 = "[{\"id\":323,\"created\":\"2013-10-03T12:42:08.029258\",\"link\":\"<link rel='self' title='taskrun' href='http:\\/\\/localhost:5000\\/api\\/taskrun\\/323'\\/>\",\"finish_time\":\"2013-10-03T12:42:08.029335\",\"task_id\":6148,\"app_id\":179,\"calibration\":null,\"links\":[\"<link rel='parent' title='app' href='http:\\/\\/localhost:5000\\/api\\/app\\/179'\\/>\",\"<link rel='parent' title='task' href='http:\\/\\/localhost:5000\\/api\\/task\\/6148'\\/>\"],\"user_id\":1,\"dateHistory\":{\"taskcreated\":\"2013-10-03 17:10:11.0\",\"taskcompleted\":\"2013-10-03T12:45:24.007863\",\"taskpresented\":\"2013-10-03T12:45:24.007835\",\"taskposted\":\"2013-10-03 17:10:11.0\",\"taskpulled\":\"2013-10-06 13:28:07.014\"},\"timeout\":null,\"user_ip\":null,\"info\":{\"documentID\":359264,\"text\":\"#Ø¯Ù…Ø´Ù‚ :: Ø­ÙŠ #ØªØ´Ø±ÙŠÙ†:Ù‚ÙˆØ§Øª Ø§Ù„Ø£Ø³Ø¯ ØªÙ‚ØµÙ� Ø¨Ù‚Ø°Ø§Ø¦Ù� Ø§Ù„Ù‡Ø§ÙˆÙ† Ø°Ø§Øª Ø§Ù„Ø¹ÙŠØ§Ø± Ø§Ù„Ø«Ù‚ÙŠÙ„ Ø¹Ù„ÙŠ Ø§Ù„Ù…Ù†Ø·Ù‚Ø© .\",\"category\":\"Quneitra,Idlib\",\"aidrID\":2,\"tweetid\":\"2.76E17\",\"crisisID\":14}},{\"id\":328,\"created\":\"2013-10-03T12:43:29.698181\",\"link\":\"<link rel='self' title='taskrun' href='http:\\/\\/localhost:5000\\/api\\/taskrun\\/328'\\/>\",\"finish_time\":\"2013-10-03T12:43:29.698236\",\"task_id\":6148,\"app_id\":179,\"calibration\":null,\"links\":[\"<link rel='parent' title='app' href='http:\\/\\/localhost:5000\\/api\\/app\\/179'\\/>\",\"<link rel='parent' title='task' href='http:\\/\\/localhost:5000\\/api\\/task\\/6148'\\/>\"],\"user_id\":null,\"dateHistory\":{\"taskcreated\":\"2013-10-03 17:10:11.0\",\"taskcompleted\":\"2013-10-03T12:45:24.007863\",\"taskpresented\":\"2013-10-03T12:45:24.007835\",\"taskposted\":\"2013-10-03 17:10:11.0\",\"taskpulled\":\"2013-10-06 13:28:07.014\"},\"timeout\":null,\"user_ip\":\"10.0.2.2\",\"info\":{\"documentID\":359264,\"text\":\"#Ø¯Ù…Ø´Ù‚ :: Ø­ÙŠ #ØªØ´Ø±ÙŠÙ†:Ù‚ÙˆØ§Øª Ø§Ù„Ø£Ø³Ø¯ ØªÙ‚ØµÙ� Ø¨Ù‚Ø°Ø§Ø¦Ù� Ø§Ù„Ù‡Ø§ÙˆÙ† Ø°Ø§Øª Ø§Ù„Ø¹ÙŠØ§Ø± Ø§Ù„Ø«Ù‚ÙŠÙ„ Ø¹Ù„ÙŠ Ø§Ù„Ù…Ù†Ø·Ù‚Ø© .\",\"category\":\"Idlib,Damascus\",\"aidrID\":2,\"tweetid\":\"2.76E17\",\"crisisID\":14}}]";
-
-       // taskAnswerService.insertTaskAnswer(data3);
-      //  System.out.print("taskAnswer : " + taskAnswer);
     }
 
 
