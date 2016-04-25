@@ -71,4 +71,10 @@ public class TaskTranslationDaoImpl extends AbstractDaoImpl<TaskTranslation, Str
 		}
 		saveOrUpdate(taskTranslation);
 	}
+
+    @Override
+    public int countAllTranslationsByOrderID(Integer orderId) {
+        List<TaskTranslation> translations = findByCriteria(Restrictions.eq("twbOrderId", new Long(orderId)));
+        return translations.size();
+    }
 }
