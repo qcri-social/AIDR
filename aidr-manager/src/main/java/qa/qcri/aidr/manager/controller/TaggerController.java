@@ -705,12 +705,6 @@ public class TaggerController extends BaseController {
 		TaskAnswer taskAnswer = new TaskAnswer();
 		taskAnswer.setUser_id(taggerUserId);
 
-		DateHistory dateHistory = new DateHistory();
-		dateHistory.setTaskcreated(taskAnswerRequest.getTaskcreated());
-		dateHistory.setTaskcompleted(taskAnswerRequest.getTaskcompleted());
-		dateHistory.setTaskpresented(taskAnswerRequest.getTaskcreated());
-		dateHistory.setTaskpulled(taskAnswerRequest.getTaskcompleted());
-
 		TaskInfo taskInfo = new TaskInfo();
 		taskInfo.setDocumentID(taskAnswerRequest.getDocumentID());
 		taskInfo.setText("");
@@ -720,7 +714,6 @@ public class TaggerController extends BaseController {
 		taskInfo.setCrisisID(taskAnswerRequest.getCrisisID());
 		taskInfo.setAttributeID(taskAnswerRequest.getAttributeID());
 
-		taskAnswer.setDateHistory(dateHistory);
 		taskAnswer.setInfo(taskInfo);
 
 		result.add(taskAnswer);

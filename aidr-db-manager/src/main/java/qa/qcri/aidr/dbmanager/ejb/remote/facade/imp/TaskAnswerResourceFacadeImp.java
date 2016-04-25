@@ -31,20 +31,15 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 	}
 
 	@Override
-	public TaskAnswerDTO insertTaskAnswer(TaskAnswerDTO taskAnswer) {
-		
-		TaskAnswerDTO answer = null;
-		
+	public void insertTaskAnswer(TaskAnswerDTO taskAnswer) {
 		if (taskAnswer != null) {
-			logger.debug("Going to insert answer = " + taskAnswer.getAnswer() + " for  taskId = " + taskAnswer.getDocumentID());
+			logger.debug("Going to insert answer = " + taskAnswer.getAnswer() + " for  documentId = " + taskAnswer.getDocumentID());
 			try {
-				answer = getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
+				TaskAnswerDTO answer = getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
 				if(answer == null) {
 					TaskAnswer t = taskAnswer.toEntity();
 					em.persist(t);
 					em.flush();			
-					
-					answer = getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
 				}
 			} catch (Exception e) {
 				logger.error("Unable to save taskAnswer: " + taskAnswer.getDocumentID() + ", " + taskAnswer.getUserID() + ", " + taskAnswer.getAnswer(), e);
@@ -52,8 +47,6 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 		} else {
 			logger.warn("Warning! Attempted to insert null task answer!");
 		}
-		
-		return answer;
 	}
 
 	@Override

@@ -52,7 +52,7 @@ public class CodeLookUp {
     public static String TASK_PRESENTER = "task_presenter";
 
     public static Integer DOCUMENT_REMAINING_COUNT = 20;
-
+    public static Integer DOCUMENT_MAX_FETCH_COUNT = 3000;
 
     public static Integer MAX_APP_HOLD_PERIOD_DAY = 7;
 

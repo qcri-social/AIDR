@@ -143,18 +143,6 @@ public class PybossaTemplate {
 
         JSONObject utilJson = new JSONObject();
         utilJson.put("clientuserID",featureJsonObj.get("user_id")) ;
-        
-        if(featureJsonObj.get("dateHistory") == null) {
-        	JSONObject dateHistory = new JSONObject();
-        	String dateString = (new Date()).toString();
-    		dateHistory.put("taskcreated", dateString);
-    		dateHistory.put("taskcompleted", dateString);
-    		dateHistory.put("taskpresented", dateString);
-    		dateHistory.put("taskpulled", dateString);
-    		utilJson.put("datetimelog", dateHistory);
-        } else {
-        	utilJson.put("datetimelog",featureJsonObj.get("dateHistory")) ;
-        }
 
         return utilJson;
     }

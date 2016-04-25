@@ -27,7 +27,7 @@ public class TaskQueueResponse implements Serializable {
     @Column(name = "task_queue_id")
     private Long taskQueueID;
 
-    @Column (name = "response", nullable = false)
+    @Column (name = "response", length = 100000)
     private String response;
 
     @Column (name = "task_info", nullable = true)
