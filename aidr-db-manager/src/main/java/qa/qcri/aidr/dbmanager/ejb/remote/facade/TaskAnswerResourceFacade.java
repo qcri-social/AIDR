@@ -12,7 +12,7 @@ import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 
 @Remote
 public interface TaskAnswerResourceFacade extends CoreDBServiceFacade<TaskAnswer, Long>{
-    TaskAnswerDTO insertTaskAnswer(TaskAnswerDTO taskAnswer);
+    void insertTaskAnswer(TaskAnswerDTO taskAnswer);
     List<TaskAnswerDTO> getTaskAnswer(Long documentID);
     TaskAnswerDTO getTaskAnswer(Long documentID, Long userID);
 	int undoTaskAnswer(Long documentID, Long userID);

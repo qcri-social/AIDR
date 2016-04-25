@@ -81,23 +81,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
 	public List<DocumentDTO> getDocumentForTask(Long crisisID, int count, String userName) {
-		/*
-		List<DocumentDTO> documents = null;
-		Users users = usersService.findUserByName(userName);
-		if(users != null){
-			int availableRequestSize = this.getAvailableDocumentCount(crisisID) - CodeLookUp.DOCUMENT_REMAINING_COUNT;
-			if(availableRequestSize > 0){
-				if(availableRequestSize < count){
-					count = availableRequestSize;
-				}
-				documents =  this.getAvailableDocument(crisisID, count) ;
-				if(documents != null && documents.size() > 0){
-					taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
-				}
-			}
-		}
-		*/
-		
+
 		if(count>CodeLookUp.DOCUMENT_MAX_FETCH_COUNT){
 			count = CodeLookUp.DOCUMENT_MAX_FETCH_COUNT;
 		}
