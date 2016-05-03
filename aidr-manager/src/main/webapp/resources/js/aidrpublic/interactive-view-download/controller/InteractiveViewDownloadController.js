@@ -302,9 +302,13 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     me.mainComponent.updateLayout();
                 }
                 //Check whether the logged in user can download full tweets or not
-                Ext.DOWNLOAD_ENABLED = me.isCurrentUserCanDownloadFullTweets(managers);
-                if(!Ext.DOWNLOAD_ENABLED){
-                	me.mainComponent.downloadContents.hide();
+                if(ownerUserName == USER_NAME){
+                	Ext.DOWNLOAD_ENABLED = true;
+                }else{
+                	Ext.DOWNLOAD_ENABLED = me.isCurrentUserCanDownloadFullTweets(managers);
+                    if(!Ext.DOWNLOAD_ENABLED){
+                    	me.mainComponent.downloadContents.hide();
+                    }
                 }
                 me.updateStatusInfo(jsonData.status, jsonData.endDate, jsonData.collectionType);
             }
