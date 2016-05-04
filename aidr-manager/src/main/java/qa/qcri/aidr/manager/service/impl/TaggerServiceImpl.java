@@ -1884,7 +1884,7 @@ public class TaggerServiceImpl implements TaggerService {
 				//logger.info("[trashCollection] response from trainer-api: "
 						//+ jsonResponse);
 				if (jsonResponse != null
-						&& jsonResponse.equalsIgnoreCase("{\"status\":200}")) {
+						&& jsonResponse.contains("\"status\":200")) {
 					logger.info("[trashCollection] Success in trashing ");
 					return 1;
 				} else {

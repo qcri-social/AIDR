@@ -35,7 +35,7 @@ import qa.qcri.aidr.manager.util.CollectionStatus;
 @Repository("collectionRepository")
 @Transactional
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, Serializable> implements CollectionRepository{
-	private Logger logger = Logger.getLogger(CollectionRepositoryImpl.class);
+	private final Logger logger = Logger.getLogger(CollectionRepositoryImpl.class);
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -43,7 +43,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.ilike("name", query, MatchMode.ANYWHERE));
 		criteria.add(Restrictions.eq("owner.id", userId));
-		return (List<Collection>) criteria.list();
+		return criteria.list();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 				sqlQuery.setParameter("start", start);
 				sqlQuery.setParameter("limit", limit);
 				sqlQuery.setParameter("statusValue", statusValue.ordinal());
-				List<BigInteger> ids = (List<BigInteger>) sqlQuery.list();
+				List<BigInteger> ids = sqlQuery.list();
 
 				return ids != null ? ids : Collections.emptyList();
 			}
@@ -96,6 +96,21 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		});
 	}
 
+	@Override
+	public Long getTotalCollectionsCount() {
+		return (Long) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+
+				String sql = " SELECT count(distinct c.id) FROM collection c" +
+						" WHERE (c.status != 7) " ;
+
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				BigInteger total = (BigInteger) sqlQuery.uniqueResult();
+				return total != null ? total.longValue() : 0;
+			}
+		});
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -136,7 +151,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 				sqlQuery.setParameter("status1", CollectionStatus.RUNNING.ordinal());
 				sqlQuery.setParameter("status2", CollectionStatus.RUNNING_WARNING.ordinal());
 				sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
-				List<Object[]> ids = (List<Object[]>) sqlQuery.list();
+				List<Object[]> ids = sqlQuery.list();
 
 				return ids != null ? ids : Collections.emptyList();
 			}
@@ -238,7 +253,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.eq("owner.id", userId));
 
-		return (List<Collection>) criteria.list();
+		return criteria.list();
 	}
 
 	@Override
@@ -284,7 +299,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 			criteriaIds.setMaxResults(limit);
 		}
 
-		List<Integer> ids = (List<Integer>) criteriaIds.list();
+		List<Integer> ids = criteriaIds.list();
 
 		if (ids.size() == 0){
 			return Collections.emptyList();
@@ -296,7 +311,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		criteria.add(Restrictions.in("id", ids));
 		searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-		return (List<Collection>) criteria.list();
+		return criteria.list();
 	}
 
 	@Override
@@ -361,7 +376,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 			criteriaIds.setMaxResults(limit);
 		}
 
-		List<Integer> ids = (List<Integer>) criteriaIds.list();
+		List<Integer> ids = criteriaIds.list();
 
 		if (ids.size() == 0){
 			return Collections.emptyList();
@@ -373,7 +388,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		criteria.add(Restrictions.in("id", ids));
 		searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-		return (List<Collection>) criteria.list();
+		return criteria.list();
 	}
 
 	@Override

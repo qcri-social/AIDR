@@ -592,4 +592,24 @@ public class PublicController extends BaseController{
 		return briefInfos;
 	}
 	
+	@RequestMapping(value = "/getTweetCounts", method = RequestMethod.GET)
+	@ResponseBody
+	public String getTweetCounts() throws Exception {
+		Map<String, Object> result = new HashMap<>();
+		JSONObject json = new JSONObject();
+		try {
+			Long runningCollectionsCount = collectionService.getRunningCollectionsCount(null);
+			Long totalCollectionCount = collectionService.getTotalCollectionsCount();
+			result.put("total_collection", totalCollectionCount);
+			result.put("total_running", runningCollectionsCount);
+			result.put("total_tweets", collectionLogService.countTotalTweets());
+			result.put("total_offline", totalCollectionCount - runningCollectionsCount);
+		    json.putAll(getUIWrapper(result,true));
+		} catch (Exception e) {
+			logger.error("Error while fetching tweets counts", e);
+		    json.putAll(getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin."));
+		}
+		return "jsonp(" + json.toJSONString() + ")";
+	}
+	
 }

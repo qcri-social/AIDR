@@ -78,7 +78,7 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, toastr, $ht
 			templateUrl : 'terms.html',
 			controller : 'TermsCtrl',
 			windowClass : 'center-modal',
-			size : 'md',
+			size : 'lg',
 			scope : $scope,
 			resolve : {
 				items : function() {

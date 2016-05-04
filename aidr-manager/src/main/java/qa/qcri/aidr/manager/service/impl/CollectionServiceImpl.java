@@ -60,7 +60,7 @@ import twitter4j.auth.AccessToken;
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
 
-	private Logger logger = Logger.getLogger(getClass());
+	private final Logger logger = Logger.getLogger(getClass());
 	@Autowired
 	private CollectionRepository collectionRepository;
 	@Autowired
@@ -588,6 +588,12 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional(readOnly = true)
 	public Long getRunningCollectionsCount(String terms) throws Exception {
 		return collectionRepository.getRunningCollectionsCount(terms);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Long getTotalCollectionsCount() {
+		return collectionRepository.getTotalCollectionsCount();
 	}
 
 	@Override

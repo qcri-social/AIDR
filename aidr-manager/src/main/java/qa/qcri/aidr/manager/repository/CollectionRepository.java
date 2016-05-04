@@ -44,9 +44,11 @@ public interface CollectionRepository extends GenericRepository<Collection, Seri
 
     public List<Collection> getAllCollectionByUser(Long userId);
     
-    public void update(Collection collection);
+    @Override
+	public void update(Collection collection);
 
     public List<Collection> getAllCollections();
     
     public List<Collection> findMicromappersFilteredCollections(boolean micromappersEnabled);
+	Long getTotalCollectionsCount();
 }

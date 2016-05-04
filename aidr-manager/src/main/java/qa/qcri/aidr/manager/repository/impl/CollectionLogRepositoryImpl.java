@@ -43,7 +43,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<Collectio
         criteria.setMaxResults(limit);
         criteria.addOrder(Order.desc("startDate"));
 
-        return new CollectionLogDataResponse((List<CollectionLog>) criteria.list(), count);
+        return new CollectionLogDataResponse(criteria.list(), count);
     }
 
     @SuppressWarnings("unchecked")
@@ -63,10 +63,9 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<Collectio
         criteria.setMaxResults(limit);
         criteria.addOrder(Order.desc("startDate"));
 
-        return new CollectionLogDataResponse((List<CollectionLog>) criteria.list(), count);
+        return new CollectionLogDataResponse(criteria.list(), count);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Integer countTotalDownloadedItemsForCollection(final Long collectionId) {
         return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
@@ -80,6 +79,20 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<Collectio
             }
         });
     }
+    
+    @Override
+    public Long countTotalTweets() {
+        return (Long) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+            @Override
+            public Object doInHibernate(Session session) throws HibernateException {
+                String sql = " select sum(c.count) from collection_log c ";
+                SQLQuery sqlQuery = session.createSQLQuery(sql);
+                BigDecimal total = (BigDecimal) sqlQuery.uniqueResult();
+                return total != null ? total.longValue() : 0;
+            }
+        });
+    }
+      
         
     @SuppressWarnings("unchecked")
     @Override
