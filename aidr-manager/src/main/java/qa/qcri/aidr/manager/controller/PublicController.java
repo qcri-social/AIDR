@@ -592,14 +592,14 @@ public class PublicController extends BaseController{
 		return briefInfos;
 	}
 	
-	@RequestMapping(value = "/getTweetCounts.action", method = RequestMethod.GET)
+	@RequestMapping(value = "/getTweetCounts", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getTweetCounts() throws Exception {
 		Map<String, Object> result = new HashMap<>();
 		try {
 			Long runningCollectionsCount = collectionService.getRunningCollectionsCount(null);
 			Long totalCollectionCount = collectionService.getTotalCollectionsCount();
-			result.put("total_collection", 0);
+			result.put("total_collection", totalCollectionCount);
 			result.put("total_running", runningCollectionsCount);
 			result.put("total_tweets", collectionLogService.countTotalTweets());
 			result.put("total_offline", totalCollectionCount - runningCollectionsCount);
