@@ -33,4 +33,6 @@ public interface CollectionLogService {
 
 	public Map<String, Object> generateJsonTweetIdsLink(String code, String jsonType) throws AidrException;
 
+	Long countTotalTweets();
+
 }

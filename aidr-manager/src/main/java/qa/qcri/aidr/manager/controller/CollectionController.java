@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ import qa.qcri.aidr.manager.util.CollectionStatus;
 @RequestMapping("protected/collection")
 public class CollectionController extends BaseController{
 
-	private Logger logger = Logger.getLogger(CollectionController.class);
+	private final Logger logger = Logger.getLogger(CollectionController.class);
 
 	@Autowired
 	private CollectionService collectionService;
@@ -775,6 +776,24 @@ public class CollectionController extends BaseController{
 		} catch (Exception e) {
 			logger.error("Error while getting twitter userIds", e);
 			return getUIWrapper(false, "Exception in twitter user data lookup.");
+		}
+	}
+	
+	@RequestMapping(value = "/getTweetCounts.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getTweetCounts() throws Exception {
+		Map<String, Object> result = new HashMap<>();
+		try {
+			Long runningCollectionsCount = collectionService.getRunningCollectionsCount(null);
+			Long totalCollectionCount = collectionService.getTotalCollectionsCount();
+			result.put("total_collection", 0);
+			result.put("total_running", runningCollectionsCount);
+			result.put("total_tweets", collectionLogService.countTotalTweets());
+			result.put("total_offline", totalCollectionCount - runningCollectionsCount);
+			return getUIWrapper(result,true);
+		} catch (Exception e) {
+			logger.error("Error while fetching tweets counts", e);
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
 }

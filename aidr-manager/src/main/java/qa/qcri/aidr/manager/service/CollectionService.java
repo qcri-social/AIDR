@@ -89,4 +89,6 @@ public interface CollectionService {
 	public List<CollectionSummaryInfo> getAllCollectionData();
 	
 	public List<CollectionBriefInfo> getMicromappersFilteredCollections(boolean micromappersEnabled);
+
+	Long getTotalCollectionsCount();
 }
