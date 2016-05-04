@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -595,7 +594,6 @@ public class PublicController extends BaseController{
 	
 	@RequestMapping(value = "/getTweetCounts", method = RequestMethod.GET)
 	@ResponseBody
-	@CrossOrigin
 	public String getTweetCounts() throws Exception {
 		Map<String, Object> result = new HashMap<>();
 		JSONObject json = new JSONObject();
