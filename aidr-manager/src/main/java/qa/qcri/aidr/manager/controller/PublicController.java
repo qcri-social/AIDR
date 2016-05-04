@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -594,8 +595,10 @@ public class PublicController extends BaseController{
 	
 	@RequestMapping(value = "/getTweetCounts", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> getTweetCounts() throws Exception {
+	@CrossOrigin
+	public String getTweetCounts() throws Exception {
 		Map<String, Object> result = new HashMap<>();
+		JSONObject json = new JSONObject();
 		try {
 			Long runningCollectionsCount = collectionService.getRunningCollectionsCount(null);
 			Long totalCollectionCount = collectionService.getTotalCollectionsCount();
@@ -603,11 +606,12 @@ public class PublicController extends BaseController{
 			result.put("total_running", runningCollectionsCount);
 			result.put("total_tweets", collectionLogService.countTotalTweets());
 			result.put("total_offline", totalCollectionCount - runningCollectionsCount);
-			return getUIWrapper(result,true);
+		    json.putAll(getUIWrapper(result,true));
 		} catch (Exception e) {
 			logger.error("Error while fetching tweets counts", e);
-			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		    json.putAll(getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin."));
 		}
+		return "jsonp(" + json.toJSONString() + ")";
 	}
 	
 }
