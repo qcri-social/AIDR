@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 
@@ -91,7 +92,7 @@ public class Collection extends BaseEntity {
     private UserAccount classifierEnabledBy;
     
     @Column(name="usage_type")
-    private String usageType;
+    private UsageType usageType;
     
     @Column(name="save_media_enabled", columnDefinition="bit default 0")
     private boolean saveMediaEnabled;
@@ -276,14 +277,6 @@ public class Collection extends BaseEntity {
 		this.purpose = purpose;
 	}	
 
-	public String getUsageType() {
-		return usageType;
-	}
-
-	public void setUsageType(String usageType) {
-		this.usageType = usageType;
-	}
-
 	public boolean isSourceOutage() {
 		return isSourceOutage;
 	}
@@ -298,6 +291,14 @@ public class Collection extends BaseEntity {
 
 	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
 		this.saveMediaEnabled = saveMediaEnabled;
+	}
+
+	public UsageType getUsageType() {
+		return usageType;
+	}
+
+	public void setUsageType(UsageType usageType) {
+		this.usageType = usageType;
 	}
 	
 }

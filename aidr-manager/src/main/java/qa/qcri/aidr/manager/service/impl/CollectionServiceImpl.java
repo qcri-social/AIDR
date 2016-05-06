@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
@@ -194,6 +195,7 @@ public class CollectionServiceImpl implements CollectionService {
 		
 		Collection collection = adaptCollectionDetailsInfoToCollection(collectionDetailsInfo, user);
 		collection.setTrack(filteredTrack);
+		collection.setUsageType(UsageType.Production);
 		try {
 			collectionRepository.save(collection);
 			collaboratorService.addCollaboratorToCollection(collectionDetailsInfo.getCode(), user.getId());
@@ -817,10 +819,10 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	@Override
-	public List<CollectionSummaryInfo> getAllCollectionData() {
+	public List<CollectionSummaryInfo> getAllCollectionDataByUsage(UsageType usage) {
 		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
 		
-		List<Collection> collections = collectionRepository.getAllCollections();
+		List<Collection> collections = collectionRepository.getAllCollectionsByUsage(usage);
 		if(collections != null) {
 			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
 		}

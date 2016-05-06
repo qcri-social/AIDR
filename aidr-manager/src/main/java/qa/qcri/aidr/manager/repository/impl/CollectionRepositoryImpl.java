@@ -27,6 +27,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
@@ -514,10 +515,19 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 	}
 	
 	@Override
-	public List<Collection> getAllCollections() {
+	public List<Collection> getAllCollectionsByUsage(UsageType usageType) {
 	
 		List<Collection> collections = new ArrayList<Collection>();
-		collections = findAll();
+
+		try {
+			Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
+			criteria.add(Restrictions.eq("usageType", usageType));
+			collections = criteria.list();
+			
+		} catch (HibernateException e) {
+			logger.error("Exception in fetching list of collections.", e);
+		}
+		
 		return collections;
 	}
 

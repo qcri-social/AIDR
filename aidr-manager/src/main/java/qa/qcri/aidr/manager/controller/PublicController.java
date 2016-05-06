@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
@@ -564,12 +565,14 @@ public class PublicController extends BaseController{
 		}
 	}
 	
-	@RequestMapping(value = "/all")
+	@RequestMapping(value = "{usage}/all")
 	@ResponseBody
-	public List<CollectionSummaryInfo> getCollections() {
+	public List<CollectionSummaryInfo> getCollections(@PathVariable(value = "usage") String usage) {
+		
 		List<CollectionSummaryInfo> summaryInfos = new ArrayList<CollectionSummaryInfo>();
 		try {
-			summaryInfos =  collectionService.getAllCollectionData();
+			UsageType usageType = UsageType.valueOf(usage);
+			summaryInfos =  collectionService.getAllCollectionDataByUsage(usageType);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("error", e);
