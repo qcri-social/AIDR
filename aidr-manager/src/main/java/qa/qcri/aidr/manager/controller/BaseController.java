@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.UserService;
+import qa.qcri.aidr.manager.util.ConstantUtils;
+import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 public class BaseController {
 	
@@ -69,6 +71,26 @@ public class BaseController {
 		}else{
 			throw new Exception("No user logged in ");
 		}
+	}
+	
+	protected String getAuthenticatedProviderName() throws Exception{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication != null){
+			return getProviderFromUserName(authentication.getName());
+		}else{
+			throw new Exception("No user logged in ");
+		}
+	}
+	
+	private String getProviderFromUserName(String userName){
+		String provider = SocialSignInProvider.TWITTER;
+		if(userName.contains(ConstantUtils.USER_NAME_SPLITTER)){
+			provider = userName.substring(0,userName.indexOf(ConstantUtils.USER_NAME_SPLITTER));
+			if(!provider.equalsIgnoreCase(SocialSignInProvider.TWITTER) && !provider.equalsIgnoreCase(SocialSignInProvider.GOOGLE) && !provider.equalsIgnoreCase(SocialSignInProvider.FACEBOOK) ){
+				provider = SocialSignInProvider.TWITTER;
+			}
+		}
+		return provider;
 	}
 
     protected String getPublicUserName() throws Exception{

@@ -12,7 +12,7 @@
 <body class="mainbody index">
 
 <div class="headerWrapper">
-    <div class="header"><img src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_240x90.png"></div>
+    <div class="header"><img src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_185x90.png"></div>
 </div>
 
 <div class="mainWraper">

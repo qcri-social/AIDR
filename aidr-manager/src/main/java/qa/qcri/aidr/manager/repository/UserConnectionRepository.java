@@ -7,7 +7,7 @@ import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 
 public interface UserConnectionRepository extends GenericRepository<UserConnection, Serializable>{
 
-	public UserConnection fetchbyUsername(String userName);
-
-    public List<UserConnection> getByUserId(String userId);
+    public List<UserConnection> getByUserIdAndProviderUserId(String userId, String providerUserId);
+    
+    public UserConnection getByUserIdAndProviderId(String userId, String providerId);
 }

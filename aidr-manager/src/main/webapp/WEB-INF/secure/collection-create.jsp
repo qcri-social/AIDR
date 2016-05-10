@@ -8,6 +8,7 @@
       COLLECTION_TYPES = ${collectionTypes};
       USER_NAME = "${userName}";
       USER_ID = "${userId}";
+	  SIGNED_IN_PROVIDER = "${signInProvider}";
   </script>
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
 

@@ -102,12 +102,12 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 150,
                     renderer: function (value, meta, record) {
                         if (value.userName){
-                            return value.userName;
+                        	return AIDRFMFunctions.getUserNameWithProviderIcon(value.userName, true);
                         }
                         return '';
                     }
                 },
-                {
+                /*{
                     xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 160,
                     renderer: function (value, meta, record) {
                         if (value) {
@@ -116,7 +116,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                             return me.getField(false);
                         }
                     }
-                },
+                },*/
                 {
                     xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Scheduled stop', width: 160,
                     renderer: function (value, meta, record) {
@@ -315,12 +315,12 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 150,
                     renderer: function (value, meta, record) {
                         if (value.userName){
-                            return value.userName;
+                        	return AIDRFMFunctions.getUserNameWithProviderIcon(value.userName, true);
                         }
                         return '';
                     }
                 },
-                {
+                /*{
                     xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 190,
                     renderer: function (value, meta, record) {
                         if (value) {
@@ -329,7 +329,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                             return me.getField(false);
                         }
                     }
-                },
+                },*/
                 {
                     xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Items', width: 100, sortable: false,
                     renderer: function (value, meta, record) {

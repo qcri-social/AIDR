@@ -27,7 +27,10 @@ import org.springframework.util.MultiValueMap;
 
 import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.UserConnection;
+import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.UserService;
+import qa.qcri.aidr.manager.util.ConstantUtils;
 
 @Repository
 @Service
@@ -42,39 +45,60 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 	private SpringSocialSecurityAuthenticationFactory authenticationFactory;
 	
 	@Autowired
+	private UserConnectionService userConnectionService;
+	
+	@Autowired
 	private SignUpService<?> signUpService;
 	
 	@Resource(name="userService")
 	private UserService userService;
 	
 	@Override
-	public UserDetails loadUserByUsername(String userName)throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String combinedUserName)throws UsernameNotFoundException {
+		String provider = combinedUserName.substring(0, combinedUserName.indexOf(ConstantUtils.USER_NAME_SPLITTER));
+		String userName = combinedUserName.substring(combinedUserName.indexOf(ConstantUtils.USER_NAME_SPLITTER)+1);
+		
 		ConnectionRepository connectionRepository = usersConnectionRepository.createConnectionRepository(userName);
-		SpringSocialProfile springSocialProfile = signUpService.getUserProfile(userName);
-		List<Connection<?>> allConnections = getConnections(connectionRepository,userName);
+		SpringSocialProfile springSocialProfile = null;
+		try{
+			springSocialProfile = signUpService.getUserProfile(userName);
+		}catch(Exception e){
+			logger.error("Multiple accounts exist with same userName: "+userName,e);
+		}
+		
+		List<Connection<?>> allConnections = getConnections(connectionRepository);
+		
 		if (allConnections.size() > 0) {
-				Authentication authentication = authenticationFactory.createAuthenticationForAllConnections(userName,
-								springSocialProfile.getPassword(),allConnections);
-				UserAccount user =  userService.fetchByUserName(userName);
-				List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-				authorities.addAll(authentication.getAuthorities());
+			Authentication authentication = null;
+			if(springSocialProfile == null){
+				UserConnection userProfile = userConnectionService.getByUserIdAndProviderId(userName, provider);
+				authentication = authenticationFactory.createAuthenticationForAllConnections(combinedUserName,
+						userProfile.getAccessToken(),allConnections);
+			}else{
+				authentication = authenticationFactory.createAuthenticationForAllConnections(combinedUserName,
+						springSocialProfile.getPassword(),allConnections);
+			}
 				
-				List<RoleType> roles = userService.getUserRoles(user.getId());
-				if(roles != null && !roles.isEmpty() ){
-					for(RoleType role : roles){
-					   GrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-					   authorities.add(authority);
-					}
+			UserAccount user =  userService.fetchByUserName(combinedUserName);
+			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+			authorities.addAll(authentication.getAuthorities());
+			
+			List<RoleType> roles = userService.getUserRoles(user.getId());
+			if(roles != null && !roles.isEmpty() ){
+				for(RoleType role : roles){
+				   GrantedAuthority authority = new SimpleGrantedAuthority(role.name());
+				   authorities.add(authority);
 				}
-				return new User(userName, authentication.getCredentials().toString(), true, true, true, true,authorities);
+			}
+			return new User(combinedUserName, authentication.getCredentials().toString(), true, true, true, true,authorities);
 		
 		} else {
-			logger.info("UsernameNotFoundException for user: "+userName);
-			throw new UsernameNotFoundException(userName);
+			logger.info("UsernameNotFoundException for user: "+combinedUserName);
+			throw new UsernameNotFoundException(combinedUserName);
 		}
 	}
 	
-	private List<Connection<?>> getConnections(ConnectionRepository connectionRepository,String userName) {
+	private List<Connection<?>> getConnections(ConnectionRepository connectionRepository) {
 		MultiValueMap<String, Connection<?>> connections = connectionRepository.findAllConnections();
 		List<Connection<?>> allConnections = new ArrayList<Connection<?>>();
 		if (connections.size() > 0) {

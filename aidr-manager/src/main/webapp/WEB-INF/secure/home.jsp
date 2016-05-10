@@ -40,6 +40,7 @@
   <script type="text/javascript">
       USER_NAME = "${userName}";
       COLLECTION_TYPES = ${collectionTypes};
+	  SIGNED_IN_PROVIDER = "${signInProvider}";
   </script>
 
 </body>

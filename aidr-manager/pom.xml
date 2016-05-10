@@ -104,7 +104,16 @@
 			<artifactId>spring-social-twitter</artifactId>
 			<version>${spring-social-twitter}</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>org.springframework.social</groupId>
+		    <artifactId>spring-social-facebook</artifactId>
+		    <version>2.0.3.RELEASE</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework.social</groupId>
+		  <artifactId>spring-social-google</artifactId>
+		  <version>1.0.0.RELEASE</version>
+		</dependency>
 		<!-- MySQL database driver -->
 		<dependency>
 			<groupId>mysql</groupId>

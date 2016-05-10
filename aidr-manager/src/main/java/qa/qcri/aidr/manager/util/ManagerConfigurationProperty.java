@@ -7,7 +7,7 @@ import qa.qcri.aidr.common.code.ConfigurationProperty;
  * 
  *         Enum containing all the property keys required by the aidr-manager
  *         module.
- *
+ * 
  */
 public enum ManagerConfigurationProperty implements ConfigurationProperty {
 
@@ -18,7 +18,11 @@ public enum ManagerConfigurationProperty implements ConfigurationProperty {
 			"socialsignin.defaultAuthenticationSuccessUrl"), SOCIAL_SIGN_IN_DEFAULT_ACCESS_DENIED_URL(
 			"socialsignin.defaultAccessDeniedUrl"), TWITTER_CONSUMER_KEY(
 			"twitter.consumerKey"), TWITTER_CONSUMER_SECRET(
-			"twitter.consumerSecret"), TWITTER_CALLBACK_URL(
+			"twitter.consumerSecret"), FACEBOOK_CONSUMER_KEY(
+			"facebook.consumerKey"), FACEBOOK_CONSUMER_SECRET(
+			"facebook.consumerSecret"), GOOGLE_CONSUMER_KEY(
+			"google.consumerKey"), GOOGLE_CONSUMER_SECRET(
+			"google.consumerSecret"), TWITTER_CALLBACK_URL(
 			"twitter.callBackURL"), APPLICATION_SECURE_URL(
 			"application.secureUrl"), SQL_SERVER_HOST("SQL_SERVER_HOST"), SQL_SERVER_PORT(
 			"SQL_SERVER_PORT"), SQL_DRIVER("SQL_DRIVER"), SQL_SERVER_TYPE(

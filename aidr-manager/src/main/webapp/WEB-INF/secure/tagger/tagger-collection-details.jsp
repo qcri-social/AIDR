@@ -12,6 +12,7 @@
       TYPE = "${collectionType}";
       IS_MICROMAPPER_ENABLED = ${isMicromapperEnabled};
       COLLECTION_TYPES = ${collectionTypes};
+	  SIGNED_IN_PROVIDER = "${signInProvider}";
   </script>
 
 </body>

@@ -14,31 +14,47 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/build/packages/sencha-charts/build/sencha-charts.js"></script>
 <link type="text/css" href="${pageContext.request.contextPath}/resources/build/packages/sencha-charts/build/crisp/resources/sencha-charts-all.css">
 </head>
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     setTimeout("submitform()",3000);
     function submitform(){
         document.forms["login"].submit();
     }
-</script>
+</script> -->
 <body class="mainbody index">
 
 <div class="headerWrapper">
-    <div class="header"><img src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_240x90.png"></div>
+    <div class="header"><img src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_185x90.png"></div>
 </div>
 
 <div class="mainWraper">
-    <div class="main">
+   <div class="main">
         <div>
-            <p align="center">Welcome! We are redirecting you to Twitter to sign-in. Please note that <strong>during the testing phase we will clean-up data and restart frequently</strong>!</p>
-            <div>
-                <form action="signin/twitter" method="POST" id="login">
-                    <input type="image" src="${pageContext.request.contextPath}/resources/img/tweeterSignin.png">
-                </form>
+           <p align="center">Welcome! We are redirecting you to Twitter to sign-in. Please note that <strong>during the testing phase we will clean-up data and restart frequently</strong>!</p>
+<div style="margin-left: 27%;">
+           <div>
+               <form action="signin/twitter" method="POST" id="loginTwitter">
+                   <input type="image" src="${pageContext.request.contextPath}/resources/img/twitter.png" style="float: left; margin-right: 45px;">
+               </form>
 
-            </div>
-            <br/><br/>
-        </div>
-    </div>
+           </div>
+           
+           <div>
+               <form action="signin/facebook" method="POST" id="loginFacebook">
+                   <input type="image" src="${pageContext.request.contextPath}/resources/img/facebook.png" style="float: left;">
+               </form>
+
+           </div>
+           
+          <%--  <div>
+               <form action="signin/google" method="POST" id="loginGoogle">
+                   <input type="image" src="${pageContext.request.contextPath}/resources/img/google.png" style="float: left;">
+               </form>
+
+           </div> --%>
+           <br/><br/>
+       </div>
+       </div>
+   </div>
 </div>
 
 <div class="site-footer">

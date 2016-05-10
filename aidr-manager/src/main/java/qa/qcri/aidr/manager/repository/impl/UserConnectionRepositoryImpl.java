@@ -14,17 +14,21 @@ import qa.qcri.aidr.manager.repository.UserConnectionRepository;
 public class UserConnectionRepositoryImpl  extends GenericRepositoryImpl<UserConnection,Serializable> implements UserConnectionRepository {
 
 	@Override
-	public UserConnection fetchbyUsername(String userName) {
+	public List<UserConnection> getByUserIdAndProviderUserId(String userId,
+			String providerUserId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserConnection.class);
-		criteria.add(Restrictions.eq("userId", userName));
-		criteria.setMaxResults(1);
-		return (UserConnection) criteria.uniqueResult();
+        criteria.add(Restrictions.eq("userId", userId));
+        criteria.add(Restrictions.eq("providerUserId", providerUserId));
+        return criteria.list();
 	}
 
-    @Override
-    public List<UserConnection> getByUserId(String userId) {
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserConnection.class);
+	@Override
+	public UserConnection getByUserIdAndProviderId(String userId,
+			String providerId) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserConnection.class);
         criteria.add(Restrictions.eq("userId", userId));
-        return criteria.list();
-    }
+        criteria.add(Restrictions.eq("providerId", providerId));
+        criteria.setMaxResults(1);
+        return (UserConnection) criteria.uniqueResult();
+	}
 }
