@@ -19,6 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -394,9 +396,11 @@ public class CollectionServiceImpl implements CollectionService {
 						.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
 
 				//logger.info("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
-				String jsonResponse = clientResponse.readEntity(String.class);
+				String jsonString = clientResponse.readEntity(String.class);
+				JSONParser parser = new JSONParser();
+				JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
 				//logger.info("NEW STRING: " + jsonResponse);
-				FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
+				FetcheResponseDTO response = objectMapper.readValue(jsonResponse.get("entity").toString(), FetcheResponseDTO.class);
 				logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
 				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
 			} else if (CollectionType.SMS.equals(collection.getProvider())) {
@@ -458,9 +462,10 @@ public class CollectionServiceImpl implements CollectionService {
 
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			String jsonResponse = clientResponse.readEntity(String.class);
-
-			collection = updateStatusCollection(jsonResponse, collection, userId);
+			String jsonString = clientResponse.readEntity(String.class);
+			JSONParser parser = new JSONParser();
+			JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+			collection = updateStatusCollection(jsonResponse.get("entity").toString(), collection, userId);
 
 			/**
 			 * Change Database Status
@@ -561,9 +566,11 @@ public class CollectionServiceImpl implements CollectionService {
 
 				WebTarget webResource = client.target(fetchMainUrl + path + URLEncoder.encode(collection.getCode(), "UTF-8"));
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-
-				String jsonResponse = clientResponse.readEntity(String.class);
-				collection = updateStatusCollection(jsonResponse, collection, accountId);
+					
+				String jsonString = clientResponse.readEntity(String.class);
+				JSONParser parser = new JSONParser();
+				JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+				collection = updateStatusCollection(jsonResponse.get("entity").toString(), collection, accountId);
 				return collection;
 			} catch (Exception e) {
 				String msg = "Error while getting status for collection from Remote FetchMain Collection";
