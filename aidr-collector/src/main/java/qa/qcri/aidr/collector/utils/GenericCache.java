@@ -26,7 +26,8 @@ public class GenericCache {
     private Map<String, String> SMSCollections;
     private Map<String, Integer> reconnectAttempts;
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
-
+    public static int totalCollectionCount = 0;
+    
     private GenericCache() {
         twitterTrackerMap = new HashMap<String, TwitterStreamTracker>();
         countersMap = new ConcurrentHashMap<String, Long>();

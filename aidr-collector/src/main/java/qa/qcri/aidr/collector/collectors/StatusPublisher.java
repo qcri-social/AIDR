@@ -26,6 +26,7 @@ public class StatusPublisher implements Publisher {
 	@Override
 	public void publish(String channel, String message) {
 		++counter;
+		GenericCache.totalCollectionCount ++;
 		if (counter >= threhold) {
 			GenericCache.getInstance().incrCounter(cacheKey, counter);
 			GenericCache.getInstance().setLastDownloadedDoc(cacheKey, message);

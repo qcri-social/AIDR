@@ -8,12 +8,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -24,6 +18,12 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
@@ -40,7 +40,8 @@ import qa.qcri.aidr.common.redis.LoadShedder;
  * Provides RESTFul APIS to start and stop SMS collections.
  * TODO: remove non-API methods from this class.
  */
-@Path("/sms")
+@Controller
+@RequestMapping("/sms")
 public class SMSCollectorAPI  {
     
     private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
@@ -50,10 +51,9 @@ public class SMSCollectorAPI  {
     public static final String CHANNEL = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + ".%s";
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
     
-    @GET
-    @Path("/start")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response startTask(@QueryParam("collection_code") String collectionCode) {
+    @RequestMapping("/start")
+    @ResponseBody
+    public Response startTask(@RequestParam("collection_code") String collectionCode) {
         if (null == redisLoadShedder) {
             redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
@@ -67,10 +67,9 @@ public class SMSCollectorAPI  {
         return Response.ok().build();
     }
     
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/stop")
-    public Response stopTask(@QueryParam("collection_code") String collectionCode) {
+    @RequestMapping("/stop")
+    @ResponseBody
+    public Response stopTask(@RequestParam("collection_code") String collectionCode) {
         GenericCache cache = GenericCache.getInstance();
         CollectionTask task = cache.getSMSConfig(collectionCode);
         cache.removeSMSCollection(collectionCode);
@@ -88,11 +87,9 @@ public class SMSCollectorAPI  {
         return Response.ok(response).build();
     }
     
-    @POST
-    @Path("/endpoint/receive/{collection_code}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response receive(@PathParam("collection_code") String code, SMS sms) {
+    @RequestMapping(value = "/endpoint/receive/{collection_code}", method={RequestMethod.POST})
+    @ResponseBody
+    public Response receive(@PathVariable("collection_code") String code, SMS sms) {
         GenericCache cache = GenericCache.getInstance();
         String smsCollections = cache.getSMSCollection(code.trim());
         if (configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING).equals(smsCollections)) {
@@ -116,18 +113,14 @@ public class SMSCollectorAPI  {
         return Response.ok().build();
     }
     
-    @GET
-    @Path("/status")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getStatus(@QueryParam("collection_code") String code) {
+    @RequestMapping("/status")
+    @ResponseBody
+    public Response getStatus(@RequestParam("collection_code") String code) {
         CollectionTask config = GenericCache.getInstance().getSMSConfig(code);
         return Response.ok(config).build();
     }
     
-    @GET
-    @Path("/status/all")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @RequestMapping("/status/all")
     public Map getStatusAll() {
         return GenericCache.getInstance().getSMSCollections();
     }

@@ -28,7 +28,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 @Service("collectionLogService")
 public class CollectionLogServiceImpl implements CollectionLogService {
 
-    private Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
     // gf 3 way - disable @AutoWired since Client API has changed
     //@Autowired
@@ -81,6 +81,12 @@ public class CollectionLogServiceImpl implements CollectionLogService {
     @Transactional(readOnly = true)
     public Integer countTotalDownloadedItemsForCollection(Long collectionId) throws Exception {
         return collectionLogRepository.countTotalDownloadedItemsForCollection(collectionId);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Long countTotalTweets() {
+    	return collectionLogRepository.countTotalTweets();
     }
 
     @Override

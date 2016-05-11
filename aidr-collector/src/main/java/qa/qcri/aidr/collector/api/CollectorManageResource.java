@@ -6,20 +6,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
@@ -34,24 +32,14 @@ import com.google.gson.Gson;
  * Provides RESTFul APIs to various management-related services.
  * 
  */
-@Path("/manage")
+@Controller
+@RequestMapping("/manage")
 public class CollectorManageResource {
 
 	private static Logger logger = Logger.getLogger(CollectorManageResource.class.getName());
 	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
 	
-    @Context
-    private UriInfo context;
-    
-    /**
-     * Creates a new instance of FetcherManageResource
-     */
-    public CollectorManageResource() {
-    }
-
-    @GET
-    @Path("/persist")
-    @Produces(MediaType.TEXT_PLAIN)
+    @RequestMapping("/persist")
     public String persistRunningCollections() {
 
         String response = "";
@@ -80,9 +68,7 @@ public class CollectorManageResource {
 
     }
 
-    @GET
-    @Path("/runPersisted")
-    @Produces(MediaType.TEXT_PLAIN)
+    @RequestMapping("/runPersisted")
     public String runPersistedCollections() throws InterruptedException {
 
         String response = "";
@@ -137,10 +123,9 @@ public class CollectorManageResource {
         }
     }
     
-    @GET
-    @Path("/ping")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response ping() throws InterruptedException {
+    @RequestMapping("/ping")
+    @ResponseBody
+    public CollectorStatus ping() throws InterruptedException {
         
         int runningCollectionsCount=0;
          List<CollectionTask> collections = GenericCache.getInstance().getAllRunningCollectionTasks();
@@ -148,7 +133,7 @@ public class CollectorManageResource {
             runningCollectionsCount = collections.size();
         }
         String startDate = GenericCache.getInstance().getCollectorStatus().getStartDate();
-        return Response.ok(new CollectorStatus(startDate, "RUNNING", runningCollectionsCount)).build();
+        return new CollectorStatus(startDate, "RUNNING", runningCollectionsCount);
     }
     
 }

@@ -2,6 +2,7 @@ package qa.qcri.aidr.manager.service;
 
 import java.util.List;
 
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
@@ -75,7 +76,7 @@ public interface CollectionService {
     public Collection findTrashedByCode(String code) throws Exception;
 
     public Collection findTrashedById(Long id) throws Exception;
-    
+
 	public String getFollowTwitterIDs(String followList, String userName);
 
 	public String getFollowTwitterScreenNames(String followList, String userName);
@@ -86,7 +87,9 @@ public interface CollectionService {
 	
 	public Boolean isValidAPIKey(String code, String apiKey) throws Exception;
 
-	public List<CollectionSummaryInfo> getAllCollectionData();
+	public List<CollectionSummaryInfo> getAllCollectionDataByUsage(UsageType usageType);
 	
 	public List<CollectionBriefInfo> getMicromappersFilteredCollections(boolean micromappersEnabled);
+
+	Long getTotalCollectionsCount();
 }
