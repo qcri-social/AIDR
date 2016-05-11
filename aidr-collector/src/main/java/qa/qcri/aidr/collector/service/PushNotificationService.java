@@ -11,17 +11,14 @@ public class PushNotificationService {
 
 	private static Logger logger = Logger.getLogger(PushNotificationService.class);
 	
-	public void publishMessage() {
+	public void publishMessage(String channel, int message, String event) {
 
 		Pusher pusher = new Pusher("143040", "1eb98c94c2976297709d", "cd8e0fcfc1cc785ccd4a");
 		
 		try {
-			
-			JSONObject json = new JSONObject();
-			json.put("collectionCount", 10);
 			JSONObject jsonData = new JSONObject();
-			json.put("data", json);
-			pusher.trigger("collection", "count_updated", jsonData);
+			jsonData.put("data", message);
+			pusher.trigger(channel, event, jsonData);
 
 		} catch (Exception e) {
 			logger.warn("Error while publishing message to channel", e);
