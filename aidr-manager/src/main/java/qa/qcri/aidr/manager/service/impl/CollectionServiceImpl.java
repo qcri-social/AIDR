@@ -19,12 +19,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
@@ -194,6 +197,7 @@ public class CollectionServiceImpl implements CollectionService {
 		
 		Collection collection = adaptCollectionDetailsInfoToCollection(collectionDetailsInfo, user);
 		collection.setTrack(filteredTrack);
+		collection.setUsageType(UsageType.Production);
 		try {
 			collectionRepository.save(collection);
 			collaboratorService.addCollaboratorToCollection(collectionDetailsInfo.getCode(), user.getId());
@@ -392,9 +396,11 @@ public class CollectionServiceImpl implements CollectionService {
 						.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
 
 				//logger.info("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
-				String jsonResponse = clientResponse.readEntity(String.class);
+				String jsonString = clientResponse.readEntity(String.class);
+				JSONParser parser = new JSONParser();
+				JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
 				//logger.info("NEW STRING: " + jsonResponse);
-				FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
+				FetcheResponseDTO response = objectMapper.readValue(jsonResponse.get("entity").toString(), FetcheResponseDTO.class);
 				logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
 				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
 			} else if (CollectionType.SMS.equals(collection.getProvider())) {
@@ -456,9 +462,10 @@ public class CollectionServiceImpl implements CollectionService {
 
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			String jsonResponse = clientResponse.readEntity(String.class);
-
-			collection = updateStatusCollection(jsonResponse, collection, userId);
+			String jsonString = clientResponse.readEntity(String.class);
+			JSONParser parser = new JSONParser();
+			JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+			collection = updateStatusCollection(jsonResponse.get("entity").toString(), collection, userId);
 
 			/**
 			 * Change Database Status
@@ -559,9 +566,11 @@ public class CollectionServiceImpl implements CollectionService {
 
 				WebTarget webResource = client.target(fetchMainUrl + path + URLEncoder.encode(collection.getCode(), "UTF-8"));
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-
-				String jsonResponse = clientResponse.readEntity(String.class);
-				collection = updateStatusCollection(jsonResponse, collection, accountId);
+					
+				String jsonString = clientResponse.readEntity(String.class);
+				JSONParser parser = new JSONParser();
+				JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+				collection = updateStatusCollection(jsonResponse.get("entity").toString(), collection, accountId);
 				return collection;
 			} catch (Exception e) {
 				String msg = "Error while getting status for collection from Remote FetchMain Collection";
@@ -817,10 +826,10 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	@Override
-	public List<CollectionSummaryInfo> getAllCollectionData() {
+	public List<CollectionSummaryInfo> getAllCollectionDataByUsage(UsageType usage) {
 		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
 		
-		List<Collection> collections = collectionRepository.getAllCollections();
+		List<Collection> collections = collectionRepository.getAllCollectionsByUsage(usage);
 		if(collections != null) {
 			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
 		}

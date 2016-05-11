@@ -3,6 +3,7 @@ package qa.qcri.aidr.manager.repository;
 import java.io.Serializable;
 import java.util.List;
 
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
@@ -47,7 +48,7 @@ public interface CollectionRepository extends GenericRepository<Collection, Seri
     @Override
 	public void update(Collection collection);
 
-    public List<Collection> getAllCollections();
+    public List<Collection> getAllCollectionsByUsage(UsageType usageType);
     
     public List<Collection> findMicromappersFilteredCollections(boolean micromappersEnabled);
 	Long getTotalCollectionsCount();

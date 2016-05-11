@@ -6,25 +6,11 @@
 
 package qa.qcri.aidr.collector.beans;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * @author Imran
  * Provides data structure to hold various collector-specific details.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "collectorStatus", propOrder = {
-    "startDate",
-    "currentStatus",
-    "runningCollectionsCount",
-    
- })
-@XmlRootElement(name = "collectorStatus")
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_DEFAULT)
 public class CollectorStatus {
     
     private String startDate;

@@ -5,23 +5,22 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
@@ -36,23 +35,15 @@ import qa.qcri.aidr.collector.utils.GenericCache;
  * RESTFul APIs to start and stop Twitter collections.
  * TODO: remove non-API related operations such as startPersister to other appropriate classes.
  */
-@Path("/twitter")
+@RestController
+@RequestMapping("/twitter")
 public class TwitterCollectorAPI {
 
     private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
     
-    @Context
-    private UriInfo context;
-
-    public TwitterCollectorAPI() {
-    }
-
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/start")
-    public Response startTask(CollectionTask task) {
+    @RequestMapping(value = "/start", method={RequestMethod.POST})
+    public Response startTask(@RequestBody CollectionTask task) {
         logger.info("Collection start request received for " + task.getCollectionCode());
         logger.info("Details:\n" + task.toString());
         ResponseWrapper response = new ResponseWrapper();
@@ -118,10 +109,8 @@ public class TwitterCollectorAPI {
 		return Response.ok(response).build();
 	}
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/stop")
-    public Response stopTask(@QueryParam("id") String collectionCode) {
+    @RequestMapping("/stop")
+    public Response stopTask(@RequestParam("id") String collectionCode) {
         GenericCache cache = GenericCache.getInstance();
         TwitterStreamTracker tracker = cache.getTwitterTracker(collectionCode);
         CollectionTask task = cache.getConfig(collectionCode);
@@ -168,10 +157,8 @@ public class TwitterCollectorAPI {
         return Response.ok(response).build();
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/status")
-    public Response getStatus(@QueryParam("id") String id) {
+    @RequestMapping("/status")
+    public Response getStatus(@RequestParam("id") String id) {
         ResponseWrapper response = new ResponseWrapper();
         if (StringUtils.isEmpty(id)) {
             response.setMessage("Invalid key. No running collector found for the given id.");
@@ -179,8 +166,8 @@ public class TwitterCollectorAPI {
             return Response.ok(response).build();
         }
         CollectionTask task = GenericCache.getInstance().getConfig(id);
-        if (task != null) {        	
-            return Response.ok(task).build();
+        if (task != null) { 
+        	return Response.ok(task).build();
         }
 
         CollectionTask failedTask = GenericCache.getInstance().getFailedCollectionTask(id);
@@ -194,10 +181,8 @@ public class TwitterCollectorAPI {
 
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/restart")
-    public Response restartCollection(@QueryParam("code") String collectionCode) throws InterruptedException {
+    @RequestMapping("/restart")
+    public ResponseWrapper restartCollection(@QueryParam("code") String collectionCode) throws InterruptedException {
         List<CollectionTask> collections = GenericCache.getInstance().getAllRunningCollectionTasks();
         CollectionTask collectionToRestart = null;
         for (CollectionTask collection : collections) {
@@ -208,24 +193,19 @@ public class TwitterCollectorAPI {
         }
         stopTask(collectionCode);
         Thread.sleep(3000);
-        Response response = startTask(collectionToRestart);
-        return response;
+        return null;//startTask(collectionToRestart);
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/status/all")
-    public Response getStatusAll() {
+    @RequestMapping("/status/all")
+    public List<CollectionTask> getStatusAll() {
         List<CollectionTask> allTasks = GenericCache.getInstance().getAllConfigs();
-        return Response.ok(allTasks).build();
+        return allTasks;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/failed/all")
-    public Response getAllFailedCollections() {
+    @RequestMapping("/failed/all")
+    public List<CollectionTask> getAllFailedCollections() {
         List<CollectionTask> allTasks = GenericCache.getInstance().getAllFailedCollections();
-        return Response.ok(allTasks).build();
+        return allTasks;
     }
 
     private void startPersister(String collectionCode, boolean saveMediaEnabled) {

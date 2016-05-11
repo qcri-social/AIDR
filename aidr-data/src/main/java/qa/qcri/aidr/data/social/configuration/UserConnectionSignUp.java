@@ -16,10 +16,7 @@ import org.springframework.social.connect.support.OAuth1Connection;
 import org.springframework.social.connect.support.OAuth2Connection;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.data.RoleType;
-import qa.qcri.aidr.data.persistence.entity.Role;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
-import qa.qcri.aidr.data.persistence.entity.UserAccountRole;
 import qa.qcri.aidr.data.persistence.entity.UserConnection;
 import qa.qcri.aidr.data.repository.RoleRepository;
 import qa.qcri.aidr.data.repository.UserAccountRoleRepository;
@@ -73,10 +70,10 @@ public class UserConnectionSignUp implements ConnectionSignUp {
 	        user.setUserName(profile.getUsername());
 	        userService.save(user);
 	        
-	        UserAccount userAccount = userService.fetchByUserName(profile.getUsername());
+	        /*UserAccount userAccount = userService.fetchByUserName(profile.getUsername());
 	        Role role = roleRepository.findByRoleType(RoleType.NORMAL);
 	        UserAccountRole userAccountRole = new UserAccountRole(userAccount, role);
-	        userRoleRepository.save(userAccountRole);	        
+	        userRoleRepository.save(userAccountRole);	*/        
 	        
 	        return profile.getUsername();
 		} else if (connection instanceof OAuth2Connection) {
@@ -112,10 +109,10 @@ public class UserConnectionSignUp implements ConnectionSignUp {
 			user.setEmail(profile.getEmail());
 			userService.save(user);
 			
-			UserAccount userAccount = userService.fetchByUserName(profile.getEmail());
+			/*UserAccount userAccount = userService.fetchByUserName(profile.getEmail());
 	        Role role = roleRepository.findByRoleType(RoleType.NORMAL);
 	        UserAccountRole userAccountRole = new UserAccountRole(userAccount, role);
-	        userRoleRepository.save(userAccountRole);
+	        userRoleRepository.save(userAccountRole);*/
 			
 			return profile.getEmail();
 		}
