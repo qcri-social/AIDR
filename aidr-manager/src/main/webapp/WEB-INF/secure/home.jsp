@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8"/>
 	<base href="${pageContext.request.contextPath}/" target="_blank"/>
-    <link rel="shortcut icon" type="image/ico" href="resources/img/AIDR/icons/aidr_logo_30h.png" />
+    <link rel="shortcut icon" type="image/ico" href="resources/img/AIDR/aidr_logo_30h.png" />
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/themes/ext-theme-crisp/resources/ext-theme-crisp-all.css"/>
     <link rel="stylesheet" type="text/css" href="resources/css/style.css"/>

@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>AIDR - Login</title>
 
-    <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/AIDR/icons/aidr_logo_30h.png" />
+    <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_30h.png" />
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
 
