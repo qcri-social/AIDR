@@ -60,6 +60,7 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 		
 		ConnectionRepository connectionRepository = usersConnectionRepository.createConnectionRepository(userName);
 		SpringSocialProfile springSocialProfile = null;
+		//Fetching user with provider id springSecurity
 		try{
 			springSocialProfile = signUpService.getUserProfile(userName);
 		}catch(Exception e){

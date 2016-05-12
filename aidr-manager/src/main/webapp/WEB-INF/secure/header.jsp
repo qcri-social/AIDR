@@ -5,7 +5,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-    <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/favicon.ico" />
+    <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/AIDR/icons/aidr_logo_30h.png" />
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/themes/ext-theme-crisp/resources/ext-theme-crisp-all.css"/>
     

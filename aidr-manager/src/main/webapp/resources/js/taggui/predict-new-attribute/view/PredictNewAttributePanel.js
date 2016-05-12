@@ -94,7 +94,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
 
             '<div class="img">',
             '<a href="' + BASE_URL + '/protected/{nominalAttributeID}/attribute-details">' +
-                '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">' +
+                '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/aidr_logo_70x59.png" width="70" height="70">' +
             '</a>',
             '</div>',
 
@@ -145,7 +145,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
 
             '<div class="img">',
             '<a href="' + BASE_URL + '/protected/{nominalAttributeID}/attribute-details">' +
-                '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">' +
+                '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/aidr_logo_70x59.png" width="70" height="70">' +
             '</a>',
             '</div>',
 

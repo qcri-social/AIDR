@@ -201,7 +201,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                     '<tr class="crisis-item">',
 
                                                     '<td class="img" width="100px">',
-                                                    '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">',
+                                                    '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/aidr_logo_70x59.png" width="70" height="70">',
                                                     '</td>',
 
                                                     '<td class="content pdng-r-0"><table  width="100%"><tr>',
