@@ -597,16 +597,16 @@ public class PublicController extends BaseController{
 	
 	@RequestMapping("/statistics")
 	@ResponseBody
-	public String getTweetCounts() throws Exception {
+	public String getCollectionStatistics() throws Exception {
 		Map<String, Object> result = new HashMap<>();
-		JSONObject json = new JSONObject();
+		ObjectMapper mapper = new ObjectMapper();
 		try {
-		    json.putAll(getUIWrapper(collectionService.getCollectionStatistics(),true));
+		    result = getUIWrapper(collectionService.getCollectionStatistics(),true);
 		} catch (Exception e) {
 			logger.error("Error while fetching tweets counts", e);
-		    json.putAll(getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin."));
+		    result = getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return "jsonp(" + json.toJSONString() + ")";
+		return "jsonp(" + mapper.writeValueAsString(result) + ")";
 	}
 	
 }

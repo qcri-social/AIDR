@@ -886,12 +886,12 @@ public class CollectionServiceImpl implements CollectionService {
 	
 		Long runningCollectionsCount = this.getRunningCollectionsCount();
 		Long totalCollectionCount = this.getTotalCollectionsCount();
-		Long runningCollectionDataCount = this.getRunningCollectionDataCount();;
 		
+		Long totalDataCount = collectionLogService.countTotalTweets() + this.getRunningCollectionDataCount();
 		CollectionStatsInfo collectionStatsInfo = new CollectionStatsInfo();
 		collectionStatsInfo.setTotalCollectionsCount(totalCollectionCount);
-		collectionStatsInfo.setRunningCollectionCount(runningCollectionDataCount);
-		collectionStatsInfo.setTotalDataCount(collectionLogService.countTotalTweets());
+		collectionStatsInfo.setRunningCollectionCount(runningCollectionsCount);
+		collectionStatsInfo.setTotalDataCount(totalDataCount);
 		collectionStatsInfo.setOfflineCollectionCount(totalCollectionCount - runningCollectionsCount);
 		
 		return collectionStatsInfo;

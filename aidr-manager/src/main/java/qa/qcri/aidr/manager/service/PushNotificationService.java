@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.util.NotificationEvent;
+import qa.qcri.aidr.manager.dto.CollectionStatsInfo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pusher.rest.Pusher;
 
 @Service
@@ -32,18 +34,14 @@ public class PushNotificationService {
 	@SuppressWarnings("unchecked")
 	private JSONObject generateResponse(NotificationEvent event) throws Exception {
 		
-		JSONObject jsonData = new JSONObject();
+		ObjectMapper mapper = new ObjectMapper();
+		CollectionStatsInfo collectionStatsInfo = null;
 		if(NotificationEvent.COLLECTION_UPDATED.equals(event)) {
-			Long runningCollectionsCount = collectionService.getRunningCollectionsCount(null);
-			Long totalCollectionCount = collectionService.getTotalCollectionsCount();
-			
-			jsonData.put("total_collection", totalCollectionCount);
-			jsonData.put("total_running", runningCollectionsCount);
-			jsonData.put("new_tweets", 2000);
-			jsonData.put("total_offline", totalCollectionCount - runningCollectionsCount);
+			collectionStatsInfo = collectionService.getCollectionStatistics();
 		}
+		
 		JSONObject responseMessage = new JSONObject();
-		responseMessage.put("data", jsonData);
+		responseMessage.put("data", collectionStatsInfo);
 		return responseMessage;
 	}
 }
