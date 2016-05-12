@@ -1,14 +1,14 @@
 package qa.qcri.aidr.collector.utils;
 
-import qa.qcri.aidr.collector.beans.CollectionTask;
-import qa.qcri.aidr.collector.beans.CollectorStatus;
-import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.CollectorStatus;
+import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 
 /**
  *
@@ -26,7 +26,6 @@ public class GenericCache {
     private Map<String, String> SMSCollections;
     private Map<String, Integer> reconnectAttempts;
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
-    public static int totalCollectionCount = 0;
     
     private GenericCache() {
         twitterTrackerMap = new HashMap<String, TwitterStreamTracker>();
@@ -332,5 +331,17 @@ public class GenericCache {
 
     public void delReconnectAttempts(String key) {
     	reconnectAttempts.remove(key);
+    }
+    
+    public Long getTotalCountSinceLastRestart() {
+    	
+    	Long totalCount = 0L;
+    	for (Map.Entry pairs : countersMap.entrySet()) {
+    		if(pairs.getValue() != null) {
+    			totalCount = totalCount +  (Long) pairs.getValue() ;
+    		}
+    	}
+    	return totalCount;
+    	
     }
 }

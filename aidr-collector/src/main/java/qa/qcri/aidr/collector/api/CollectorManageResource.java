@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -104,6 +106,14 @@ public class CollectorManageResource {
  
     }
 
+    @RequestMapping("/count")
+    @ResponseBody
+    public Map getCollectionCount() {
+    	Map<String, Long> countMap = new HashMap<String, Long>();
+    	countMap.put("count", GenericCache.getInstance().getTotalCountSinceLastRestart());
+    	return countMap;
+    }
+    
     private String runCollection(CollectionTask collection) {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
