@@ -1,4 +1,4 @@
-package qa.qcri.aidr.data;
+package qa.qcri.aidr.data.util;
 
 import java.util.List;
 
@@ -38,5 +38,18 @@ public class CommonUtil {
 			throw new Exception("No user logged in ");
 		}
 	}
-
+	
+	public String getSplittedUserName(String combinedUserName) throws Exception {
+		String userName = combinedUserName;
+		
+		if(combinedUserName.contains(ConstantUtils.USER_NAME_SPLITTER)){
+			String provider = combinedUserName.substring(0,combinedUserName.indexOf(ConstantUtils.USER_NAME_SPLITTER));
+			
+			if(provider.equalsIgnoreCase(SocialSignInProvider.TWITTER) || provider.equalsIgnoreCase(SocialSignInProvider.GOOGLE) || provider.equalsIgnoreCase(SocialSignInProvider.FACEBOOK) ){
+				userName = combinedUserName.substring(combinedUserName.indexOf(ConstantUtils.USER_NAME_SPLITTER) + 1);
+			}
+		}
+		return userName;
+	}
+	
 }

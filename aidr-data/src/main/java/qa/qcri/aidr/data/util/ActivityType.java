@@ -1,7 +1,7 @@
 /**
  * 
  */
-package qa.qcri.aidr.data;
+package qa.qcri.aidr.data.util;
 
 /**
  * @author Latika

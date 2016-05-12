@@ -7,17 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.data.RoleType;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
 import qa.qcri.aidr.data.persistence.entity.UserAccountRole;
 import qa.qcri.aidr.data.repository.UserAccountRepository;
 import qa.qcri.aidr.data.repository.UserAccountRoleRepository;
 import qa.qcri.aidr.data.service.UserService;
+import qa.qcri.aidr.data.util.RoleType;
 
 
 @Service("userService")
 public class UserServiceImpl implements UserService{
-    private Logger logger = Logger.getLogger(getClass());
 
 	//@Resource(name="userRepository")
 	@Autowired

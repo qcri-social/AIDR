@@ -25,8 +25,8 @@ public class UserConnectionServiceImpl implements UserConnectionService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserConnection> getByUserId(String userId) {
-        return userConnectionRepository.findByUserId(userId);
+    public List<UserConnection> getByProviderIdAndUserId (String providerId, String userId) {
+        return userConnectionRepository.findByProviderIdAndUserId(providerId, userId);
     }
 
     @Override

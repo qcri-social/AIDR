@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="resources/css/style.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="resources/css/angular-toastr.min.css" />
+		<link rel="shortcut icon" type="image/ico" href="resources/img/AIDR/icons/aidr_logo_30h.png" />
 		
 	</head>
 	<body ng-app="DataApp" ng-controller="appCtrl" style="overflow: auto">
@@ -19,7 +20,7 @@
         	<div class="header">
         		<div class="col-md-2 col-xs-2" style="padding:0px" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
         			<a href="http://aidr.qcri.org" class="pull-right">
-        				<img src="resources/img/aidr.png" width="140px" height="60px">			
+        				<img src="resources/img/aidr_logo_50h.png">			
         			</a>        			
         		</div>
         		<!-- <div class="col-md-1 col-xs-1 aidr_text_logo" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
@@ -155,7 +156,7 @@
            <!-- <b>Keywords:</b> <p class="text-right" id="key">{{collection.keywords}}</p> -->
         </div>
          <div class="modal-body" >
-           <b>Curator:</b> <p class="text-right">{{collection.curator}}</p>
+           <b>Curator:</b> <p class="text-right">{{splittedName}}</p>
         </div>
         <div class="modal-body">
 			<button ng-hide="busy" ng-disabled="busy" ng-click="openTerms(collection)" class="btn btn-primary center-block">Download 50000 sample tweets </button>
@@ -163,6 +164,7 @@
 			<!-- <button disabled class="btn btn-primary center-block">Download 50000 sample tweets</button> -->
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
+		
     </script>
     <script type="text/ng-template" id="profile.html">
         <div class="modal-header" style="background-color: white">
