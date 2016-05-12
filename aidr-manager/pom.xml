@@ -36,8 +36,11 @@
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
-			
-			
+		</dependency>
+		<dependency>
+		  <groupId>com.pusher</groupId>
+		  <artifactId>pusher-http-java</artifactId>
+		  <version>0.9.3</version>
 		</dependency>
 
 		<dependency>

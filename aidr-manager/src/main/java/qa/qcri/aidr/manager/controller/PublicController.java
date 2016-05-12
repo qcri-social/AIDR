@@ -603,10 +603,14 @@ public class PublicController extends BaseController{
 		try {
 			Long runningCollectionsCount = collectionService.getRunningCollectionsCount(null);
 			Long totalCollectionCount = collectionService.getTotalCollectionsCount();
+			Long new_tweets = 1000L;
+			
 			result.put("total_collection", totalCollectionCount);
 			result.put("total_running", runningCollectionsCount);
 			result.put("total_tweets", collectionLogService.countTotalTweets());
+			result.put("new_tweets", new_tweets);
 			result.put("total_offline", totalCollectionCount - runningCollectionsCount);
+			
 		    json.putAll(getUIWrapper(result,true));
 		} catch (Exception e) {
 			logger.error("Error while fetching tweets counts", e);
