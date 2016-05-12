@@ -208,7 +208,7 @@ color:#000000;
 	opacity: 1;
 	color: #FFFFFF;
 	border: none;
-	margin-top: 60px;
+	margin-top: 15px;
 	/* padding: 0.4em 0.8em;*/
 	font-size: 1em;
 }
@@ -293,9 +293,8 @@ a.svg-menu {
 }
 
 .header img {
-	margin-top: 10px;
 	border-radius: 0px;
-	padding: 8px;
+	padding: 2px;
 	background: none;
 }
 
@@ -352,7 +351,7 @@ a.svg-menu {
 .headerWrapper {
 	background-color: #00a79d;
 	opacity: 1;
-	height: 120px;
+	height: 55px;
 	width: auto;
 	margin: 0;
 	padding: 0;

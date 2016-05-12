@@ -219,7 +219,7 @@ Ext.define('AIDRFM.common.Header', {
 					html : '<div class="headerWrapper">'
 							+ '<div class="header"><a href="http://aidr.qcri.org"><img src="'
 							+ BASE_URL
-							+ '/resources/img/AIDR/aidr_logo_185x90.png"></a>'
+							+ '/resources/img/AIDR/aidr_logo_50h.png"></a>'
 							+ '<div class="dropdown">'
 							+ ' <button><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAMFBMVEUAAAD///////////////////////////////////////////////////////////87TQQwAAAAD3RSTlMAAQ8TFB4fSV6Ag4Wt6/uDY192AAAAQElEQVQoz2NgIAiEXVCAAsP5/yjgOwMq//8vdIHfDO9RBX4y9KEKXGOgCUCz5SqmOzBciuEXDN9ihAc1wGANZAAX+vf+Xu8gUwAAAABJRU5ErkJggg=="/> </button>'
 							+ '<ul class="dropdown-menu">'
