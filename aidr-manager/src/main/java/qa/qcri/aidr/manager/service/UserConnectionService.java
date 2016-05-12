@@ -7,7 +7,12 @@ import java.util.List;
 public interface UserConnectionService {
 	public void register (UserConnection userConnection);
 
-    public List<UserConnection> getByUserId (String userId);
+    public List<UserConnection> getByUserIdAndProviderUserId (String userId, String providerUserId);
 
+    public UserConnection getByUserIdAndProviderId (String userId, String providerId);
+    
     public void update (UserConnection userConnection);
+    
+    public UserConnection fetchByCombinedUserName (String userName);
+    
 }

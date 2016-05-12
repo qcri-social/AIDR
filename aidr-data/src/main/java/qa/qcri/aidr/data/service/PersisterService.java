@@ -14,8 +14,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import qa.qcri.aidr.data.CommonUtil;
 import qa.qcri.aidr.data.config.Configurations;
+import qa.qcri.aidr.data.util.CommonUtil;
 
 
 @Service

@@ -188,6 +188,14 @@ angular.module('DataApp').controller(
 		function($scope, $http, $uibModalInstance, toastr, items) {
 			console.log(items);
 			$scope.collection = items;
+			
+			var userName = $scope.collection.curator;
+			var provider = userName.substring(0, userName.indexOf("-"));
+			if(provider == "twitter" || provider == "facebook" || provider =="google"){
+				userName = userName.substring(userName.indexOf("-")+1);
+			}
+			$scope.splittedName = userName;
+			
 			$scope.downloadTweets = function() {
 			    $scope.busy = true;
 				/*
@@ -214,7 +222,7 @@ angular.module('DataApp').controller(
 					$scope.busy = false;
 					toastr.error('Could not serve download request for now. Please try again later.', 'Error');
 					console.log("failed :(", failure);
-				});
+				});				
 
 			};
 

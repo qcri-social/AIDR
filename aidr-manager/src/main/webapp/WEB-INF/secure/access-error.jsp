@@ -6,13 +6,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>AIDR - Access Error</title>
-    <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/favicon.ico" />
+    <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_30h.png" />
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
 </head>
 <body class="mainbody index">
 
 <div class="headerWrapper">
-    <div class="header"><img src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_240x90.png"></div>
+    <div class="header"><img src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_164x80.png"></div>
 </div>
 
 <div class="mainWraper">
@@ -30,8 +30,9 @@
 <div class="site-footer">
     <div class="footer">
         <div class="right">
-            <a href="http://www.qcri.qa/">A project by
-                <img align="middle" src="${pageContext.request.contextPath}/resources/img/qcri-gray-horiz.png"/></a>
+            <a href="http://www.qcri.qa/">
+			<span style="position: absolute;margin-top: 12px;right: 290px;">A project by</span>
+                <img align="middle" src="${pageContext.request.contextPath}/resources/img/qcri_90h.png"/></a>
         </div>
         <div class="left">
             <a href="http://aidr.data.qcri.org/aidr-data/resources/QSS-Usr-Agr-Print-Version.docx.pdf" target="_blank">Terms of Service</a>

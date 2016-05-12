@@ -51,6 +51,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.CrisisTypeService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.WordDictionaryService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
@@ -71,6 +72,8 @@ public class CollectionServiceImpl implements CollectionService {
 	private CollectionLogRepository collectionLogRepository;
 	@Autowired
 	private UserConnectionRepository userConnectionRepository;
+	@Autowired
+	private UserConnectionService userConnectionService;
 
 	@Autowired
 	private TaggerService taggerService;
@@ -323,7 +326,7 @@ public class CollectionServiceImpl implements CollectionService {
 	public FetcherRequestDTO prepareFetcherRequest(Collection dbCollection) {
 		FetcherRequestDTO dto = new FetcherRequestDTO();
 
-		UserConnection userconnection = userConnectionRepository.fetchbyUsername(dbCollection.getOwner().getUserName());
+		UserConnection userconnection = userConnectionService.fetchByCombinedUserName(dbCollection.getOwner().getUserName());
 		dto.setAccessToken(userconnection.getAccessToken());
 		dto.setAccessTokenSecret(userconnection.getSecret());
 		dto.setConsumerKey(consumerKey);
@@ -654,7 +657,7 @@ public class CollectionServiceImpl implements CollectionService {
 			List<String> userList = Arrays.asList(followList.split(","));
 
 			if (null == accessTokenStr || null == accessTokenSecretStr) {
-				UserConnection userConnection = userConnectionRepository.fetchbyUsername(userName);
+				UserConnection userConnection = userConnectionService.fetchByCombinedUserName(userName);
 				accessTokenStr = userConnection.getAccessToken();
 				accessTokenSecretStr = userConnection.getSecret();
 			}
@@ -721,7 +724,7 @@ public class CollectionServiceImpl implements CollectionService {
 			List<String> userList = Arrays.asList(followList.split(","));
 
 			if (null == accessTokenStr || null == accessTokenSecretStr) {
-				UserConnection userConnection = userConnectionRepository.fetchbyUsername(userName);
+				UserConnection userConnection = userConnectionService.fetchByCombinedUserName(userName);
 				accessTokenStr = userConnection.getAccessToken();
 				accessTokenSecretStr = userConnection.getSecret();
 			}

@@ -7,7 +7,7 @@ Ext.define('AIDRFM.common.Footer', {
         '<div class="footer">' +
 
         '<div class="right">' +
-        '<a href="http://www.qcri.qa/">A project by <img align="middle" src="' + BASE_URL + '/resources/img/qcri-gray-horiz.png"/></a>' +
+        '<a href="http://www.qcri.qa/"><span style="position: absolute;margin-top: 12px;right: 290px;">A project by</span> <img align="middle" src="' + BASE_URL + '/resources/img/qcri_90h.png"/></a>' +
         '</div>' +
 
         '<div class="left">' +

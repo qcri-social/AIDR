@@ -7,6 +7,7 @@
   <script type="text/javascript">
       ATTRIBUTE_ID = ${id};
       USER_ID = ${userId};
+	  SIGNED_IN_PROVIDER = "${signInProvider}";
   </script>
 
 </body>

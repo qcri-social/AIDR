@@ -13,6 +13,7 @@
       USER_NAME = "${userName}";
       TYPE = "${collectionType}";
       COLLECTION_TYPES = ${collectionTypes};
+	  SIGNED_IN_PROVIDER = "${signInProvider}";
   </script>
 
 </body>

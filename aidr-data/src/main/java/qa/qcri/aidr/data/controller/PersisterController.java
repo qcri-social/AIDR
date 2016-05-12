@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import qa.qcri.aidr.data.ActivityType;
-import qa.qcri.aidr.data.CommonUtil;
+import qa.qcri.aidr.data.util.ActivityType;
+import qa.qcri.aidr.data.util.CommonUtil;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
 import qa.qcri.aidr.data.persistence.entity.UserAccountActivity;
 import qa.qcri.aidr.data.service.PersisterService;

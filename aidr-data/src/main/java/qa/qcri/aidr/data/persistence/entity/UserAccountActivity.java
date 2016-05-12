@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import qa.qcri.aidr.data.ActivityType;
+import qa.qcri.aidr.data.util.ActivityType;
 
 @Entity
 @Table(name="account_activity")

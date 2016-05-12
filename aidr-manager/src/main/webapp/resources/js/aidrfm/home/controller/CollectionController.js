@@ -48,7 +48,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
 
         this.mainComponent = component;
         collectionController = this;
-
+        
         var me = this;
 
         var isFirstRun = true;
@@ -62,6 +62,11 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
 //            5 minutes
             interval: 5 * 60 * 1000
         });
+        
+        //Disabling Create Collection Button if provider is not twitter
+        if(SIGNED_IN_PROVIDER != "twitter"){
+			this.mainComponent.newCollectionButton.disable();
+		}
     },
 
     startCollectionCheck: function(id, name, ownerName, ownerId) {
