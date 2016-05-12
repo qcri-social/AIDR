@@ -5,6 +5,7 @@ import java.util.List;
 import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionStatsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
@@ -92,4 +93,10 @@ public interface CollectionService {
 	public List<CollectionBriefInfo> getMicromappersFilteredCollections(boolean micromappersEnabled);
 
 	Long getTotalCollectionsCount();
+	
+	public Long getRunningCollectionsCount();
+
+	Long getRunningCollectionDataCount();
+
+	CollectionStatsInfo getCollectionStatistics();
 }

@@ -30,6 +30,7 @@ import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionStatsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
@@ -600,6 +601,11 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 	
 	@Override
+	public Long getRunningCollectionsCount() {
+		return collectionRepository.getRunningCollectionsCount("");
+	}
+	
+	@Override
 	@Transactional(readOnly = true)
 	public Long getTotalCollectionsCount() {
 		return collectionRepository.getTotalCollectionsCount();
@@ -850,6 +856,45 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 		
 		return briefInfos;
+	}
+
+	@Override
+	public Long getRunningCollectionDataCount() {
+	
+		Long collectionCountSinceLastRestart = 0L;
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+
+		try {
+			WebTarget webResource = client.target(fetchMainUrl + "/manage/count");
+
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonString = clientResponse.readEntity(String.class);
+			JSONParser parser = new JSONParser();
+			JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+			collectionCountSinceLastRestart = (Long) jsonResponse.get("count");
+		} catch (Exception e) {
+			logger.warn("Error while fetching count", e);
+		}
+		
+		return collectionCountSinceLastRestart;
+		
+	}
+	
+	@Override
+	public CollectionStatsInfo getCollectionStatistics() {
+	
+		Long runningCollectionsCount = this.getRunningCollectionsCount();
+		Long totalCollectionCount = this.getTotalCollectionsCount();
+		Long runningCollectionDataCount = this.getRunningCollectionDataCount();;
+		
+		CollectionStatsInfo collectionStatsInfo = new CollectionStatsInfo();
+		collectionStatsInfo.setTotalCollectionsCount(totalCollectionCount);
+		collectionStatsInfo.setRunningCollectionCount(runningCollectionDataCount);
+		collectionStatsInfo.setTotalDataCount(collectionLogService.countTotalTweets());
+		collectionStatsInfo.setOfflineCollectionCount(totalCollectionCount - runningCollectionsCount);
+		
+		return collectionStatsInfo;
 	}
 	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
