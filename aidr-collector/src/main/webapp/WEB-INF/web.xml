@@ -5,29 +5,24 @@
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
-    <!-- servlet>
-        <servlet-name>ServletAdaptor</servlet-name>
-        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet -->
-    
-    <!--  servlet-mapping>
-        <servlet-name>ServletAdaptor</servlet-name>
-        <url-pattern>/*</url-pattern>
-    </servlet-mapping -->
-<!--    <listener>
-    <listener-class>qa.qcri.aidr.fetcher.init.InitNDestroyTomcat</listener-class>
-    </listener>-->
-    
-    <!--  servlet>
-		<servlet-name>qa.qcri.aidr.collector.global.ApplicationConfig</servlet-name>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	    <context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>WEB-INF/spring-servlet.xml</param-value>
+	</context-param>
+
+	<servlet>
+		<servlet-name>aidr</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>qa.qcri.aidr.collector.global.ApplicationConfig</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping -->
-	
+		<servlet-name>aidr</servlet-name>
+		<url-pattern>/webresources/*</url-pattern>
+	</servlet-mapping>
+
     <session-config>
         <session-timeout>
             30

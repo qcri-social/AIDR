@@ -1176,17 +1176,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'generateJsonTweetIdsLink'
         });
 
-        this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
-            minChars: 0,
-            width: 300,
-            pageSize: true,
-            triggerAction: 'query',
-            margin: '1 0 0 0',
-            emptyText: 'Please select a user',
-            displayField: 'userName',
-            valueField: 'id',
-            store: {
-                fields: ['id', 'userName'],
+		this.userStore = Ext.create('Ext.data.JsonStore', { 
+			fields: ['id', 'userName'],
                 pageSize: 10,
                 proxy: {
                     type: 'ajax',
@@ -1196,9 +1187,33 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         type: 'json'
                     }
                 }
-            }
+		
+		});
+		
+		this.usersTpl = new Ext.XTemplate(
+			'<tpl for=".">' +
+				'<div style="height:30px;padding-top: 5px" class="x-boundlist-item">'+
+				'{[AIDRFMFunctions.getUserNameWithProviderIcon(values.userName, true)]}'+
+				'</div>' +              
+			'</tpl>'
+		);
+		
+        this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
+            minChars: 0,
+            width: 300,
+            pageSize: true,
+            triggerAction: 'query',
+            margin: '1 0 0 0',
+            emptyText: 'Please select a user',
+            displayField: 'userName',
+            valueField: 'id',
+		    store: this.userStore,
+            
+			tpl: this.usersTpl
+							
         });
-
+		
+		
         this.addManagerInfo = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
@@ -1224,7 +1239,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls: 'aidr-grid',
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'userName', text: 'Collaborator', flex: 1
+                    xtype: 'gridcolumn', dataIndex: 'userName', text: 'Collaborator', flex: 1,
+					renderer: function (recordValue, metaData, record, rowIdx, colIdx, store) {
+						return AIDRFMFunctions.getUserNameWithProviderIcon(record.data.userName, true);
+					}
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'id', text: 'Action', width: 205, sortable: false,
@@ -1304,6 +1322,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 fields: 'endDate',
                 position: 'bottom',
                 grid: true,
+                hidden: true,
                 label:{
                     rotate: {
                                 degrees: -90

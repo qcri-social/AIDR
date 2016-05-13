@@ -12,19 +12,20 @@
 		<link rel="stylesheet" href="resources/css/style.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="resources/css/angular-toastr.min.css" />
+		<link rel="shortcut icon" type="image/ico" href="resources/img/AIDR/icons/aidr_logo_30h.png" />
 		
 	</head>
 	<body ng-app="DataApp" ng-controller="appCtrl" style="overflow: auto">
 		<div class="headerWrapper">
         	<div class="header">
-        		<div class="col-md-1 col-xs-1" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
-        			<a href="http://aidr.qcri.org" class="pull-right">
-        				<img src="resources/img/AIDR/aidr_triangle_105x90.png" width="40" height="40">			
+        		<div class="col-md-2 col-xs-2" style="padding-left: 55px; margin-top: -6px" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
+        			<a href="http://aidr.qcri.org" class="pull-left">
+        				<img src="resources/img/aidr_logo_50h.png">			
         			</a>        			
         		</div>
-        		<div class="col-md-1 col-xs-1 aidr_text_logo" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
+        		<!-- <div class="col-md-1 col-xs-1 aidr_text_logo" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
         			<span>AIDR</span>
-        		</div>
+        		</div> -->
         		<div class="col-md-6 col-xs-3">        			
         		</div>
         		<div class="col-md-2 col-xs-4">
@@ -115,7 +116,7 @@
 	        <h4 class="modal-title" id="myModalLabel">User Agreement</h4>
 	      </div>
 	      <div class="modal-body">
-	        This User Agreement (hereinafter referred to as the 'Agreement') is entered into on the Users date of registration on the Rayyan website, and is made by and between the User and Qatar Computing Research Institute (hereinafter referred to as "QCRI"), a centre of Qatar Foundation for Education, Science and Community Development (hereinafter referred to as "QF").
+	        <iframe src="https://drive.google.com/a/metacube.com/file/d/0Bzst6Nh0RVDHby0tejdBUFp6anc/preview" width="100%" height="300"></iframe>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" ng-hide="busy" ng-disabled="busy" ng-click="downloadTweets()">Agree & Download</button>
@@ -155,7 +156,7 @@
            <!-- <b>Keywords:</b> <p class="text-right" id="key">{{collection.keywords}}</p> -->
         </div>
          <div class="modal-body" >
-           <b>Curator:</b> <p class="text-right">{{collection.curator}}</p>
+           <b>Curator:</b> <p class="text-right">{{splittedName}}</p>
         </div>
         <div class="modal-body">
 			<button ng-hide="busy" ng-disabled="busy" ng-click="openTerms(collection)" class="btn btn-primary center-block">Download 50000 sample tweets </button>
@@ -163,6 +164,7 @@
 			<!-- <button disabled class="btn btn-primary center-block">Download 50000 sample tweets</button> -->
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
+		
     </script>
     <script type="text/ng-template" id="profile.html">
         <div class="modal-header" style="background-color: white">
@@ -207,10 +209,12 @@
     <div class="footer navbar-fixed-bottom" id="footer">
       	<div class="footer">
       		<div class="right">
-  	    		<a href="http://www.qcri.qa/">A project by <img align="middle" src="resources/img/qcri-gray-horiz.png"/></a>
+  	    		<a href="http://www.qcri.qa/">
+  	    		<span style="position: absolute;margin-top: 15px;right: 120px;">A project by</span>
+  	    		<img align="middle" src="resources/img/qcri_75x60.png"/></a>
       		</div>
 	        <div class="left">
-	   	    	<a href="http://aidr.qcri.org/r/tos/">Terms of Service</a>
+	   	    	<a href="resources/QSS-Usr-Agr-Print-Version.docx.pdf" target="_blank">Terms of Service</a>
 	       		<a href="http://aidr.qcri.org/r/manual">Help</a>
 	       		<a href="http://aidr.qcri.org/r/credits">Credits</a>
 	       	</div>

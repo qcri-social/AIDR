@@ -83,14 +83,14 @@ public class TWBTranslationServiceImpl implements TranslationService {
         boolean forceProcessingByTime = false;
         long currentTimeMillis = System.currentTimeMillis();
          // every 12hours
-        if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= MAX_CHECK_TIME_MILLIS) {
+      //  if ((currentTimeMillis - timeOfLastTranslationProcessingMillis) >= MAX_CHECK_TIME_MILLIS) {
             Calendar calendar = Calendar.getInstance();
             int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
             if(dayOfWeek == Calendar.MONDAY || dayOfWeek == Calendar.WEDNESDAY || dayOfWeek == Calendar.FRIDAY ) {
                 forceProcessingByTime = true;
             }
-        }
+     //   }
 
         if ((forceProcessingByTime || translations.size() >= maxBatchSize) && (translations.size() > 0)) {
             while (true) {
@@ -184,14 +184,16 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     private void processTranslationDocument(String download_link, String selfLink, Integer orderId, Integer projectId) throws Exception {
         try {
-            String content = TranslationCenterCommunicator.getTranslationDocumentContent(download_link);
-
-          /**  if(orderId== 43513 || orderId == 43678 )
+           int translationCount = taskTranslationDao.countAllTranslationsByOrderID(orderId);
+           if(translationCount > 0 )
             {
+                String content = TranslationCenterCommunicator.getTranslationDocumentContent(download_link);
+
                 processResponseDocumentContent(content, orderId, projectId);
+                TranslationCenterCommunicator.updateTranslationOrder(selfLink, "accepted", "Translation was accepted");
             }
-              **/
-            TranslationCenterCommunicator.updateTranslationOrder(selfLink, "accepted", "Translation was accepted");
+
+
         } catch (Exception exception) {
             logger.debug("Exception caught: " + exception.toString());
             TranslationCenterCommunicator.updateTranslationOrder(selfLink, "rejected", exception.toString());
@@ -240,11 +242,10 @@ public class TWBTranslationServiceImpl implements TranslationService {
             }
         }
 
-
         if (taskTranslation == null) {
             logger.error("No translation task found for id:" + taskId);
-            return;
-            //throw new RuntimeException("No translation task found for id:" + taskId);
+            //return;
+            throw new RuntimeException("No translation task found for id:" + taskId);
         } else if (taskTranslation.getTwbOrderId() == null) {
             logger.error("No TWB order number found for id:" + taskId);
             throw new RuntimeException("No TWB order number found for id:" + taskId);

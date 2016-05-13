@@ -14,6 +14,7 @@
       MODEL_NAME = "${modelName}";
       TYPE = "${collectionType}";
       COLLECTION_TYPES = ${collectionTypes};
+	  SIGNED_IN_PROVIDER = "${signInProvider}";
   </script>
 
 </body>

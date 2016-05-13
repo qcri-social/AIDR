@@ -24,6 +24,7 @@ import javax.persistence.Table;
 
 import org.hibernate.Hibernate;
 
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
@@ -96,7 +97,7 @@ public class Collection implements java.io.Serializable {
     private boolean isMicromapperEnabled;
     
     @Column(name="usage_type")
-    private String usageType;
+    private UsageType usageType;
 
     @ManyToOne
     @JoinColumn(name="classifier_enabled_by")
@@ -421,20 +422,20 @@ public class Collection implements java.io.Serializable {
 		this.status = status;
 	}
 
-	public String getUsageType() {
-		return usageType;
-	}
-
-	public void setUsageType(String usageType) {
-		this.usageType = usageType;
-	}
-
 	public boolean isSaveMediaEnabled() {
 		return saveMediaEnabled;
 	}
 
 	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
 		this.saveMediaEnabled = saveMediaEnabled;
+	}
+
+	public UsageType getUsageType() {
+		return usageType;
+	}
+
+	public void setUsageType(UsageType usageType) {
+		this.usageType = usageType;
 	}
 
 }

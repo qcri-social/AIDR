@@ -19,14 +19,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionStatsInfo;
 import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
@@ -47,6 +51,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.CrisisTypeService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.WordDictionaryService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
@@ -60,13 +65,15 @@ import twitter4j.auth.AccessToken;
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
 
-	private Logger logger = Logger.getLogger(getClass());
+	private final Logger logger = Logger.getLogger(getClass());
 	@Autowired
 	private CollectionRepository collectionRepository;
 	@Autowired
 	private CollectionLogRepository collectionLogRepository;
 	@Autowired
 	private UserConnectionRepository userConnectionRepository;
+	@Autowired
+	private UserConnectionService userConnectionService;
 
 	@Autowired
 	private TaggerService taggerService;
@@ -194,6 +201,7 @@ public class CollectionServiceImpl implements CollectionService {
 		
 		Collection collection = adaptCollectionDetailsInfoToCollection(collectionDetailsInfo, user);
 		collection.setTrack(filteredTrack);
+		collection.setUsageType(UsageType.Production);
 		try {
 			collectionRepository.save(collection);
 			collaboratorService.addCollaboratorToCollection(collectionDetailsInfo.getCode(), user.getId());
@@ -318,7 +326,7 @@ public class CollectionServiceImpl implements CollectionService {
 	public FetcherRequestDTO prepareFetcherRequest(Collection dbCollection) {
 		FetcherRequestDTO dto = new FetcherRequestDTO();
 
-		UserConnection userconnection = userConnectionRepository.fetchbyUsername(dbCollection.getOwner().getUserName());
+		UserConnection userconnection = userConnectionService.fetchByCombinedUserName(dbCollection.getOwner().getUserName());
 		dto.setAccessToken(userconnection.getAccessToken());
 		dto.setAccessTokenSecret(userconnection.getSecret());
 		dto.setConsumerKey(consumerKey);
@@ -392,9 +400,11 @@ public class CollectionServiceImpl implements CollectionService {
 						.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
 
 				//logger.info("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
-				String jsonResponse = clientResponse.readEntity(String.class);
+				String jsonString = clientResponse.readEntity(String.class);
+				JSONParser parser = new JSONParser();
+				JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
 				//logger.info("NEW STRING: " + jsonResponse);
-				FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
+				FetcheResponseDTO response = objectMapper.readValue(jsonResponse.get("entity").toString(), FetcheResponseDTO.class);
 				logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
 				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
 			} else if (CollectionType.SMS.equals(collection.getProvider())) {
@@ -456,9 +466,10 @@ public class CollectionServiceImpl implements CollectionService {
 
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			String jsonResponse = clientResponse.readEntity(String.class);
-
-			collection = updateStatusCollection(jsonResponse, collection, userId);
+			String jsonString = clientResponse.readEntity(String.class);
+			JSONParser parser = new JSONParser();
+			JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+			collection = updateStatusCollection(jsonResponse.get("entity").toString(), collection, userId);
 
 			/**
 			 * Change Database Status
@@ -559,9 +570,11 @@ public class CollectionServiceImpl implements CollectionService {
 
 				WebTarget webResource = client.target(fetchMainUrl + path + URLEncoder.encode(collection.getCode(), "UTF-8"));
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-
-				String jsonResponse = clientResponse.readEntity(String.class);
-				collection = updateStatusCollection(jsonResponse, collection, accountId);
+					
+				String jsonString = clientResponse.readEntity(String.class);
+				JSONParser parser = new JSONParser();
+				JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+				collection = updateStatusCollection(jsonResponse.get("entity").toString(), collection, accountId);
 				return collection;
 			} catch (Exception e) {
 				String msg = "Error while getting status for collection from Remote FetchMain Collection";
@@ -588,6 +601,17 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional(readOnly = true)
 	public Long getRunningCollectionsCount(String terms) throws Exception {
 		return collectionRepository.getRunningCollectionsCount(terms);
+	}
+	
+	@Override
+	public Long getRunningCollectionsCount() {
+		return collectionRepository.getRunningCollectionsCount("");
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Long getTotalCollectionsCount() {
+		return collectionRepository.getTotalCollectionsCount();
 	}
 
 	@Override
@@ -633,7 +657,7 @@ public class CollectionServiceImpl implements CollectionService {
 			List<String> userList = Arrays.asList(followList.split(","));
 
 			if (null == accessTokenStr || null == accessTokenSecretStr) {
-				UserConnection userConnection = userConnectionRepository.fetchbyUsername(userName);
+				UserConnection userConnection = userConnectionService.fetchByCombinedUserName(userName);
 				accessTokenStr = userConnection.getAccessToken();
 				accessTokenSecretStr = userConnection.getSecret();
 			}
@@ -700,7 +724,7 @@ public class CollectionServiceImpl implements CollectionService {
 			List<String> userList = Arrays.asList(followList.split(","));
 
 			if (null == accessTokenStr || null == accessTokenSecretStr) {
-				UserConnection userConnection = userConnectionRepository.fetchbyUsername(userName);
+				UserConnection userConnection = userConnectionService.fetchByCombinedUserName(userName);
 				accessTokenStr = userConnection.getAccessToken();
 				accessTokenSecretStr = userConnection.getSecret();
 			}
@@ -811,10 +835,10 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	@Override
-	public List<CollectionSummaryInfo> getAllCollectionData() {
+	public List<CollectionSummaryInfo> getAllCollectionDataByUsage(UsageType usage) {
 		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
 		
-		List<Collection> collections = collectionRepository.getAllCollections();
+		List<Collection> collections = collectionRepository.getAllCollectionsByUsage(usage);
 		if(collections != null) {
 			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
 		}
@@ -835,6 +859,45 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 		
 		return briefInfos;
+	}
+
+	@Override
+	public Long getRunningCollectionDataCount() {
+	
+		Long collectionCountSinceLastRestart = 0L;
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+
+		try {
+			WebTarget webResource = client.target(fetchMainUrl + "/manage/count");
+
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonString = clientResponse.readEntity(String.class);
+			JSONParser parser = new JSONParser();
+			JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+			collectionCountSinceLastRestart = (Long) jsonResponse.get("count");
+		} catch (Exception e) {
+			logger.warn("Error while fetching count", e);
+		}
+		
+		return collectionCountSinceLastRestart;
+		
+	}
+	
+	@Override
+	public CollectionStatsInfo getCollectionStatistics() {
+	
+		Long runningCollectionsCount = this.getRunningCollectionsCount();
+		Long totalCollectionCount = this.getTotalCollectionsCount();
+		
+		Long totalDataCount = collectionLogService.countTotalTweets() + this.getRunningCollectionDataCount();
+		CollectionStatsInfo collectionStatsInfo = new CollectionStatsInfo();
+		collectionStatsInfo.setTotalCollectionsCount(totalCollectionCount);
+		collectionStatsInfo.setRunningCollectionCount(runningCollectionsCount);
+		collectionStatsInfo.setTotalDataCount(totalDataCount);
+		collectionStatsInfo.setOfflineCollectionCount(totalCollectionCount - runningCollectionsCount);
+		
+		return collectionStatsInfo;
 	}
 	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		

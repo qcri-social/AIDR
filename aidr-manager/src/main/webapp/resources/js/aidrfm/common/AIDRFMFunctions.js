@@ -192,7 +192,33 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         else
             return results[1];
     },
-
+    
+    getSplittedUserName: function (fullUserName) {
+		var userName = fullUserName;
+		var provider = fullUserName.substring(0, fullUserName.indexOf("-"));
+		if(provider == "twitter" || provider == "facebook" || provider =="google"){
+			userName = fullUserName.substring(fullUserName.indexOf("-")+1);
+		}
+		return userName;
+	},
+	
+	getProviderFromUserName: function (fullUserName) {
+		var provider = fullUserName.substring(0, fullUserName.indexOf("-"));
+		if(provider != "twitter" && provider != "facebook" && provider !="google"){
+			provider = "twitter";
+		}
+		return provider;
+	},
+	
+	getUserNameWithProviderIcon: function (fullUserName, alignLeft) {
+		if(alignLeft){
+			return  '<img src="'+BASE_URL+'/resources/img/icons/coloured/'+this.getProviderFromUserName(fullUserName)+'-circular-icon.png" height="20px" align="left">&nbsp;&nbsp;'+this.getSplittedUserName(fullUserName);
+		}
+		else{
+			return  '<img src="'+BASE_URL+'/resources/img/icons/coloured/'+this.getProviderFromUserName(fullUserName)+'-circular-icon.png" height="20px">&nbsp;&nbsp;'+this.getSplittedUserName(fullUserName);
+		}
+	},
+	
     getStatusWithStyle: function(raw, collectionType) {
         var statusText = '';
         var status = collectionType === 'Twitter' ? 'Running' : 'Collecting Live SMS';
@@ -288,6 +314,7 @@ Ext.Ajax.on('requestexception', function (conn, response, options) {
         }
     }
 });
+
 
 Ext.Date.patterns = {
     ISO8601Long:"Y-m-d H:i:s",

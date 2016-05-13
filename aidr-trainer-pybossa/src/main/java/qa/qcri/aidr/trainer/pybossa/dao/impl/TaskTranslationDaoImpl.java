@@ -1,6 +1,7 @@
 package qa.qcri.aidr.trainer.pybossa.dao.impl;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -71,4 +72,9 @@ public class TaskTranslationDaoImpl extends AbstractDaoImpl<TaskTranslation, Str
 		saveOrUpdate(taskTranslation);
 	}
 
+    @Override
+    public int countAllTranslationsByOrderID(Integer orderId) {
+        List<TaskTranslation> translations = findByCriteria(Restrictions.eq("twbOrderId", new Long(orderId)));
+        return translations.size();
+    }
 }

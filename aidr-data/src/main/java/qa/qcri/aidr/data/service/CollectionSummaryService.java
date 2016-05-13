@@ -24,8 +24,15 @@ public class CollectionSummaryService {
 	private CollectionSummaryDao collectionSummaryDao;
 	
     public List<CollectionSummaryInfo> fetchAllCollections() {
-        List<CollectionSummary> aidrData = collectionSummaryDao.getAllCollections();
-        return adaptCollectionSummaryListToCollectionSummaryInfoList(aidrData);
+        List<CollectionSummary> collectionSummaries = collectionSummaryDao.getAllCollections();
+        
+        List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
+    	
+    	for(CollectionSummary collectionSummary : collectionSummaries) {
+    		collectionSummaryInfos.add(adaptCollectionSummaryToCollectionSummaryInfo(collectionSummary));
+    	}
+    	
+        return collectionSummaryInfos;
     }
     
     public void saveUpdateCollectionSummary(CollectionSummaryInfo collectionSummaryInfo) {
@@ -65,17 +72,6 @@ public class CollectionSummaryService {
     	collectionSummary.setPubliclyListed(summaryInfo.isPubliclyListed());
     	
     	return collectionSummary;
-    }
-    
-    private List<CollectionSummaryInfo> adaptCollectionSummaryListToCollectionSummaryInfoList(List<CollectionSummary> collectionSummaries) {
-    	
-    	List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
-    	
-    	for(CollectionSummary collectionSummary : collectionSummaries) {
-    		collectionSummaryInfos.add(adaptCollectionSummaryToCollectionSummaryInfo(collectionSummary));
-    	}
-
-    	return collectionSummaryInfos;
     }
     
     private CollectionSummaryInfo adaptCollectionSummaryToCollectionSummaryInfo(CollectionSummary collectionSummary) {

@@ -36,13 +36,11 @@
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hibernate</groupId>
-					<artifactId>hibernate-entitymanager</artifactId>
-				</exclusion>
-			</exclusions>
-			
+		</dependency>
+		<dependency>
+		  <groupId>com.pusher</groupId>
+		  <artifactId>pusher-http-java</artifactId>
+		  <version>0.9.3</version>
 		</dependency>
 
 		<dependency>
@@ -109,7 +107,16 @@
 			<artifactId>spring-social-twitter</artifactId>
 			<version>${spring-social-twitter}</version>
 		</dependency>
-
+		<dependency>
+		    <groupId>org.springframework.social</groupId>
+		    <artifactId>spring-social-facebook</artifactId>
+		    <version>2.0.3.RELEASE</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework.social</groupId>
+		  <artifactId>spring-social-google</artifactId>
+		  <version>1.0.0.RELEASE</version>
+		</dependency>
 		<!-- MySQL database driver -->
 		<dependency>
 			<groupId>mysql</groupId>

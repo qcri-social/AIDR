@@ -46,9 +46,6 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     private TaskQueueService taskQueueService;
 
     @Autowired
-    private TaskLogService taskLogService;
-
-    @Autowired
     private ClientAppResponseService clientAppResponseService;
 
     private Client client;

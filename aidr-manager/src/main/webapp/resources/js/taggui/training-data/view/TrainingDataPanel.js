@@ -99,7 +99,7 @@ No use for this label as all the information is rendered in a single taggerDescr
                 {
                     xtype: 'gridcolumn', dataIndex: 'labelerName', text: 'Tagger', width: 150,
                     renderer: function (value, meta, record) {
-                        return me.getField(value);
+                        return AIDRFMFunctions.getUserNameWithProviderIcon(value, true);
                     }
                 },
                 {

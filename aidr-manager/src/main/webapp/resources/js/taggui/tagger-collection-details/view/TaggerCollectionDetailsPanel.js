@@ -201,7 +201,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                     '<tr class="crisis-item">',
 
                                                     '<td class="img" width="100px">',
-                                                    '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">',
+                                                    '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/aidr_logo_70x59.png" width="70" height="70">',
                                                     '</td>',
 
                                                     '<td class="content pdng-r-0"><table  width="100%"><tr>',
@@ -987,7 +987,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                      });
 
            this.microMappersUI = Ext.create('Ext.form.Label', {
-                    html: '<table><td class="styled-text-14" width="750px"><a href="http://micromappers.org/">MicroMappers</a> is a volunteer community for digital disaster response. If you want to allow your classifier to receive human-tagged items from volunteers through MicroMappers, click on "Enable MicroMappers".<br><br>Please note you will have to invite the volunteers yourself through social media and other channels, we will provide you a unique URL for your classifiers.<br><br>By using MicroMappers you are making your data publicly visible to anyone on the web, see the <a href="http://aidr.qcri.org/r/tos">Terms of Service</a> if you have any questions.</td></table>',
+                    html: '<table><td class="styled-text-14" width="750px"><a href="http://micromappers.org/">MicroMappers</a> is a volunteer community for digital disaster response. If you want to allow your classifier to receive human-tagged items from volunteers through MicroMappers, click on "Enable MicroMappers".<br><br>Please note you will have to invite the volunteers yourself through social media and other channels, we will provide you a unique URL for your classifiers.<br><br>By using MicroMappers you are making your data publicly visible to anyone on the web, see the <a href="http://aidr.data.qcri.org/aidr-data/resources/QSS-Usr-Agr-Print-Version.docx.pdf" target="_blank">Terms of Service</a> if you have any questions.</td></table>',
                     flex:1
             });
 

@@ -36,18 +36,16 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 
 	@Override
 	public int insertTaskAssignment(List<DocumentDTO> taskList, Long userID) {
-		// hard code, will create user service
 		logger.debug("[insertTaskAssignment] Going to insert/create task list of size = " + taskList.size() + ", for userID: " + userID);
 		try {
-			for (Iterator<DocumentDTO> it = taskList.iterator(); it.hasNext();){
-				DocumentDTO tb = (DocumentDTO) it.next();
-				List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("id.documentId", tb.getDocumentID()));
-				if(null == taskAssignments || taskAssignments.size()== 0){
+			for (DocumentDTO documentDTO : taskList) {
+				/*List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("id.documentId", documentDTO.getDocumentID()));
+				if(null == taskAssignments || taskAssignments.size()== 0){*/
 					// No assigned tasks currently for user
-					TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
+					TaskAssignment taskAssignment = new TaskAssignment(documentDTO.getDocumentID(), userID, new Date());
 					save(taskAssignment);
 					em.flush();
-				}
+//				}
 			}
 			return 1;
 		} catch (Exception e) {
