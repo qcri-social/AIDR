@@ -88,10 +88,7 @@ public class HomeController {
 		UserAccount userAccount = commonUtil.getAuthenticatedUser();
 		UserConnection userConnection = null;
 		
-		List<UserConnection> userConnections = userConnectionService.getByProviderIdAndUserId(userAccount.getProvider(), commonUtil.getSplittedUserName(userAccount.getUserName()));
-		if (userConnections != null && !userConnections.isEmpty()) {
-			userConnection = userConnections.get(0);
-		}
+		userConnection = userConnectionService.getByProviderIdAndUserId(userAccount.getProvider(), commonUtil.getSplittedUserName(userAccount.getUserName()));
 		JSONObject jsonObject = getUserProfile(userAccount, userConnection);	
 		return jsonObject;
   		

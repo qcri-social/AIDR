@@ -71,7 +71,7 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 		if (allConnections.size() > 0) {
 			Authentication authentication = null;
 			if(springSocialProfile == null){
-				UserConnection userProfile = userConnectionService.getByProviderIdAndUserId(provider, userName).get(0);
+				UserConnection userProfile = userConnectionService.getByProviderIdAndUserId(provider, userName);
 				authentication = authenticationFactory.createAuthenticationForAllConnections(combinedUserName,
 						userProfile.getAccessToken(),allConnections);
 			}else{

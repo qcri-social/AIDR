@@ -50,15 +50,19 @@ public class UserConnectionSignUp implements ConnectionSignUp {
 	        userConnection.setDisplayName(data.getDisplayName());
 	        userConnection.setRank(1);
 	        userConnectionService.register(userConnection);
-	        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-	        UserAccount user = new UserAccount();
-	        // TODO move to hibernate level
-	        user.setApiKey(UUID.randomUUID().toString());
-	        user.setCreatedAt(currentTimestamp);
-	        user.setUpdatedAt(currentTimestamp);
-	        user.setProvider(data.getProviderId());
-	        user.setUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getUsername());
-	        userService.save(user);
+	        
+	        if(userService.fetchByUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getUsername()) == null){
+	        	Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		        UserAccount user = new UserAccount();
+		        // TODO move to hibernate level
+		        user.setApiKey(UUID.randomUUID().toString());
+		        user.setCreatedAt(currentTimestamp);
+		        user.setUpdatedAt(currentTimestamp);
+		        user.setProvider(data.getProviderId());
+		        user.setUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getUsername());
+		        userService.save(user);
+	        }
+	        
 	        return profile.getUsername();
 	        
 		}else if (connection instanceof OAuth2Connection) {
@@ -79,15 +83,17 @@ public class UserConnectionSignUp implements ConnectionSignUp {
 			userConnection.setRank(1);
 			userConnectionService.register(userConnection);
 			
-			Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-			UserAccount user = new UserAccount();
-			user.setApiKey(UUID.randomUUID().toString());
-			user.setCreatedAt(currentTimestamp);
-			user.setUpdatedAt(currentTimestamp);
-			user.setProvider(data.getProviderId());
-			user.setUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getEmail());
-			user.setEmail(profile.getEmail());
-			userService.save(user);
+			if(userService.fetchByUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getEmail()) == null){
+				Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+				UserAccount user = new UserAccount();
+				user.setApiKey(UUID.randomUUID().toString());
+				user.setCreatedAt(currentTimestamp);
+				user.setUpdatedAt(currentTimestamp);
+				user.setProvider(data.getProviderId());
+				user.setUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getEmail());
+				user.setEmail(profile.getEmail());
+				userService.save(user);
+			}
 			
 			return profile.getEmail();
 		}
