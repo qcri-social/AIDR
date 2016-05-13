@@ -1322,6 +1322,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 fields: 'endDate',
                 position: 'bottom',
                 grid: true,
+                hidden: true,
                 label:{
                     rotate: {
                                 degrees: -90
