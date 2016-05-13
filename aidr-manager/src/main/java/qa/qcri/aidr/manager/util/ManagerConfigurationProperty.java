@@ -32,7 +32,10 @@ public enum ManagerConfigurationProperty implements ConfigurationProperty {
 			"fetchMainUrl"), TAGGER_MAIN_URL("taggerMainUrl"), PERSISTER_MAIN_URL(
 			"persisterMainUrl"), CROWDSOURCING_API_MAIN_URL(
 			"crowdsourcingAPIMainUrl"), OUTPUT_MAIN_URL("outputAPIMainUrl"), SERVER_URL(
-			"serverUrl"), COLLECTION_COUNT_UPDATE_CRON("collection.update.notification.cron");
+			"serverUrl"), COLLECTION_COUNT_UPDATE_CRON("collection.update.notification.cron"),
+			PUSHER_APP_ID("pusher.app.id"),
+			PUSHER_APP_KEY("pusher.app.key"),
+			PUSHER_APP_SECRET("pusher.app.secret");
 
 	private final String configurationProperty;
 

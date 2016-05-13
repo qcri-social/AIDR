@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.util.NotificationEvent;
 import qa.qcri.aidr.manager.dto.CollectionStatsInfo;
+import qa.qcri.aidr.manager.util.ManagerConfigurationProperty;
+import qa.qcri.aidr.manager.util.ManagerConfigurator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pusher.rest.Pusher;
@@ -19,9 +21,25 @@ public class PushNotificationService {
 	@Autowired
 	private CollectionService collectionService;
 	
+	private static String pusherAppID;
+	
+	private static String pusherAppKey;
+	
+	private static String pusherAppSecret;
+	
+	public PushNotificationService() {
+		super();
+		pusherAppID = ManagerConfigurator.getInstance().getProperty
+				(ManagerConfigurationProperty.PUSHER_APP_ID);
+		pusherAppKey = ManagerConfigurator.getInstance().getProperty
+				(ManagerConfigurationProperty.PUSHER_APP_KEY);
+		pusherAppSecret = ManagerConfigurator.getInstance().getProperty
+				(ManagerConfigurationProperty.PUSHER_APP_SECRET);
+	}
+
 	public void publishMessage(String channel, NotificationEvent event) {
 
-		Pusher pusher = new Pusher("143040", "1eb98c94c2976297709d", "cd8e0fcfc1cc785ccd4a");
+		Pusher pusher = new Pusher(pusherAppID, pusherAppKey, pusherAppSecret);
 		
 		try {
 			pusher.trigger(channel, event.name(), generateResponse(event));
