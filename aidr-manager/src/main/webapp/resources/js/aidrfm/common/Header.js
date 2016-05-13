@@ -45,7 +45,7 @@ UserController.service = {
 		});
 
 		var div = '<div id="content1" class="modal-body" >'
-				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.userName + '</span></p>'
+				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;' + AIDRFMFunctions.getUserNameWithProviderIcon(Ext.USER.data.items[0].data.userName, false) + '</span></p>'
 				+ ' </div>'
 				+ '<div id="content2" class="modal-body" >'
 				+ ' <p class="text-right" id="key"><span><i class="fa fa-key fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
@@ -72,7 +72,7 @@ UserController.service = {
 					{
 		                xtype: 'container',
 		                html: '<div id="content1" class="modal-body" >'
-		    				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;' +Ext.USER.data.items[0].data.userName + '</span></p>'
+		    				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;' +AIDRFMFunctions.getUserNameWithProviderIcon(Ext.USER.data.items[0].data.userName, false) + '</span></p>'
 		    				+' </div>'
 		    				+ '<div id="content1" class="modal-body" >'
 		    				+ ' <p class="text-right" id="key"><span><i class="fa fa-key fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
@@ -219,7 +219,7 @@ Ext.define('AIDRFM.common.Header', {
 					html : '<div class="headerWrapper">'
 							+ '<div class="header"><a href="http://aidr.qcri.org"><img src="'
 							+ BASE_URL
-							+ '/resources/img/AIDR/aidr_logo_240x90.png"></a>'
+							+ '/resources/img/AIDR/aidr_logo_164x80.png"></a>'
 							+ '<div class="dropdown">'
 							+ ' <button><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAMFBMVEUAAAD///////////////////////////////////////////////////////////87TQQwAAAAD3RSTlMAAQ8TFB4fSV6Ag4Wt6/uDY192AAAAQElEQVQoz2NgIAiEXVCAAsP5/yjgOwMq//8vdIHfDO9RBX4y9KEKXGOgCUCz5SqmOzBciuEXDN9ihAc1wGANZAAX+vf+Xu8gUwAAAABJRU5ErkJggg=="/> </button>'
 							+ '<ul class="dropdown-menu">'

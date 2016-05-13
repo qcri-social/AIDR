@@ -6,7 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import qa.qcri.aidr.data.RoleType;
+import qa.qcri.aidr.data.util.RoleType;
 
 @Entity
 @Table(name="role")

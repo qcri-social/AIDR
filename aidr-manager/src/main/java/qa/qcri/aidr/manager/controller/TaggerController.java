@@ -705,12 +705,6 @@ public class TaggerController extends BaseController {
 		TaskAnswer taskAnswer = new TaskAnswer();
 		taskAnswer.setUser_id(taggerUserId);
 
-		DateHistory dateHistory = new DateHistory();
-		dateHistory.setTaskcreated(taskAnswerRequest.getTaskcreated());
-		dateHistory.setTaskcompleted(taskAnswerRequest.getTaskcompleted());
-		dateHistory.setTaskpresented(taskAnswerRequest.getTaskcreated());
-		dateHistory.setTaskpulled(taskAnswerRequest.getTaskcompleted());
-
 		TaskInfo taskInfo = new TaskInfo();
 		taskInfo.setDocumentID(taskAnswerRequest.getDocumentID());
 		taskInfo.setText("");
@@ -720,7 +714,6 @@ public class TaggerController extends BaseController {
 		taskInfo.setCrisisID(taskAnswerRequest.getCrisisID());
 		taskInfo.setAttributeID(taskAnswerRequest.getAttributeID());
 
-		taskAnswer.setDateHistory(dateHistory);
 		taskAnswer.setInfo(taskInfo);
 
 		result.add(taskAnswer);
@@ -784,7 +777,8 @@ public class TaggerController extends BaseController {
 		try {
 			UserAccount authenticatedUser = getAuthenticatedUser();
 			String userName = authenticatedUser.getUserName();
-			//if (null == userName) userName = "System";
+
+			//Checking whether authenticated user can download tweets with full content
 			if(authenticatedUser.isDownloadPermitted()){
 				result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet);
 				if (result != null && result.get("url") != null) {
@@ -794,7 +788,21 @@ public class TaggerController extends BaseController {
 				}
 			}
 			else{
-				return getUIWrapper(false, "User is not permitted to download full tweets csv");
+				Collection collection = collectionService.findByCode(code);
+				UserAccount collectionOwner = collection.getOwner();
+				//Owner can download tweets with full content
+				if(userName.equalsIgnoreCase(collectionOwner.getUserName())){
+					result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet);
+					if (result != null && result.get("url") != null) {
+						return getUIWrapper(result.get("url"),true);
+					} else {
+						return getUIWrapper(false, "Something wrong - no file generated!");
+					}
+				}
+				else{
+					return getUIWrapper(false, "User is not permitted to download full tweets csv");
+				}
+				
 			}
 			
 		} catch (Exception e) {
@@ -840,12 +848,12 @@ public class TaggerController extends BaseController {
 			String queryString,
 			@RequestParam boolean removeRetweet,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
-		//logger.info("Received request for generating JSON filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			UserAccount authenticatedUser = getAuthenticatedUser();
 			String userName = authenticatedUser.getUserName();
-//			if (null == userName) userName = "System";
+			
+			//Checking whether authenticatedUser can download tweets with full content
 			if(authenticatedUser.isDownloadPermitted()){
 				result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName, count, removeRetweet);
 				if (result != null && result.get("url") != null) {
@@ -855,13 +863,24 @@ public class TaggerController extends BaseController {
 				}
 			}
 			else{
-				return getUIWrapper(false, "User is not permitted to download full tweets Json");
+				Collection collection = collectionService.findByCode(code);
+				UserAccount collectionOwner = collection.getOwner();
+				//Owner can download tweets with full content
+				if(userName.equalsIgnoreCase(collectionOwner.getUserName())){
+					result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName, count, removeRetweet);
+					if (result != null && result.get("url") != null) {
+						return getUIWrapper(result.get("url"),true);
+					} else {
+						return getUIWrapper(false, "Something wrong - no file generated!");
+					}
+				}else{
+					return getUIWrapper(false, "User is not permitted to download full tweets Json");
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Error while generating JSON filtered link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		//return getUIWrapper(result,true);
 	}
 
 	@RequestMapping(value = "/taggerGenerateJsonTweetIdsFilteredLink.action", method = RequestMethod.POST)

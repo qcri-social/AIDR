@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ import qa.qcri.aidr.manager.util.CollectionStatus;
 @RequestMapping("protected/collection")
 public class CollectionController extends BaseController{
 
-	private Logger logger = Logger.getLogger(CollectionController.class);
+	private final Logger logger = Logger.getLogger(CollectionController.class);
 
 	@Autowired
 	private CollectionService collectionService;
@@ -777,4 +778,6 @@ public class CollectionController extends BaseController{
 			return getUIWrapper(false, "Exception in twitter user data lookup.");
 		}
 	}
+	
+	
 }

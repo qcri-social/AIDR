@@ -2,7 +2,7 @@ package qa.qcri.aidr.data.service;
 
 import java.util.List;
 
-import qa.qcri.aidr.data.RoleType;
+import qa.qcri.aidr.data.util.RoleType;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
 
 public interface UserService {

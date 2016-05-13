@@ -164,8 +164,6 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     documentID: me.mainComponent.documentID,
                     crisisID: CRISIS_ID,
                     category: Ext.String.trim( values[0].code ),
-                    taskcreated: me.mainComponent.createDate,
-                    taskcompleted: Ext.Date.format(new Date(), "c"),
                     attributeID: NOMINAL_ATTRIBUTE_ID
                 },
                 headers: {
@@ -211,12 +209,9 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             url: BASE_URL + '/protected/tagger/saveTaskAnswer.action',
             method: 'POST',
             params: {
-                //documentID: me.mainComponent.documentID,
             	documentID: skippedDocumentID,
                 crisisID: CRISIS_ID,
                 category: Ext.String.trim('null'),
-                taskcreated: me.mainComponent.createDate,
-                taskcompleted: Ext.Date.format(new Date(), "c"),
                 attributeID: NOMINAL_ATTRIBUTE_ID
             },
             headers: {

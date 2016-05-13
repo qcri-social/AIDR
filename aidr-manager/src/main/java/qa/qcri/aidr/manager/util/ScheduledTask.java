@@ -9,14 +9,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.common.util.NotificationEvent;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.PushNotificationService;
 import qa.qcri.aidr.manager.service.TaggerService;
 
 @Service
 public class ScheduledTask {
 
-	private Logger logger = Logger.getLogger(getClass());
+	private final Logger logger = Logger.getLogger(getClass());
 
 	public static final long HOUR = 3600*1000; // in milli-seconds.
 
@@ -25,6 +27,9 @@ public class ScheduledTask {
 	
 	@Autowired
 	private TaggerService taggerService;
+	
+	@Autowired
+	private PushNotificationService pushNotificationService;
 
 	@Transactional
 	@Scheduled(fixedDelay = 10 * 60 * 1000) // 10 minutes - in milliseconds
@@ -80,6 +85,11 @@ public class ScheduledTask {
 			}
 		}
 		//logger.info("Checking for collections running duration completed.");
+	}
+	
+	@Scheduled(cron = "${collection.update.notification.cron}")
+	void sendCollectionCountNotification() {
+		pushNotificationService.publishMessage("collection", NotificationEvent.COLLECTION_UPDATED);
 	}
 
 }

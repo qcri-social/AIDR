@@ -16,6 +16,7 @@
 		<receive.scope>provided</receive.scope>
 		<receive.version>1.7.1</receive.version>
 		<resource.dir>${basedir}/src/main/resources</resource.dir>
+		<org.springframework.version>4.2.1.RELEASE</org.springframework.version>
 	</properties>
 
 	<dependencies>
@@ -25,6 +26,44 @@
 			<groupId>qa.qcri.aidr.common</groupId>
 			<artifactId>aidr-common</artifactId>
 			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework.version}</version>
 		</dependency>
 
 		<dependency>
@@ -40,7 +79,11 @@
 			<version>2.2.4</version>
 		</dependency>
 
-
+		<dependency>
+		  <groupId>com.pusher</groupId>
+		  <artifactId>pusher-http-java</artifactId>
+		  <version>0.9.3</version>
+		</dependency>
 		<dependency>
 			<groupId>com.twitter</groupId>
 			<artifactId>hbc-core</artifactId> <!-- or hbc-twitter4j -->
@@ -52,7 +95,6 @@
 			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- if you are using Jersey client specific features -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
@@ -73,15 +115,6 @@
 			<version>[4.0,)</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>org.twitter4j</groupId> <artifactId>twitter4j-core</artifactId> 
-			<version>4.0.2</version> </dependency> -->
-
-		<!-- <dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency> -->
-		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -99,8 +132,6 @@
 			<artifactId>super-csv</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-
-
 
 		<dependency>
 			<groupId>redis.clients</groupId>

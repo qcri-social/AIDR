@@ -21,7 +21,9 @@ import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionType;
+import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 
 @Controller
@@ -29,6 +31,8 @@ public class ScreenController extends BaseController{
 
     @Autowired
     private CollectionService collectionService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private TaggerService taggerService;
     @Value("${fetchMainUrl}")
@@ -40,10 +44,11 @@ public class ScreenController extends BaseController{
     
 	@RequestMapping("protected/home")
 	public ModelAndView home() throws Exception {
-        String userName = getAuthenticatedUserName();
+        UserAccount authenticatedUser = getAuthenticatedUser();
 
         ModelAndView model = new ModelAndView("home");
-        model.addObject("userName", userName);
+        model.addObject("userName", authenticatedUser.getUserName());
+        model.addObject("signInProvider", authenticatedUser.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
         return model;
 	}
@@ -92,13 +97,14 @@ public class ScreenController extends BaseController{
             return new ModelAndView("redirect:/protected/access-error");
         }
 
-        String userName = getAuthenticatedUserName();
+        UserAccount authenticatedUser = getAuthenticatedUser();
         Collection collection = collectionService.findByCode(code);
 
         ModelAndView model = new ModelAndView("collection-details");
         model.addObject("id", collection.getId());
         model.addObject("collectionCode", code);
-        model.addObject("userName", userName);
+        model.addObject("userName", authenticatedUser.getUserName());
+        model.addObject("signInProvider", authenticatedUser.getProvider());
         model.addObject("fetchMainUrl", fetchMainUrl);
         model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
@@ -108,11 +114,19 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/collection-create")
     public ModelAndView collectionCreate() throws Exception {
+    	
+    	String signInProviderName = getAuthenticatedProviderName();
+    	if(!signInProviderName.equalsIgnoreCase(SocialSignInProvider.TWITTER)){
+    		logger.info("protected access-error");
+    		return new ModelAndView("redirect:/protected/access-error");
+    	}
+    	
         ModelAndView model = new ModelAndView("collection-create");
 
-        String userName = getAuthenticatedUserName();
+        UserAccount authenticatedUser = getAuthenticatedUser();
         model.addObject("collectionTypes", CollectionType.JSON());
-        model.addObject("userName", userName);
+        model.addObject("userName", authenticatedUser.getUserName());
+        model.addObject("signInProvider", authenticatedUser.getProvider());
         model.addObject("userId", getAuthenticatedUser().getId());
 
         return model;
@@ -131,7 +145,8 @@ public class ScreenController extends BaseController{
         logger.info("returned from getCrisesByCode");
         Collection collection = collectionService.findByCode(code);
         logger.info("returned from findByCode");
-
+        
+        String signInProviderName = getAuthenticatedProviderName();
         Long crisisId = 0L;
         String crisisName = "";
         Long crisisTypeId = 0L;
@@ -155,7 +170,7 @@ public class ScreenController extends BaseController{
         model.addObject("isMicromapperEnabled", isMicromapperEnabled);
         model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
-        
+        model.addObject("signInProvider", signInProviderName);
         logger.info("Returning model: " + model.getModel());
         return model;
     }
@@ -174,27 +189,23 @@ public class ScreenController extends BaseController{
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
         }
-
+        String signInProviderName = getAuthenticatedProviderName();
+        
         ModelAndView model = new ModelAndView("tagger/predict-new-attribute");
         model.addObject("crisisId", crisisId);
         model.addObject("name", crisisName);
         model.addObject("code", code);
+        model.addObject("signInProvider", signInProviderName);
         return model;
     }
 
     @RequestMapping("protected/{id}/attribute-details")
     public ModelAndView attributeDetails(@PathVariable(value="id") Integer id) throws Exception {
         ModelAndView model = new ModelAndView("tagger/attribute-details");
-        Integer taggerUserId = 0;
-        try {
-            String userName = getAuthenticatedUserName();
-            taggerUserId = taggerService.isUserExistsByUsername(userName);
-
-        } catch (Exception e) {
-            logger.error("Exception while getting attribute details",e);
-        }
+        UserAccount authenticatedUser = getAuthenticatedUser();
         model.addObject("id", id);
-        model.addObject("userId", taggerUserId);
+        model.addObject("userId", authenticatedUser.getId());
+        model.addObject("signInProvider", authenticatedUser.getProvider());
         return model;
     }
 
@@ -229,22 +240,11 @@ public class ScreenController extends BaseController{
             }
         }
 
-        Integer taggerUserId = 0;
-        try {
-            String userName = getAuthenticatedUserName();
-            taggerUserId = taggerService.isUserExistsByUsername(userName);
-            if(taggerUserId == null){
-                taggerUserId = 0;
-            }
-
-
-        } catch (Exception e) {
-           // System.out.println("e : " + e);
-        	logger.error("Exception while checking whether user exist by username",e);
-        }
+        UserAccount authenticatedUser = getAuthenticatedUser();
 
         Collection collection = collectionService.findByCode(code);
-
+        String signInProviderName = getAuthenticatedProviderName();
+        
         ModelAndView model = new ModelAndView("tagger/model-details");
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
@@ -253,11 +253,12 @@ public class ScreenController extends BaseController{
         model.addObject("modelAuc", modelAuc);
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("code", code);
-        model.addObject("userId", taggerUserId);
+        model.addObject("userId", authenticatedUser.getId());
+        model.addObject("signInProvider", authenticatedUser.getProvider());
         model.addObject("attributeId", attributeId);
         model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
-
+        model.addObject("signInProvider", signInProviderName);
         return model;
     }
 
@@ -277,14 +278,16 @@ public class ScreenController extends BaseController{
         }
 
         Collection collection = collectionService.findByCode(code);
-
+        String signInProviderName = getAuthenticatedProviderName();
+        
         ModelAndView model = new ModelAndView("tagger/new-custom-attribute");
         model.addObject("code", code);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
         model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
-
+        model.addObject("signInProvider", signInProviderName);
+        
         return model;
     }
 
@@ -322,7 +325,8 @@ public class ScreenController extends BaseController{
         }
 
         Collection collection = collectionService.findByCode(code);
-
+        String signInProviderName = getAuthenticatedProviderName();
+        
         ModelAndView model = new ModelAndView("tagger/training-data");
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
@@ -336,7 +340,7 @@ public class ScreenController extends BaseController{
         model.addObject("retrainingThreshold", retrainingThreshold);
         model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
-
+        model.addObject("signInProvider", signInProviderName);
         return model;
     }
 
@@ -368,7 +372,8 @@ public class ScreenController extends BaseController{
 
 
         Collection collection = collectionService.findByCode(code);
-
+        String signInProviderName = getAuthenticatedProviderName();
+        
         ModelAndView model = new ModelAndView("tagger/training-examples");
         model.addObject("code", code);
         model.addObject("crisisId", crisisId);
@@ -379,7 +384,7 @@ public class ScreenController extends BaseController{
         model.addObject("nominalAttributeId", nominalAttributeId);
         model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
-
+        model.addObject("signInProvider", signInProviderName);
         return model;
     }
 
@@ -406,29 +411,30 @@ public class ScreenController extends BaseController{
     @RequestMapping("protected/{code}/interactive-view-download")
          public ModelAndView interactiveViewDownload(@PathVariable(value="code") String code) throws Exception {
 
-        String userName ="";
+        UserAccount user =null;
        // System.out.println("interactiveViewDownload : ");
 
         if (isHasPermissionForCollection(code)){
-            userName = getAuthenticatedUserName();
+            user = getAuthenticatedUser();
         }
 
-        return getInteractiveViewDownload(code,userName);
+        return getInteractiveViewDownload(code,user.getUserName(), user.getProvider());
     }
 
     @RequestMapping("public/{code}/interactive-view-download")
     public ModelAndView publicInteractiveViewDownload(@PathVariable(value="code") String code) throws Exception {
-        return getInteractiveViewDownload(code, "");
+        return getInteractiveViewDownload(code, "", "");
     }
 
     @RequestMapping("public/{code}/{username}/interactive-view-download")
     public ModelAndView privateInteractiveViewDownload(@PathVariable(value="code") String code,
                                                        @PathVariable(value="username") String username) throws Exception {
 
-        return getInteractiveViewDownload(code, username);
+    	UserAccount user = userService.fetchByUserName(username);
+        return getInteractiveViewDownload(code, username, user.getProvider());
     }
 
-    private ModelAndView getInteractiveViewDownload(String code, String userName){
+    private ModelAndView getInteractiveViewDownload(String code, String userName, String signInProvider){
 
         TaggerCrisis crisis = null;
         Collection collection = null;
@@ -474,6 +480,7 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("count", collectionCount);
         model.addObject("userName", userName);
+        model.addObject("signInProvider", signInProvider);
         model.addObject("collectionType", type);
         model.addObject("collectionTypes", CollectionType.JSON());
 

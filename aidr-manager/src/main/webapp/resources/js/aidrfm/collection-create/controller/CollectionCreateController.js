@@ -420,9 +420,6 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             });
     },
     
-    
-    
-    
     initNameAndCodeValidation: function() {
     	this.checkCount = 2;
     	this.isExist();
@@ -432,10 +429,10 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
     generateCollectionCode: function(value) {
         var me = this;
 
-        var currentCode = me.CollectionCreateComponent.codeE.getValue();
-        if (currentCode != ''){
-            return false;
-        }
+//        var currentCode = me.CollectionCreateComponent.codeE.getValue();
+//        if (currentCode != ''){
+//            return false;
+//        }
 
         var v = Ext.util.Format.trim(value);
         v = v.replace(/ /g, '_');

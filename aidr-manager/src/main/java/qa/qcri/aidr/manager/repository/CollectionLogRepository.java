@@ -22,5 +22,8 @@ public interface CollectionLogRepository extends GenericRepository<CollectionLog
 
     public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(List<Long> ids);
     
-    public void save(CollectionLog collectionLog);
+    @Override
+	public void save(CollectionLog collectionLog);
+
+    Long countTotalTweets();
 }

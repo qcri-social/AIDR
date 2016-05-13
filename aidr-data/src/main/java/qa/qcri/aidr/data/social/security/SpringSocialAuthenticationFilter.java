@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.data.persistence.entity.UserConnection;
 import qa.qcri.aidr.data.service.UserConnectionService;
+import qa.qcri.aidr.data.util.ConstantUtils;
 
 @Component
 @Qualifier("springSocialAuthenticationFilter")
@@ -59,11 +61,8 @@ public class SpringSocialAuthenticationFilter extends AbstractAuthenticationProc
 	@Autowired
 	@Qualifier("springSocialUserDetailsService")
 	private UserDetailsService userDetailsService;
-	
-	@Autowired
-	SpringSocialUserDetailService springSocialUserDetailService;
 
-	@Autowired
+    @Inject
     private UserConnectionService userConnectionService;
 
     @Autowired
@@ -74,7 +73,6 @@ public class SpringSocialAuthenticationFilter extends AbstractAuthenticationProc
 		this.removeSignInDetailsFromSessionOnSuccessfulAuthentication = removeSignInDetailsFromSessionOnSuccessfulAuthentication;
 	}
 
-	@Override
 	@Autowired
 	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
 		super.setAuthenticationManager(authenticationManager);
@@ -105,14 +103,16 @@ public class SpringSocialAuthenticationFilter extends AbstractAuthenticationProc
 		SpringSocialSecuritySignInDetails signInDetails = (SpringSocialSecuritySignInDetails) request.getSession().getAttribute(
 						SpringSocialSecuritySignInService.SIGN_IN_DETAILS_SESSION_ATTRIBUTE_NAME);
 		String alreadyAuthenticatedUserId = AuthenticatedUserIdHolder.getAuthenticatedUserId();
-				
 
 		if (signInDetails != null) {
-			UserDetails user = springSocialUserDetailService.loadUserByUsername(signInDetails.getUserId());
+			UserDetails user = userDetailsService.loadUserByUsername(signInDetails.getConnectionData().getProviderId() + ConstantUtils.USER_NAME_SPLITTER + signInDetails.getUserId());
 			if (removeSignInDetailsFromSessionOnSuccessfulAuthentication) {
 				request.getSession().removeAttribute(SpringSocialSecuritySignInService.SIGN_IN_DETAILS_SESSION_ATTRIBUTE_NAME);
 			}
             updateUserKeys(signInDetails.getConnectionData(), signInDetails.getUserId());
+            //Setting social login provider for current session
+            //request.getSession().setAttribute("provider", signInDetails.getConnectionData().getProviderId());
+            
 			return authenticationFactory.createAuthenticationFromUserDetails(user);
 		} else if (allowRepeatedAuthenticationAttempts && alreadyAuthenticatedUserId != null) {
 			return SecurityContextHolder.getContext().getAuthentication();
@@ -124,8 +124,8 @@ public class SpringSocialAuthenticationFilter extends AbstractAuthenticationProc
 	}
 
     private void updateUserKeys(ConnectionData connectionData, String userId){
-        List<UserConnection> userConnections = userConnectionService.getByUserId(userId);
-        if(userConnections!=null && !CollectionUtils.isFull(userConnections)){
+        List<UserConnection> userConnections = userConnectionService.getByProviderUserIdAndUserId(connectionData.getProviderUserId(), userId);
+        if(!CollectionUtils.isFull(userConnections)){
            for(UserConnection uc : userConnections){
                uc.setAccessToken(connectionData.getAccessToken());
                uc.setSecret(connectionData.getSecret());

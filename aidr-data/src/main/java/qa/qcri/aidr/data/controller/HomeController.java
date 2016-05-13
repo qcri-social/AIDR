@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import qa.qcri.aidr.data.util.CommonUtil;
 import qa.qcri.aidr.data.model.CollectionSummaryInfo;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
 import qa.qcri.aidr.data.persistence.entity.UserConnection;
@@ -39,6 +38,9 @@ public class HomeController {
     
     @Autowired
     private UserConnectionService userConnectionService;
+    
+    @Autowired
+	private CommonUtil commonUtil;
     
     @RequestMapping(value = "/dashboard/list")    
     @PreAuthorize("hasRole('ROLE_USER_SPRINGSOCIALSECURITY')")
@@ -78,27 +80,15 @@ public class HomeController {
         return view;  
     }
     
-    protected UserAccount getAuthenticatedUser() throws Exception{
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if(authentication!=null){
-			return userService.fetchByUserName(authentication.getName());
-		}else{
-			throw new Exception("No user logged in ");
-		}
-	}
-    
     @PreAuthorize("hasRole('ROLE_USER_SPRINGSOCIALSECURITY')")
     @RequestMapping(value = "/current-user", method={RequestMethod.GET})
   	@ResponseBody
   	public JSONObject getCurrentUser() throws Exception {
 	
-		UserAccount userAccount = getAuthenticatedUser();
+		UserAccount userAccount = commonUtil.getAuthenticatedUser();
 		UserConnection userConnection = null;
 		
-		List<UserConnection> userConnections = userConnectionService.getByUserId(userAccount.getUserName());
-		if (userConnections != null && !userConnections.isEmpty()) {
-			userConnection = userConnections.get(0);
-		}
+		userConnection = userConnectionService.getByProviderIdAndUserId(userAccount.getProvider(), commonUtil.getSplittedUserName(userAccount.getUserName()));
 		JSONObject jsonObject = getUserProfile(userAccount, userConnection);	
 		return jsonObject;
   		
@@ -122,7 +112,7 @@ public class HomeController {
 		if(jsonObject != null && jsonObject.get("email") != null){
 			String email = (String) jsonObject.get("email");
 			
-			UserAccount userAccount = getAuthenticatedUser();
+			UserAccount userAccount = commonUtil.getAuthenticatedUser();
 			userAccount.setEmail(email);
 			userService.save(userAccount);
 			result.put("updated", true);

@@ -70,7 +70,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                 width: 70,
                 height: 70,
                 src: '/AIDRFetchManager/resources/img/AIDR/tag.png'
-                //src: '/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg'
+                //src: '/AIDRFetchManager/resources/img/AIDR/aidr_logo_70x59.png'
                 
             },
             {

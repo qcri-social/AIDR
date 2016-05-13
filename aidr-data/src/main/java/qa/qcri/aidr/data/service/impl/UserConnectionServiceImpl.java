@@ -25,9 +25,22 @@ public class UserConnectionServiceImpl implements UserConnectionService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserConnection> getByUserId(String userId) {
-        return userConnectionRepository.findByUserId(userId);
+    public UserConnection getByProviderIdAndUserId (String providerId, String userId) {
+         List<UserConnection> findByProviderIdAndUserId = userConnectionRepository.findByProviderIdAndUserId(providerId, userId);
+         if(findByProviderIdAndUserId != null && findByProviderIdAndUserId.size() > 0){
+        	return findByProviderIdAndUserId.get(0);
+         }
+         else{
+        	 return null;
+         }
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserConnection> getByProviderUserIdAndUserId (String providerUserId, String userId) {
+        return userConnectionRepository.findByProviderUserIdAndUserId(providerUserId, userId);
+    }
+    
 
     @Override
     @Transactional

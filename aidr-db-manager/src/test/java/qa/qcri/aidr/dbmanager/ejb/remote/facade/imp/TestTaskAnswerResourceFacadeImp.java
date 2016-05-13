@@ -173,8 +173,9 @@ public class TestTaskAnswerResourceFacadeImp {
 	public void testInsertTaskAnswer() {
 		taskAnswer.setAnswer("test_sample_answer1");
 		entityManager.getTransaction().begin();
-		taskAnswer = taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
+		taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
 		entityManager.getTransaction().commit();
+		taskAnswer = taskAnswerResourceFacadeImp.getTaskAnswer(documentDTO.getDocumentID(), user.getUserID());
 		assertEquals(documentDTO.getDocumentID(),taskAnswer.getDocumentID());
 	}
 	
@@ -185,10 +186,10 @@ public class TestTaskAnswerResourceFacadeImp {
 	public void testGetTaskAnswerByDocumentId() {
 		taskAnswer.setAnswer("test_sample_answer2");
 		entityManager.getTransaction().begin();
-		taskAnswer = taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
+		taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
 		entityManager.getTransaction().commit();
-		List<TaskAnswerDTO> result = taskAnswerResourceFacadeImp.getTaskAnswer(documentDTO.getDocumentID());
-		assertTrue(result.size()>=1);
+		List<TaskAnswerDTO> taskAnswer = taskAnswerResourceFacadeImp.getTaskAnswer(documentDTO.getDocumentID());
+		assertTrue(taskAnswer.size()>=1);
 	}
 	
 	/**
@@ -198,10 +199,10 @@ public class TestTaskAnswerResourceFacadeImp {
 	public void testinsertTaskAnswerByDocumentIdAndUserId() {
 		taskAnswer.setAnswer("test_sample_answer3");
 		entityManager.getTransaction().begin();
-		taskAnswer = taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
+		taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
 		entityManager.getTransaction().commit();
-		TaskAnswerDTO result = taskAnswerResourceFacadeImp.getTaskAnswer(documentDTO.getDocumentID(), user.getUserID());
-		assertEquals(documentDTO.getDocumentID(),result.getDocumentID());
+		TaskAnswerDTO taskAnswer = taskAnswerResourceFacadeImp.getTaskAnswer(documentDTO.getDocumentID(), user.getUserID());
+		assertEquals(documentDTO.getDocumentID(),taskAnswer.getDocumentID());
 	}
 
 }

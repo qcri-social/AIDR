@@ -1,23 +1,27 @@
 package qa.qcri.aidr.trainer.pybossa.format.impl;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import qa.qcri.aidr.trainer.pybossa.entity.*;
+
+import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
+import qa.qcri.aidr.trainer.pybossa.entity.ClientAppAnswer;
+import qa.qcri.aidr.trainer.pybossa.entity.ReportTemplate;
+import qa.qcri.aidr.trainer.pybossa.entity.TaskQueueResponse;
+import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
 import qa.qcri.aidr.trainer.pybossa.service.TranslationService;
 import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.JsonSorter;
 import qa.qcri.aidr.trainer.pybossa.util.StreamConverter;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -67,7 +71,7 @@ public class TextClickerPybossaFormatter {
         return appID;
     }
 
-    public String buildTaskOutputForAIDR(Long taskQueueId, List<TaskLog> taskLogList, String pybossaResult, JSONParser parser, ClientApp clientApp, ClientAppAnswer clientAppAnswer) throws Exception{
+    public String buildTaskOutputForAIDR(Long taskQueueId, String pybossaResult, JSONParser parser, ClientApp clientApp, ClientAppAnswer clientAppAnswer) throws Exception{
 
         JSONArray outJson = new JSONArray();
 
@@ -418,7 +422,6 @@ public class TextClickerPybossaFormatter {
 
             outputFormatData.add(tasks.toJSONString());
 
-            //System.out.println(featureJsonObj.toString());
         }
 
         return outputFormatData;

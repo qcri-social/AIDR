@@ -10,7 +10,9 @@ import qa.qcri.aidr.data.persistence.entity.UserConnection;
 @Repository
 public interface UserConnectionRepository extends CrudRepository<UserConnection, Long>{
 
-	List<UserConnection> findByUserId(String userId);
+	List<UserConnection> findByProviderIdAndUserId(String providerId, String userId);
+	
+	List<UserConnection> findByProviderUserIdAndUserId(String providerUserId, String userId);
 
 
 }

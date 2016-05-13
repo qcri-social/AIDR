@@ -8,10 +8,6 @@ public class TaskAnswerRequest {
 
     private String category;
 
-    private String taskcreated;
-
-    private String taskcompleted;
-
     private Integer attributeID;
 
     public Integer getCrisisID() {
@@ -36,22 +32,6 @@ public class TaskAnswerRequest {
 
     public void setDocumentID(Integer documentID) {
         this.documentID = documentID;
-    }
-
-    public String getTaskcreated() {
-        return taskcreated;
-    }
-
-    public void setTaskcreated(String taskcreated) {
-        this.taskcreated = taskcreated;
-    }
-
-    public String getTaskcompleted() {
-        return taskcompleted;
-    }
-
-    public void setTaskcompleted(String taskcompleted) {
-        this.taskcompleted = taskcompleted;
     }
 
     public Integer getAttributeID() {
