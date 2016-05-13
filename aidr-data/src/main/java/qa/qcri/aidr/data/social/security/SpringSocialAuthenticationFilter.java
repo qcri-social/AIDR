@@ -124,7 +124,7 @@ public class SpringSocialAuthenticationFilter extends AbstractAuthenticationProc
 	}
 
     private void updateUserKeys(ConnectionData connectionData, String userId){
-        List<UserConnection> userConnections = userConnectionService.getByProviderIdAndUserId(connectionData.getProviderUserId(), userId);
+        List<UserConnection> userConnections = userConnectionService.getByProviderUserIdAndUserId(connectionData.getProviderUserId(), userId);
         if(!CollectionUtils.isFull(userConnections)){
            for(UserConnection uc : userConnections){
                uc.setAccessToken(connectionData.getAccessToken());
