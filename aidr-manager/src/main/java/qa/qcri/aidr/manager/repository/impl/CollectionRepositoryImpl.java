@@ -103,8 +103,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 
-				String sql = " SELECT count(distinct c.id) FROM collection c" +
-						" WHERE (c.status != 7) " ;
+				String sql = " SELECT count(distinct c.id) FROM collection c";
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
 				BigInteger total = (BigInteger) sqlQuery.uniqueResult();
