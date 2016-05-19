@@ -288,7 +288,19 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('configurationsL').show();
                          Ext.getCmp('geoDescription').show();
-                         Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>');
+                         Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>');
+                         Ext.getCmp('endpointLabel').hide();
+                     }else if(newValue === 'Facebook'){
+                         Ext.getCmp('keywordsPanel').show();
+                         Ext.getCmp('langPanel').hide();
+                         Ext.getCmp('geoPanel').hide();
+                         Ext.getCmp('AdvancedConfiguration').hide();
+                         Ext.getCmp('geoRPanel').hide();
+                         Ext.getCmp('followPanel').hide();
+                         Ext.getCmp('durationDescription').show();
+                         Ext.getCmp('configurationsL').show();
+                         Ext.getCmp('geoDescription').hide();
+                         Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
                          Ext.getCmp('endpointLabel').hide();
                      }
 

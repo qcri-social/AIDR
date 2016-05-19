@@ -8,7 +8,8 @@ package qa.qcri.aidr.manager.util;
 
 public enum CollectionType {
     Twitter("tweet", "tweets"),
-    SMS("sms", "sms");
+    SMS("sms", "sms"),
+    Facebook("post","posts");
 
     private String singular;
     private String plural;

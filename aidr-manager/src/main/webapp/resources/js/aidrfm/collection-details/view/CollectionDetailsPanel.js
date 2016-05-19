@@ -315,6 +315,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fields: ['val', 'label'],
             data: [
                 { "val": 'Twitter', "label": 'Twitter' },
+                { "val": 'Facebook', "label": 'Facebook' },
                 { "val": 'SMS', "label": 'SMS' }
             ]
         });
@@ -529,12 +530,21 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collection-item">',
 
             '<div class="img">',
-            '<tpl if="[this.getType()] == 0">' +
-            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon2.png" width="70">',
+            
+            '<tpl if="TYPE == \'Twitter\'">'+
+            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">' +
+        	'<tpl elseif="TYPE == \'Facebook\'">'+
+            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/facebook_icon.png" width="70">' +
+            '<tpl else>'+
+            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+            '</tpl>'+
+            
+            /*'<tpl if="[this.getType()] == 0">' +
+            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">',
             '</tpl>',
             '<tpl if="[this.getType()] == 1">' +
             '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">',
-            '</tpl>',
+            '</tpl>',*/
             '</div>',
 
             '<div class="content">',
@@ -907,7 +917,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     height:50,
                                     width:75,
                                     id:'iconPanel',
-                                    html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
+                                    html: '<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>'
                                 },
                                 {
                                     xtype: 'container',

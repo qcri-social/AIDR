@@ -166,6 +166,15 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('geoDescription').show();
                      }
+                     else if(newValue === 'Facebook'){
+                         Ext.getCmp('keywordsPanel').show();
+                         Ext.getCmp('langPanel').hide();
+                         Ext.getCmp('geoPanel').hide();
+                         Ext.getCmp('geoRPanel').hide();
+                         Ext.getCmp('followPanel').hide();
+                         Ext.getCmp('durationDescription').show();
+                         Ext.getCmp('geoDescription').hide();
+                     }
                 }
             }
         });

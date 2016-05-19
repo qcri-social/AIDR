@@ -276,7 +276,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             fields: ['val', 'label'],
             data: [
                 { "val": 'Twitter', "label": 'Twitter' },
-                { "val": 'SMS', "label": 'SMS' }
+                { "val": 'SMS', "label": 'SMS' },
+                { "val": 'Facebook', "label": 'Facebook' }
             ]
         });
 

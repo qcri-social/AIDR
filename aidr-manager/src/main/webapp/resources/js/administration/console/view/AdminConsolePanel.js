@@ -118,6 +118,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },*/
                 {
+                    xtype: 'gridcolumn', dataIndex: 'collectionType', text: 'Media', width: 70
+                },
+                {
                     xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Scheduled stop', width: 160,
                     renderer: function (value, meta, record) {
                         var duration = record.data.durationHours;
@@ -330,6 +333,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         }
                     }
                 },*/
+                {
+                    xtype: 'gridcolumn', dataIndex: 'collectionType', text: 'Media', width: 70
+                },
                 {
                     xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Items', width: 100, sortable: false,
                     renderer: function (value, meta, record) {
