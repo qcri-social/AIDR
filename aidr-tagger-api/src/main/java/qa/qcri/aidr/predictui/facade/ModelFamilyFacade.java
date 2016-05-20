@@ -9,6 +9,7 @@ import java.util.List;
 import javax.ejb.Local;
 
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 
 /**
@@ -26,4 +27,5 @@ public interface ModelFamilyFacade {
     public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
     public boolean deleteModelFamilyData(Long modelFamilyID);
 
+    public List<ModelWrapper> getModelFamilyAggregateDataForCollection(Long collectionId);
 }

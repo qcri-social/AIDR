@@ -35,7 +35,8 @@ public enum ManagerConfigurationProperty implements ConfigurationProperty {
 			"serverUrl"), COLLECTION_COUNT_UPDATE_CRON("collection.update.notification.cron"),
 			PUSHER_APP_ID("pusher.app.id"),
 			PUSHER_APP_KEY("pusher.app.key"),
-			PUSHER_APP_SECRET("pusher.app.secret");
+			PUSHER_APP_SECRET("pusher.app.secret"),
+			SAMPLE_COUNT_THRESHOLD("sample.count.threshold");
 
 	private final String configurationProperty;
 

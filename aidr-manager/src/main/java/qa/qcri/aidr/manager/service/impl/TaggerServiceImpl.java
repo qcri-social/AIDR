@@ -542,9 +542,9 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			int retrainingThreshold = getCurrentRetrainingThreshold();
+			int retrainingThreshold = Integer.parseInt(ManagerConfigurator.getInstance().getProperty(ManagerConfigurationProperty.SAMPLE_COUNT_THRESHOLD));
 			WebTarget webResource = client.target(taggerMainUrl
-					+ "/model/crisis/" + new Long(crisisID));
+					+ "/modelfamily/crisis/" + new Long(crisisID));
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			Response clientResponse = webResource.request(
