@@ -311,13 +311,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             queryMode: 'local'
         });
 
+        var collection_type = [{ "val": 'SMS', "label": 'SMS' }];
+		if (SIGNED_IN_PROVIDER == "twitter") {
+			collection_type.push({ "val": 'Twitter', "label": 'Twitter' });
+		} else if (SIGNED_IN_PROVIDER == "facebook") {
+			collection_type.push({ "val": 'Facebook', "label": 'Facebook' });
+		}
         this.collectionTypeComboStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
-            data: [
-                { "val": 'Twitter', "label": 'Twitter' },
-                { "val": 'Facebook', "label": 'Facebook' },
-                { "val": 'SMS', "label": 'SMS' }
-            ]
+            data: collection_type
         });
 
         this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
@@ -333,6 +335,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             store: this.collectionTypeComboStore,
             value: 'Twitter'
         });
+        this.collectionTypeL = Ext.create('Ext.form.Label', {
+			flex: 1
+		});
 
         this.collectionTypeNote = Ext.create('Ext.form.Label', {
             flex: 1,
@@ -742,19 +747,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             layout: 'hbox',
+							defaultType: 'label',
                             margin: '5 0 0 0',
                             padding: '0 0 8 0',
                             items: [
-                                this.collectionTypeCombo,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionTypeInfo'
-                                }
+								{
+                                    width: 135,
+                                    text: 'Collection Type:',
+									cls: 'x-form-item-label-default'
+                                },
+                                this.collectionTypeL
                             ]
+
                         },
                         {
                             xtype: 'container',

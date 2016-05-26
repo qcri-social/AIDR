@@ -271,14 +271,16 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             html:'<div></div>',
             padding: '2 0 2 245'
         });
-
+        
+        var collection_type = [{ "val": 'SMS', "label": 'SMS' }];
+		if (SIGNED_IN_PROVIDER == "twitter") {
+			collection_type.push({ "val": 'Twitter', "label": 'Twitter' });
+		} else if (SIGNED_IN_PROVIDER == "facebook") {
+			collection_type.push({ "val": 'Facebook', "label": 'Facebook' });
+		}
         this.collectionTypeComboStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
-            data: [
-                { "val": 'Twitter', "label": 'Twitter' },
-                { "val": 'SMS', "label": 'SMS' },
-                { "val": 'Facebook', "label": 'Facebook' }
-            ]
+            data: collection_type
         });
 
         this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
