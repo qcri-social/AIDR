@@ -44,6 +44,9 @@ public class CollectionTask {
     private Boolean persist;
     private boolean sourceOutage;
     private boolean saveMediaEnabled;
+    private Long searchInterval;
+    private Long lastCollectedAt;
+    private String provider;
     /**
      *
      */
@@ -176,6 +179,12 @@ public class CollectionTask {
     public boolean isTwitterInfoPresent() {
         return StringUtils.isNotEmpty(getAccessToken())
                 && StringUtils.isNotEmpty(getAccessTokenSecret())
+                && StringUtils.isNotEmpty(getConsumerKey())
+                && StringUtils.isNotEmpty(getConsumerSecret());
+    }
+    
+    public boolean isFacebookInfoPresent() {
+        return StringUtils.isNotEmpty(getAccessToken())
                 && StringUtils.isNotEmpty(getConsumerKey())
                 && StringUtils.isNotEmpty(getConsumerSecret());
     }
@@ -331,6 +340,9 @@ public class CollectionTask {
         newTask.setPersist(persist);
         newTask.setSourceOutage(sourceOutage);
         newTask.setSaveMediaEnabled(saveMediaEnabled);
+        newTask.setLastCollectedAt(lastCollectedAt);
+        newTask.setSearchInterval(searchInterval);
+        newTask.setProvider(provider); //To create enum in commons
         return newTask;
     }
 
@@ -365,20 +377,6 @@ public class CollectionTask {
 		}
 	}
 
-    @Override
-	public String toString() {
-		return "CollectionTask{" + "collectionCode=" + collectionCode
-				+ ", collectionName=" + collectionName + ", toTrack=" + toTrack
-				+ ", toFollow=" + toFollow + ", geoLocation=" + geoLocation
-				+ ", geoR=" + geoR + ", languageFilter=" + languageFilter
-				+ ", lastDocument=" + lastDocument + ", statusCode="
-				+ statusCode + ", statusMessage=" + statusMessage
-				+ ", persist=" + persist + ", consumerKey=" + consumerKey
-				+ ", consumerSecret=" + consumerSecret + ", accessToken="
-				+ accessToken + ", accessTokenSecret=" + accessTokenSecret
-				+ ", collectionCount=" + collectionCount + '}';
-	}
-    
     public Boolean getPersist() {
 		return persist;
 	}
@@ -402,4 +400,29 @@ public class CollectionTask {
 	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
 		this.saveMediaEnabled = saveMediaEnabled;
 	}
+
+	public Long getSearchInterval() {
+		return searchInterval;
+	}
+
+	public void setSearchInterval(Long searchInterval) {
+		this.searchInterval = searchInterval;
+	}
+
+	public Long getLastCollectedAt() {
+		return lastCollectedAt;
+	}
+
+	public void setLastCollectedAt(Long lastCollectedAt) {
+		this.lastCollectedAt = lastCollectedAt;
+	}
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
 }

@@ -201,6 +201,17 @@ public class GenericCache {
         }
         return collections;
     }
+    
+    public Boolean isCollectionRunning(String collectionCode){
+       if (twtConfigMap != null) {
+          if(twtConfigMap.containsKey(collectionCode)){
+        	  return true;
+          }
+       }
+       return false;
+   }
+    
+    
     public List<CollectionTask> getAllConfigs() {
         List<CollectionTask> mappersList = new ArrayList<CollectionTask>();
         if (twtConfigMap != null) {

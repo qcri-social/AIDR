@@ -127,6 +127,19 @@
 			<version>[4.0,)</version> <!-- 4.0.2 -->
 		</dependency>
 
+		<!-- http://mvnrepository.com/artifact/org.facebook4j/facebook4j-core -->
+		<dependency>
+		    <groupId>org.facebook4j</groupId>
+		    <artifactId>facebook4j-core</artifactId>
+		    <version>2.4.4</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.restfb</groupId>
+		    <artifactId>restfb</artifactId>
+		    <version>1.23.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>net.sf.supercsv</groupId>
 			<artifactId>super-csv</artifactId>
