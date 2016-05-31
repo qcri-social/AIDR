@@ -87,7 +87,7 @@ public class ScheduledTask {
 		//logger.info("Checking for collections running duration completed.");
 	}
 	
-	@Scheduled(cron = "${collection.update.notification.cron}")
+	//@Scheduled(cron = "${collection.update.notification.cron}")
 	void sendCollectionCountNotification() {
 		pushNotificationService.publishMessage("collection", NotificationEvent.COLLECTION_UPDATED);
 	}

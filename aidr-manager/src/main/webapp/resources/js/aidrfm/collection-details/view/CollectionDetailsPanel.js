@@ -311,7 +311,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             queryMode: 'local'
         });
 
-        var collection_type = [{ "val": 'SMS', "label": 'SMS' }];
+        /*var collection_type = [{ "val": 'SMS', "label": 'SMS' }];
 		if (SIGNED_IN_PROVIDER == "twitter") {
 			collection_type.push({ "val": 'Twitter', "label": 'Twitter' });
 		} else if (SIGNED_IN_PROVIDER == "facebook") {
@@ -334,7 +334,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             displayField: 'label',
             store: this.collectionTypeComboStore,
             value: 'Twitter'
-        });
+        });*/
+        
         this.collectionTypeL = Ext.create('Ext.form.Label', {
 			flex: 1
 		});
@@ -756,7 +757,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     text: 'Collection Type:',
 									cls: 'x-form-item-label-default'
                                 },
-                                this.collectionTypeL
+                                this.collectionTypeL,
+                                {
+									xtype: 'hiddenfield',
+									name: 'collectionType',
+									value: ''
+								}
                             ]
 
                         },

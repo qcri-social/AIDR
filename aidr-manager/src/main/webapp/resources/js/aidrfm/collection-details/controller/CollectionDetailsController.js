@@ -597,7 +597,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         if(r.crisisType!=null){
         	p.crisisTypesCombo.setValue(r.crisisType.id);
         }
-        p.collectionTypeCombo.setValue(r.collectionType);
+        var collectionForm = Ext.getCmp('collectionForm').getForm();
+		collectionForm.findField('collectionType').setValue(r.collectionType);
+		
 		p.collectionTypeL.setText(r.collectionType);
         if(r.collectionType === 'SMS'){
            Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
