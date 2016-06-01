@@ -96,6 +96,9 @@ public class Collection extends BaseEntity {
     
     @Column(name="save_media_enabled", columnDefinition="bit default 0")
     private boolean saveMediaEnabled;
+
+    @Column(name="fetch_interval")
+    private int fetchInterval;
     
     @Transient
     private boolean isSourceOutage = false;
@@ -299,6 +302,14 @@ public class Collection extends BaseEntity {
 
 	public void setUsageType(UsageType usageType) {
 		this.usageType = usageType;
+	}
+
+	public int getFetchInterval() {
+		return fetchInterval;
+	}
+
+	public void setFetchInterval(int fetchInterval) {
+		this.fetchInterval = fetchInterval;
 	}
 	
 }

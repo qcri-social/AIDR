@@ -97,6 +97,10 @@ public class CollectionServiceImpl implements CollectionService {
 	@Value("${twitter.consumerSecret}")
 	private String consumerSecret;
 
+	@Value("${facebook.consumerKey}")
+	private String facebookConsumerKey;
+	@Value("${facebook.consumerSecret}")
+	private String facebookConsumerSecret;
 	private String accessTokenStr = null;
 	private String accessTokenSecretStr = null;
 
@@ -329,18 +333,20 @@ public class CollectionServiceImpl implements CollectionService {
 		UserConnection userconnection = userConnectionService.fetchByCombinedUserName(dbCollection.getOwner().getUserName());
 		dto.setAccessToken(userconnection.getAccessToken());
 		dto.setAccessTokenSecret(userconnection.getSecret());
-		dto.setConsumerKey(consumerKey);
-		dto.setConsumerSecret(consumerSecret);
+		dto.setConsumerKey(facebookConsumerKey);
+		dto.setConsumerSecret(facebookConsumerSecret);
 		dto.setCollectionName(dbCollection.getName());
 		dto.setCollectionCode(dbCollection.getCode());
 
 		dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getOwner().getUserName()));
-		dto.setToFollow(dbCollection.getFollow());
 		dto.setToTrack(dbCollection.getTrack());
 		dto.setGeoLocation(dbCollection.getGeo());
 		dto.setGeoR(dbCollection.getGeoR());
 		dto.setLanguageFilter(dbCollection.getLangFilters());
 		dto.setSaveMediaEnabled(dbCollection.isSaveMediaEnabled());
+		dto.setLastRunTime(dbCollection.getStartDate());
+		dto.setFetchInterval(dbCollection.getFetchInterval());
+		dto.setProvider(dbCollection.getProvider().toString());
 		
 		// Added by koushik
 		accessTokenStr = dto.getAccessToken();
@@ -391,8 +397,9 @@ public class CollectionServiceImpl implements CollectionService {
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
-			if (CollectionType.Twitter.equals(collection.getProvider())) {
-				WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
+			if (CollectionType.Twitter.equals(collection.getProvider())
+					|| CollectionType.Facebook.equals(collection.getProvider())) {
+				WebTarget webResource = client.target(fetchMainUrl + "/" +collection.getProvider().toString().toLowerCase() + "/start");
 
 				ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
@@ -446,7 +453,6 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 	}
 
-	//@SuppressWarnings("deprecation")
 	@Override
 	@Transactional(readOnly = false)
 	public Collection stopAidrFetcher(Collection collection, Long userId) {
@@ -456,10 +462,10 @@ public class CollectionServiceImpl implements CollectionService {
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 			String path = "";
-			if (CollectionType.Twitter.equals(collection.getProvider())) {
-				path = "/twitter/stop?id=";
-			} else if(CollectionType.SMS.equals(collection.getProvider())) {
+			if(CollectionType.SMS.equals(collection.getProvider())) {
 				path = "/sms/stop?collection_code=";
+			} else {
+				path = "/" + collection.getProvider().toString().toLowerCase() + "/stop?id=";
 			}
 
 			WebTarget webResource = client.target(fetchMainUrl + path + URLEncoder.encode(collection.getCode(), "UTF-8"));
@@ -562,8 +568,9 @@ public class CollectionServiceImpl implements CollectionService {
 				Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
 				String path = "";
-				if (CollectionType.Twitter.equals(collection.getProvider())) {
-					path = "/twitter/status?id=";
+				if (CollectionType.Twitter.equals(collection.getProvider())
+						|| CollectionType.Facebook.equals(collection.getProvider())) {
+					path = "/" +collection.getProvider().toString().toLowerCase() + "/status?id=";
 				} else if(CollectionType.SMS.equals(collection.getProvider())) {
 					path = "/sms/status?collection_code=";
 				}

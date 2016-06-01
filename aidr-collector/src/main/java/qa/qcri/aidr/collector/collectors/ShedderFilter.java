@@ -29,4 +29,24 @@ public class ShedderFilter implements Predicate<JsonObject> {
 		return this.getClass().getSimpleName();
 	}
 
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public LoadShedder getDelegate() {
+		return delegate;
+	}
+
+	public void setDelegate(LoadShedder delegate) {
+		this.delegate = delegate;
+	}
+	
+	public LoadShedder getDelegateForChannel(String channel) {
+		return this.delegate;
+	}
+
 }

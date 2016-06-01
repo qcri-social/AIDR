@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.TwitterCollectionTask;
 import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.common.redis.LoadShedder;
@@ -32,7 +33,7 @@ public class TwitterStreamTracker implements Closeable {
 	private FilterQuery query;
 	private JedisPublisher publisherJedis;
 
-	public TwitterStreamTracker(CollectionTask task) throws ParseException{
+	public TwitterStreamTracker(TwitterCollectionTask task) throws ParseException{
 
 		logger.info("Waiting to aquire Jedis connection for collection " + task.getCollectionCode());
 		this.query = task2query(task);
@@ -101,7 +102,7 @@ public class TwitterStreamTracker implements Closeable {
 		return configuration;
 	}
 	
-	/*default*/ static FilterQuery task2query(CollectionTask collectionTask) throws NumberFormatException {
+	/*default*/ static FilterQuery task2query(TwitterCollectionTask collectionTask) throws NumberFormatException {
 		FilterQuery query;
 		query = new FilterQuery();
 		String toTrack = collectionTask.getToTrack();

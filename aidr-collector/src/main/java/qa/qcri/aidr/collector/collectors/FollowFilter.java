@@ -4,7 +4,7 @@ import javax.json.JsonObject;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.TwitterCollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 
 /**
@@ -18,7 +18,7 @@ public class FollowFilter implements Predicate<JsonObject> {
 	
 	public FollowFilter() {}
 
-	public FollowFilter(CollectionTask task) {
+	public FollowFilter(TwitterCollectionTask task) {
 		if (task != null) {
 			this.setToFollow(task.getToFollow());
 		} else {

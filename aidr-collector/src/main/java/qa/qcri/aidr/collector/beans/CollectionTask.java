@@ -1,63 +1,29 @@
 package qa.qcri.aidr.collector.beans;
 
-import java.util.Properties;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * @author Imran
  * A JAVA POJO class used to define a collection (i.e. Twitter collection) details.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "config", propOrder = {
-    "collectionCode",
-    "collectionName",
-    "toTrack",
-    "toFollow",
-    "geoLocation",
-    "geoR",
-    "languageFilter",
-    "collectionCount",
-    "statusCode",
-    "statusMessage",
-    "persist"
-})
-@XmlRootElement(name = "config")
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_DEFAULT)
 public class CollectionTask {
 
-    private String collectionCode;
-    private String collectionName;
-    private String toTrack;
-    private String toFollow;
-    private String geoLocation, geoR;
-    private String languageFilter;
-    private String lastDocument;
-    private String statusCode;
-    private String statusMessage;
-    private Boolean persist;
-    private boolean sourceOutage;
-    private boolean saveMediaEnabled;
-    private Long searchInterval;
-    private Long lastCollectedAt;
-    private String provider;
-    /**
-     *
-     */
-    //@XmlTransient
+	protected String collectionCode;
+	protected String collectionName;
+	protected String toTrack;
+    protected String lastDocument;
+    protected String statusCode;
+    protected String statusMessage;
+    protected Boolean persist;
+    protected boolean sourceOutage;
+    protected boolean saveMediaEnabled;
     protected String consumerKey;
     protected String consumerSecret;
-    //@XmlTransient
     protected String accessToken;
-    //@XmlTransient
     protected String accessTokenSecret;
     protected Long collectionCount;
+    protected String provider;
     
     public CollectionTask() {}		
     
@@ -73,22 +39,6 @@ public class CollectionTask {
      */
     public void setToTrack(String toTrack) {
         this.toTrack = toTrack;
-    }
-
-    /**
-     * @return the toFollow
-     */
-    public String getToFollow() {
-        return toFollow;
-    }
-    
-    
-
-    /**
-     * @param toFollow the toFollow to set
-     */
-    public void setToFollow(String toFollow) {
-        this.toFollow = toFollow;
     }
 
     /**
@@ -158,35 +108,17 @@ public class CollectionTask {
         }
     }
 
-    public boolean isToFollowAvailable() {
-        if (StringUtils.isNotEmpty(toFollow)) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean checkSocialConfigInfo() {
+    	
+    	boolean isConfigured = StringUtils.isNotEmpty(getAccessToken())
+    			&& StringUtils.isNotEmpty(getConsumerSecret())&& StringUtils.isNotEmpty(getConsumerKey());
 
-    }
-
-    public boolean isGeoLocationAvailable() {
-        if (StringUtils.isNotEmpty(geoLocation)) {
-            return true;
-
-        } else {
-            return false;
-        }
-    }
-
-    public boolean isTwitterInfoPresent() {
-        return StringUtils.isNotEmpty(getAccessToken())
-                && StringUtils.isNotEmpty(getAccessTokenSecret())
-                && StringUtils.isNotEmpty(getConsumerKey())
-                && StringUtils.isNotEmpty(getConsumerSecret());
-    }
-    
-    public boolean isFacebookInfoPresent() {
-        return StringUtils.isNotEmpty(getAccessToken())
-                && StringUtils.isNotEmpty(getConsumerKey())
-                && StringUtils.isNotEmpty(getConsumerSecret());
+    	if(provider.equals("Twitter")) {
+    		isConfigured = isConfigured && StringUtils.isNotEmpty(getAccessTokenSecret()); 
+    	}
+    		
+        return isConfigured;
+                
     }
 
     /**
@@ -269,28 +201,6 @@ public class CollectionTask {
         this.lastDocument = lastDocument;
     }
 
-    /**
-     * @return the geoLocation
-     */
-    public String getGeoLocation() {
-        return geoLocation;
-    }
-
-    /**
-     * @param geoLocation the geoLocation to set
-     */
-    public void setGeoLocation(String geoLocation) {
-        this.geoLocation = geoLocation;
-    }
-
-    public String getGeoR() {
-		return geoR;
-	}
-
-	public void setGeoR(String geoR) {
-		this.geoR = geoR;
-	}
-
 	/**
      * @return the status
      */
@@ -319,64 +229,6 @@ public class CollectionTask {
         this.statusMessage = statusMessage;
     }
 
-    @Override
-	public CollectionTask clone() {
-
-        CollectionTask newTask = new CollectionTask();
-        newTask.setAccessToken(accessToken);
-        newTask.setAccessTokenSecret(accessTokenSecret);
-        newTask.setCollectionCode(collectionCode);
-        newTask.setCollectionName(collectionName);
-        newTask.setConsumerKey(consumerKey);
-        newTask.setConsumerSecret(consumerSecret);
-        newTask.setGeoLocation(geoLocation);
-        newTask.setLastDocument(lastDocument);
-        newTask.setStatusCode(statusCode);
-        newTask.setStatusMessage(statusMessage);
-        newTask.setToFollow(toFollow);
-        newTask.setToTrack(toTrack);
-        newTask.setCollectionCount(collectionCount);
-        newTask.setLanguageFilter(languageFilter);
-        newTask.setPersist(persist);
-        newTask.setSourceOutage(sourceOutage);
-        newTask.setSaveMediaEnabled(saveMediaEnabled);
-        newTask.setLastCollectedAt(lastCollectedAt);
-        newTask.setSearchInterval(searchInterval);
-        newTask.setProvider(provider); //To create enum in commons
-        return newTask;
-    }
-
-    /**
-     * @return the languageFilter
-     */
-    public String getLanguageFilter() {
-        return languageFilter;
-    }
-
-    /**
-     * @param languageFilter the languageFilter to set
-     */
-    public void setLanguageFilter(String languageFilter) {
-        this.languageFilter = languageFilter;
-    }
-
-    public CollectionTask(Properties properties){
-		this.setConsumerKey(properties.getProperty("consumerKey"));
-		this.setConsumerSecret(properties.getProperty("consumerSecret"));
-		this.setAccessToken(properties.getProperty("accessToken"));
-		this.setAccessTokenSecret(properties.getProperty("accessTokenSecret"));
-		this.setToTrack(properties.getProperty("toTrack"));
-		this.setCollectionCode(properties.getProperty("collectionCode"));
-		this.setCollectionName(properties.getProperty("collectionName"));
-		this.setToFollow(properties.getProperty("toFollow"));
-		this.setGeoLocation(properties.getProperty("geoLocation"));
-		this.setGeoR(properties.getProperty("geoR"));
-		this.setLanguageFilter(properties.getProperty("languageFilter"));
-		if(properties.getProperty("persist")!=null){
-			this.setPersist(Boolean.valueOf(properties.getProperty("persist")));
-		}
-	}
-
     public Boolean getPersist() {
 		return persist;
 	}
@@ -401,22 +253,6 @@ public class CollectionTask {
 		this.saveMediaEnabled = saveMediaEnabled;
 	}
 
-	public Long getSearchInterval() {
-		return searchInterval;
-	}
-
-	public void setSearchInterval(Long searchInterval) {
-		this.searchInterval = searchInterval;
-	}
-
-	public Long getLastCollectedAt() {
-		return lastCollectedAt;
-	}
-
-	public void setLastCollectedAt(Long lastCollectedAt) {
-		this.lastCollectedAt = lastCollectedAt;
-	}
-
 	public String getProvider() {
 		return provider;
 	}
@@ -424,5 +260,26 @@ public class CollectionTask {
 	public void setProvider(String provider) {
 		this.provider = provider;
 	}
+
+    @Override
+	public CollectionTask clone() {
+
+        CollectionTask newTask = new CollectionTask();
+        newTask.setAccessToken(accessToken);
+        newTask.setAccessTokenSecret(accessTokenSecret);
+        newTask.setCollectionCode(collectionCode);
+        newTask.setCollectionName(collectionName);
+        newTask.setConsumerKey(consumerKey);
+        newTask.setConsumerSecret(consumerSecret);
+        newTask.setLastDocument(lastDocument);
+        newTask.setStatusCode(statusCode);
+        newTask.setStatusMessage(statusMessage);
+        newTask.setToTrack(toTrack);
+        newTask.setCollectionCount(collectionCount);
+        newTask.setPersist(persist);
+        newTask.setSourceOutage(sourceOutage);
+        newTask.setSaveMediaEnabled(saveMediaEnabled);
+        return newTask;
+    }
 
 }

@@ -127,7 +127,10 @@ public class Collection implements java.io.Serializable {
 	
     @Column(name="save_media_enabled", columnDefinition="bit default 0")
     private boolean saveMediaEnabled;
-	
+
+    @Column(name="fetch_interval")
+    private int fetchInterval;
+    
 	@PreUpdate
 	protected void onUpdate() {
 		updatedAt = new Timestamp(System.currentTimeMillis());
@@ -436,6 +439,14 @@ public class Collection implements java.io.Serializable {
 
 	public void setUsageType(UsageType usageType) {
 		this.usageType = usageType;
+	}
+
+	public int getFetchInterval() {
+		return fetchInterval;
+	}
+
+	public void setFetchInterval(int fetchInterval) {
+		this.fetchInterval = fetchInterval;
 	}
 
 }

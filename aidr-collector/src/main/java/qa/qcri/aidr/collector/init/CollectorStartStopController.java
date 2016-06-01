@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.collector.api.TwitterCollectorAPI;
+import qa.qcri.aidr.collector.api.TwitterCollectionController;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
 import qa.qcri.aidr.collector.utils.GenericCache;
@@ -58,7 +58,7 @@ public class CollectorStartStopController extends HttpServlet {
 		logger.info("AIDR-Collector: Shutting Down...");
 		List<CollectionTask> collections = GenericCache.getInstance()
 				.getAllRunningCollectionTasks();
-		TwitterCollectorAPI twitterCollector = new TwitterCollectorAPI();
+		TwitterCollectionController twitterCollector = new TwitterCollectionController();
 		for (CollectionTask collection : collections) {
 			System.out.println("Stopping " + collection.getCollectionCode());
 			logger.info("Stopping " + collection.getCollectionCode());
