@@ -69,8 +69,6 @@ public class TwitterCollectionTask extends CollectionTask {
         newTask.setAccessTokenSecret(accessTokenSecret);
         newTask.setCollectionCode(collectionCode);
         newTask.setCollectionName(collectionName);
-        newTask.setConsumerKey(consumerKey);
-        newTask.setConsumerSecret(consumerSecret);
         newTask.setGeoLocation(geoLocation);
         newTask.setLastDocument(lastDocument);
         newTask.setStatusCode(statusCode);
@@ -86,8 +84,6 @@ public class TwitterCollectionTask extends CollectionTask {
     }
 
     public TwitterCollectionTask(Properties properties){
-		this.setConsumerKey(properties.getProperty("consumerKey"));
-		this.setConsumerSecret(properties.getProperty("consumerSecret"));
 		this.setAccessToken(properties.getProperty("accessToken"));
 		this.setAccessTokenSecret(properties.getProperty("accessTokenSecret"));
 		this.setToTrack(properties.getProperty("toTrack"));
@@ -114,8 +110,7 @@ public class TwitterCollectionTask extends CollectionTask {
 				+ ", geoR=" + geoR + ", languageFilter=" + languageFilter
 				+ ", lastDocument=" + lastDocument + ", statusCode="
 				+ statusCode + ", statusMessage=" + statusMessage
-				+ ", persist=" + persist + ", consumerKey=" + consumerKey
-				+ ", consumerSecret=" + consumerSecret + ", accessToken="
+				+ ", persist=" + persist + ", accessToken="
 				+ accessToken + ", accessTokenSecret=" + accessTokenSecret
 				+ ", collectionCount=" + collectionCount + '}';
 	}

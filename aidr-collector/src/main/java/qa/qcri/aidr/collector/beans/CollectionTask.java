@@ -18,8 +18,6 @@ public class CollectionTask {
     protected Boolean persist;
     protected boolean sourceOutage;
     protected boolean saveMediaEnabled;
-    protected String consumerKey;
-    protected String consumerSecret;
     protected String accessToken;
     protected String accessTokenSecret;
     protected Long collectionCount;
@@ -39,35 +37,6 @@ public class CollectionTask {
      */
     public void setToTrack(String toTrack) {
         this.toTrack = toTrack;
-    }
-
-    /**
-     * @return the consumerKey
-     */
-    public String getConsumerKey() {
-        return consumerKey;
-    }
-
-    /**
-     * @param consumerKey the consumerKey to set
-     */
-    public void setConsumerKey(String consumerKey) {
-        this.consumerKey = consumerKey;
-    }
-
-    /**
-     * @return the consumerSecret
-     */
-    //@XmlTransient
-    public String getConsumerSecret() {
-        return consumerSecret;
-    }
-
-    /**
-     * @param consumerSecret the consumerSecret to set
-     */
-    public void setConsumerSecret(String consumerSecret) {
-        this.consumerSecret = consumerSecret;
     }
 
     /**
@@ -110,10 +79,9 @@ public class CollectionTask {
 
     public boolean checkSocialConfigInfo() {
     	
-    	boolean isConfigured = StringUtils.isNotEmpty(getAccessToken())
-    			&& StringUtils.isNotEmpty(getConsumerSecret())&& StringUtils.isNotEmpty(getConsumerKey());
-
-    	if(provider.equals("Twitter")) {
+    	boolean isConfigured = StringUtils.isNotEmpty(getAccessToken());
+    	
+     	if(provider.equals("Twitter")) {
     		isConfigured = isConfigured && StringUtils.isNotEmpty(getAccessTokenSecret()); 
     	}
     		
@@ -269,8 +237,6 @@ public class CollectionTask {
         newTask.setAccessTokenSecret(accessTokenSecret);
         newTask.setCollectionCode(collectionCode);
         newTask.setCollectionName(collectionName);
-        newTask.setConsumerKey(consumerKey);
-        newTask.setConsumerSecret(consumerSecret);
         newTask.setLastDocument(lastDocument);
         newTask.setStatusCode(statusCode);
         newTask.setStatusMessage(statusMessage);

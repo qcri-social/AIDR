@@ -281,9 +281,6 @@ public class GenericCache {
 
         task.setAccessToken(null);
         task.setAccessTokenSecret(null);
-        task.setConsumerKey(null);
-        task.setConsumerSecret(null);
-
         return task;
     }
 

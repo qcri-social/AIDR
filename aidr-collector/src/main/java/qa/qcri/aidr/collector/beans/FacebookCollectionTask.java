@@ -30,8 +30,6 @@ public class FacebookCollectionTask extends CollectionTask {
         newTask.setAccessTokenSecret(accessTokenSecret);
         newTask.setCollectionCode(collectionCode);
         newTask.setCollectionName(collectionName);
-        newTask.setConsumerKey(consumerKey);
-        newTask.setConsumerSecret(consumerSecret);
         newTask.setLastDocument(lastDocument);
         newTask.setStatusCode(statusCode);
         newTask.setStatusMessage(statusMessage);
@@ -47,8 +45,6 @@ public class FacebookCollectionTask extends CollectionTask {
 
     @SuppressWarnings("deprecation")
 	public FacebookCollectionTask(Properties properties){
-		this.setConsumerKey(properties.getProperty("consumerKey"));
-		this.setConsumerSecret(properties.getProperty("consumerSecret"));
 		this.setAccessToken(properties.getProperty("accessToken"));
 		this.setAccessTokenSecret(properties.getProperty("accessTokenSecret"));
 		this.setToTrack(properties.getProperty("toTrack"));
@@ -72,8 +68,7 @@ public class FacebookCollectionTask extends CollectionTask {
 				+ ", lastRunTime=" + lastRunTime + ", fetchInterval=" + fetchInterval
 				+ ", lastDocument=" + lastDocument + ", statusCode="
 				+ statusCode + ", statusMessage=" + statusMessage
-				+ ", persist=" + persist + ", consumerKey=" + consumerKey
-				+ ", consumerSecret=" + consumerSecret + ", accessToken="
+				+ ", persist=" + persist + ", accessToken="
 				+ accessToken + ", accessTokenSecret=" + accessTokenSecret
 				+ ", collectionCount=" + collectionCount + '}';
 	}

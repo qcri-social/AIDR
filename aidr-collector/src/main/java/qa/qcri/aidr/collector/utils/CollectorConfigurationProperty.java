@@ -33,7 +33,9 @@ public enum CollectorConfigurationProperty implements ConfigurationProperty {
 			RECONNECT_RATE_LIMIT_RETRY_ATTEMPTS("RECONNECT_RATE_LIMIT_RETRY_ATTEMPTS"),
 			RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS("RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS"),
 			RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS("RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS"),
-			COLLECTION_COUNT_UPDATE_CRON("collection.count.update.cron");;
+			COLLECTION_COUNT_UPDATE_CRON("collection.count.update.cron"),
+			TWITTER_CONSUMER_KEY("twitter.consumerKey"),TWITTER_CONSUMER_SECRET("twitter.consumerSecret"),
+			FACEBOOK_CONSUMER_KEY("facebook.consumerKey"),FACEBOOK_CONSUMER_SECRET("facebook.consumerSecret");
 
 	private final String configurationProperty;
 

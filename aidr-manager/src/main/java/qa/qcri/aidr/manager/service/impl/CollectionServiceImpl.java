@@ -333,8 +333,6 @@ public class CollectionServiceImpl implements CollectionService {
 		UserConnection userconnection = userConnectionService.fetchByCombinedUserName(dbCollection.getOwner().getUserName());
 		dto.setAccessToken(userconnection.getAccessToken());
 		dto.setAccessTokenSecret(userconnection.getSecret());
-		dto.setConsumerKey(facebookConsumerKey);
-		dto.setConsumerSecret(facebookConsumerSecret);
 		dto.setCollectionName(dbCollection.getName());
 		dto.setCollectionCode(dbCollection.getCode());
 

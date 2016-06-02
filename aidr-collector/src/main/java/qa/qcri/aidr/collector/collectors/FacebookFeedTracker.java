@@ -1,5 +1,6 @@
 package qa.qcri.aidr.collector.collectors;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +30,7 @@ import facebook4j.internal.org.json.JSONException;
 import facebook4j.internal.org.json.JSONObject;
 import facebook4j.json.DataObjectFactory;
 
-public class FacebookFeedTracker {
+public class FacebookFeedTracker implements Closeable {
 
 	private static Logger logger = Logger.getLogger(FacebookFeedTracker.class);
 	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
@@ -37,7 +38,7 @@ public class FacebookFeedTracker {
 	private Facebook facebook;
 	private FacebookCollectionTask task;
 	private LoadShedder shedder;
-	
+
 	public FacebookFeedTracker(FacebookCollectionTask task) {
 
 		logger.info("Waiting to aquire Jedis connection for collection " + task.getCollectionCode());
@@ -51,20 +52,16 @@ public class FacebookFeedTracker {
 				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), 
 				true,channelName);
 		
-		String cacheKey = task.getCollectionCode();
-
-		facebook = new FacebookFactory(config).getInstance();
+		this.facebook = new FacebookFactory(config).getInstance();
 		this.task = task;
 	}
 	
 	public void start() {
-		new Runnable() {
-			
-			@Override
-			public void run() {
-				collectFacebookData(task);
-			}
-		};
+		new Thread(new Runnable() {
+		    public void run() {
+		        collectFacebookData(task);
+		    }
+		}).start();
 	}
 
 	public void close() throws IOException {
@@ -76,8 +73,8 @@ public class FacebookFeedTracker {
 	private static Configuration task2configuration(CollectionTask task) {
 		ConfigurationBuilder builder = new ConfigurationBuilder();
 		builder.setDebugEnabled(false)
-		    .setOAuthAppId(task.getConsumerKey())
-		    .setOAuthAppSecret(task.getConsumerSecret())
+		    .setOAuthAppId(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_KEY))
+		    .setOAuthAppSecret(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_SECRET))
 		    .setJSONStoreEnabled(true)
 			.setOAuthAccessToken(task.getAccessToken());
 
@@ -91,22 +88,17 @@ public class FacebookFeedTracker {
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
 		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "." + task.getCollectionCode();
-		LoadShedder shedder = new LoadShedder(
-				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)),
-				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), 
-				true,channelName);
-		ShedderFilter filter = new ShedderFilter(channelName, shedder);
-			
+		
 		Date toTimestamp = new Date();
 		
 		for(FacebookEntityType type : FacebookEntityType.values()) {
-			this.fetchPosts(toTimestamp, type, filter);	
+			this.fetchPosts(toTimestamp, type);	
 		}
 		
 		task.setLastRunTime(toTimestamp);
 	}
 
-    private void fetchPosts(Date toTimestamp, FacebookEntityType type, ShedderFilter filter) {
+    private void fetchPosts(Date toTimestamp, FacebookEntityType type) {
     	int offset = 0;
     	Integer limit = 100; 
     	List<String> entityIds = new ArrayList<String>();
@@ -133,7 +125,7 @@ public class FacebookFeedTracker {
     	if(entityIds != null && !entityIds.isEmpty()) {
     		offset = entityIds != null && entityIds.size() == limit ? offset + limit : -1;
     		try {
-				processPost(filter, toTimestamp, limit, entityIds);
+				processPost(toTimestamp, limit, entityIds);
 			} catch (IOException | FacebookException e) {
 				logger.warn("Error in processing fetching posts", e.getMessage());
 			}
@@ -176,8 +168,7 @@ public class FacebookFeedTracker {
 		return entityIds;
     }
     
-    private void processPost(ShedderFilter filter,
-    		Date toTimestamp, Integer limit, List<String> entityIds)
+    private void processPost(Date toTimestamp, Integer limit, List<String> entityIds)
     				throws IOException, FacebookException {
     	  
     	logger.info("process Post");
@@ -198,7 +189,7 @@ public class FacebookFeedTracker {
     			postsOffset = feed.size() == limit ? postsOffset + limit : -1;
     			for (Post post : feed) {
     				try {
-	    				if(filter.getDelegateForChannel(channelName).canProcess()) {
+	    				if(shedder.canProcess()) {
 	    					JSONObject aidrJson = new JSONObject(); 
 	    			    	aidrJson.put("doctype", "facebook");
 	    			    	aidrJson.put("crisis_code", task.getCollectionCode());
