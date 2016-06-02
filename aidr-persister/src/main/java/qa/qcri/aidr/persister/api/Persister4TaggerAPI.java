@@ -297,6 +297,7 @@ public class Persister4TaggerAPI {
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + result.get("fileName"));
 		
 		JSONObject obj = new JSONObject();
+		obj.put("tweetCount", result.get("count"));
 		if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
