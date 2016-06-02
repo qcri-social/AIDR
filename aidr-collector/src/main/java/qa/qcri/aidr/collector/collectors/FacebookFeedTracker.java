@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FacebookCollectionTask;
 import qa.qcri.aidr.collector.beans.FacebookEntityType;
@@ -28,7 +30,6 @@ import facebook4j.conf.ConfigurationBuilder;
 import facebook4j.internal.logging.Logger;
 import facebook4j.internal.org.json.JSONException;
 import facebook4j.internal.org.json.JSONObject;
-import facebook4j.json.DataObjectFactory;
 
 public class FacebookFeedTracker implements Closeable {
 
@@ -38,7 +39,12 @@ public class FacebookFeedTracker implements Closeable {
 	private Facebook facebook;
 	private FacebookCollectionTask task;
 	private LoadShedder shedder;
-
+	private static String FIELDS_TO_FETCH = "id,updated_time,message_tags,scheduled_publish_time,"
+			+ "created_time, full_picture,object_id,with_tags,story_tags, is_published, "
+			+ "from,to,message,picture,link,name,caption,description,source,properties,"
+			+ "icon,actions,privacy,type,shares,status_type,place,story,"
+			+ "application,targeting,likes.summary(true),comments.summary(true)";
+	
 	public FacebookFeedTracker(FacebookCollectionTask task) {
 
 		logger.info("Waiting to aquire Jedis connection for collection " + task.getCollectionCode());
@@ -87,8 +93,6 @@ public class FacebookFeedTracker implements Closeable {
 		this.publisher = JedisPublisher.newInstance();
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
-		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "." + task.getCollectionCode();
-		
 		Date toTimestamp = new Date();
 		
 		for(FacebookEntityType type : FacebookEntityType.values()) {
@@ -125,7 +129,7 @@ public class FacebookFeedTracker implements Closeable {
     	if(entityIds != null && !entityIds.isEmpty()) {
     		offset = entityIds != null && entityIds.size() == limit ? offset + limit : -1;
     		try {
-				processPost(toTimestamp, limit, entityIds);
+				processPost(toTimestamp, limit, entityIds, type);
 			} catch (IOException | FacebookException e) {
 				logger.warn("Error in processing fetching posts", e.getMessage());
 			}
@@ -168,7 +172,7 @@ public class FacebookFeedTracker implements Closeable {
 		return entityIds;
     }
     
-    private void processPost(Date toTimestamp, Integer limit, List<String> entityIds)
+    private void processPost(Date toTimestamp, Integer limit, List<String> entityIds, FacebookEntityType parent)
     				throws IOException, FacebookException {
     	  
     	logger.info("process Post");
@@ -176,6 +180,7 @@ public class FacebookFeedTracker implements Closeable {
     			+ "." + task.getCollectionCode(); 
 
     	Date since = new Date(System.currentTimeMillis() - 7*24*60*60*1000);
+    	Gson gson = new Gson();
     	
     	for (String id : entityIds) {
     		int postsOffset = 0;
@@ -185,7 +190,7 @@ public class FacebookFeedTracker implements Closeable {
     				since = task.getLastRunTime();
     			}
     			
-    			ResponseList<Post> feed = facebook.getFeed(id, new Reading().since(since).until(toTimestamp).order(Ordering.CHRONOLOGICAL).limit(limit).offset(postsOffset));
+    			ResponseList<Post> feed = facebook.getFeed(id, new Reading().fields(FIELDS_TO_FETCH).since(since).until(toTimestamp).order(Ordering.CHRONOLOGICAL).limit(limit).offset(postsOffset));
     			postsOffset = feed.size() == limit ? postsOffset + limit : -1;
     			for (Post post : feed) {
     				try {
@@ -193,14 +198,18 @@ public class FacebookFeedTracker implements Closeable {
 	    					JSONObject aidrJson = new JSONObject(); 
 	    			    	aidrJson.put("doctype", "facebook");
 	    			    	aidrJson.put("crisis_code", task.getCollectionCode());
-	    			    	
 							aidrJson.put("crisis_name", task.getCollectionName());
+							aidrJson.put("parent_type", parent.name());
 							
-	    			    	   
-	    			    	JSONObject docJson = new JSONObject(DataObjectFactory.getRawJSON(post));
+	    			    	JSONObject docJson = new JSONObject(gson.toJson(post));
 	    			    	docJson.put("aidr", aidrJson);
-	    			    	
-	    					publisher.publish(channelName, docJson.toString());
+
+	    			    	int likeCount = post.getLikes().getSummary() != null ?post.getLikes().getSummary().getTotalCount() : 0;
+    			            docJson.put("likesCount", likeCount);
+    			            int commentCount = post.getComments().getSummary() != null ?post.getComments().getSummary().getTotalCount() : 0;
+    			            docJson.put("commentsCount",commentCount);
+	    					
+    			            publisher.publish(channelName, docJson.toString());
 	    				}
     				} catch (JSONException e) {
 						logger.warn("Issue in parsing data.");
