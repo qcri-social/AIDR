@@ -77,6 +77,17 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+            "#fetchIntervalInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection fetch interval specifies the duration after which collection will fetch new data.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+            
             "#collectionLangInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -157,6 +168,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('followPanel').hide();
                          Ext.getCmp('durationDescription').hide();
                          Ext.getCmp('geoDescription').hide();
+                         Ext.getCmp('fetchIntervalPanel').hide();
                      } else if(newValue === 'Twitter'){
                          Ext.getCmp('keywordsPanel').show();
                          Ext.getCmp('langPanel').show();
@@ -165,6 +177,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('followPanel').show();
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('geoDescription').show();
+                         Ext.getCmp('fetchIntervalPanel').hide();
                      }
                      else if(newValue === 'Facebook'){
                          Ext.getCmp('keywordsPanel').show();
@@ -172,6 +185,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('geoRPanel').hide();
                          Ext.getCmp('followPanel').hide();
+                         Ext.getCmp('fetchIntervalPanel').show();
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('geoDescription').hide();
                      }
@@ -283,7 +297,11 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             function createCollection(shouldRun) {
 
                 Ext.getBody().mask('Saving collection ...');
-
+                var fi =0;
+                if(form.findField('collectionType').getValue() ==='Facebook'){
+                	fi = form.findField('fetchInterval').getValue();
+                }
+                
                 Ext.Ajax.request({
                     url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
                     method: 'POST',
@@ -295,6 +313,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         geo: Ext.String.trim( form.findField('geo').getValue() ),
                         geoR: Ext.String.trim(  form.findField('geoR').getValue().geoR1 ),
                         langFilters: form.findField('langFilters').getValue(),
+                        fetchInterval: fi,
                         durationHours: form.findField('durationHours').getValue(),
                         crisisType: form.findField('crisisType').getValue(),
                         provider: form.findField('collectionType').getValue(),

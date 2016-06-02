@@ -680,7 +680,7 @@ public class CollectionController extends BaseController{
 		dto.setName(collection.getName());
 		//dto.setTarget(collection.getTarget());
         dto.setGeoR(collection.getGeoR());
-
+        
 		UserAccount user = collection.getOwner();
 		dto.setUser(user);
 
@@ -700,6 +700,7 @@ public class CollectionController extends BaseController{
 			logger.error("Error", e);
 		}
 		dto.setGeo(collection.getGeo());
+		dto.setFetchInterval(collection.getFetchInterval());
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());
 		dto.setEndDate(collection.getEndDate());

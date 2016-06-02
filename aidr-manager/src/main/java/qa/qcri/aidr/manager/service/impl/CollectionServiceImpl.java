@@ -132,6 +132,7 @@ public class CollectionServiceImpl implements CollectionService {
 			
 			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
 			collection.setFollow(collectionUpdateInfo.getFollow());
+			collection.setFetchInterval(collectionUpdateInfo.getFetchInterval());
 			filteredTrack = collectionUpdateInfo.getTrack();
 			
 			if(!StringUtils.isEmpty(filteredTrack)) {
@@ -345,7 +346,7 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setLastRunTime(dbCollection.getStartDate());
 		dto.setFetchInterval(dbCollection.getFetchInterval());
 		dto.setProvider(dbCollection.getProvider().toString());
-		
+		dto.setFetchInterval(dbCollection.getFetchInterval());
 		// Added by koushik
 		accessTokenStr = dto.getAccessToken();
 		accessTokenSecretStr = dto.getAccessTokenSecret();
@@ -957,11 +958,12 @@ public class CollectionServiceImpl implements CollectionService {
 		collection.setGeo(collectionInfo.getGeo());
 		collection.setTrack(collectionInfo.getTrack());
 		collection.setCrisisType(crisisTypeService.getById(collectionInfo.getCrisisType()));
-		collection.setFollow(collection.getFollow());
+		collection.setFollow(collectionInfo.getFollow());
 		collection.setLangFilters(collectionInfo.getLangFilters());
 		collection.setMicromappersEnabled(Boolean.FALSE);
 		collection.setProvider(CollectionType.valueOf(collectionInfo.getProvider()));
 		collection.setPurpose(collectionInfo.getPurpose());
+		collection.setFetchInterval(collectionInfo.getFetchInterval());
 		
 		if(CollectionType.SMS.equals(collectionInfo.getProvider())) {
 			collection.setTrack(null);

@@ -12,6 +12,8 @@ public class CollectionUpdateInfo {
 	private String durationHours;
 	private String geo;
 	private String geoR;
+	private int fetchInterval;
+	
 	public String getCode() {
 		return code;
 	}
@@ -71,5 +73,11 @@ public class CollectionUpdateInfo {
 	}
 	public void setGeoR(String geoR) {
 		this.geoR = geoR;
+	}
+	public int getFetchInterval() {
+		return fetchInterval;
+	}
+	public void setFetchInterval(int fetchInterval) {
+		this.fetchInterval = fetchInterval;
 	}
 }

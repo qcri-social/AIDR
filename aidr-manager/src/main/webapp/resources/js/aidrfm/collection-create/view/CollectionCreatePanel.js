@@ -232,6 +232,32 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 //            default duration is 2 days (48 hours)
             value: 48
         });
+        
+        this.fetchIntervalStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 2, "label": '2 hours' },
+                { "val": 6, "label": '6 hours' },
+                { "val": 12, "label": '12 hours' },
+                { "val": 24, "label": '1 day'},
+                { "val": 72, "label": '3 days' },
+                { "val": 168, "label": '7 days' }
+            ]
+        });
+        
+        this.fetchInterval = Ext.create('Ext.form.ComboBox', {
+        	  fieldLabel: 'Fetch Interval',
+              width:698,
+              labelWidth: 240,
+              name: 'fetchInterval',
+              editable: false,
+              text: 'Edit',
+              valueField: 'val',
+              displayField: 'label',
+              store: this.fetchIntervalStore,
+//              default duration is 6 hours
+              value: 6
+        });
 
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
             autoDestroy: true,
@@ -426,7 +452,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         this.geoR,
 
                         wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '12 0', undefined, 'followPanel'),
-
+                        wrapFieldWithInfo(this.fetchInterval, 'fetchIntervalInfo', undefined, '20 0 5 0', 'fetchIntervalPanel'),
                         wrapFieldWithInfo(this.duration, 'collectionDurationInfo', undefined, '20 0 5 0'),
                         this.durationDescription
                     ]

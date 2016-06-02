@@ -87,6 +87,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     });
                 }
             },
+            
+            "#fetchIntervalInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', { 
+                        trackMouse: true,
+                        html: "Collection fetch interval specifies the duration after which collection will fetch new data.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
 
             "#collectionLangInfo": {
                 render: function (infoPanel, eOpts) {
@@ -261,8 +272,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 click: function (btn, e, eOpts) {
                     this.goToTagger(btn);
                 }
-            },
-
+            }
         });
     },
 
@@ -378,15 +388,18 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 me.DetailsComponent.updateLayout();
 
                 Ext.getBody().unmask();
-
-                if(jsonData.collectionType === 'SMS'){
+                
+                var collectionType = jsonData.collectionType;
+                
+                if(collectionType === 'SMS'){
                     Ext.getCmp('keywordsPanel').hide();
                     Ext.getCmp('keywords').hide();
                     Ext.getCmp('configurationsL').hide();
                     Ext.getCmp('durationDescription').hide();
+                    Ext.getCmp('fetchIntervalPanel').hide();
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
                     Ext.getCmp('endpointLabel').show();
-                } else if(jsonData.collectionType === 'Twitter'){
+                } else if(collectionType === 'Twitter'){
                 	Ext.getCmp('Language').show();
                 	Ext.getCmp('langPanel').show();
                     Ext.getCmp('geoPanel').show();
@@ -394,14 +407,15 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('geoRPanel').show();
                     Ext.getCmp('followPanel').show();
                     Ext.getCmp('geoDescription').show();
+                    Ext.getCmp('fetchIntervalPanel').hide();
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>');
-                }else if(jsonData.collectionType === 'Facebook'){
+                }else if(collectionType === 'Facebook'){
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
                 }
 
-               Ext.getCmp('downloadLabel').setText('Downloaded ' + COLLECTION_TYPES[newValue]['plural'] + ' <br/> (since last re-start):',false);
-               Ext.getCmp('totalDownloadLabel').setText('Total downloaded ' + COLLECTION_TYPES[newValue]['plural'] + ':');
-               Ext.getCmp('lastDownloadLabel').setText('Last downloaded ' + COLLECTION_TYPES[newValue]['plural'] + ':');
+               Ext.getCmp('downloadLabel').setText('Downloaded ' + COLLECTION_TYPES[collectionType]['plural'] + ' <br/> (since last re-start):',false);
+               Ext.getCmp('totalDownloadLabel').setText('Total downloaded ' + COLLECTION_TYPES[collectionType]['plural'] + ':');
+               Ext.getCmp('lastDownloadLabel').setText('Last downloaded ' + COLLECTION_TYPES[collectionType]['plural'] + ':');
 
             },
             failure: function () {
@@ -437,7 +451,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         COLLECTION_CODE = r.code;
         p.codeL.setText(r.code);
         p.keywordsL.setText(r.track ? r.track : this.na, false);
-
+        
+        if(r.collectionType === 'Facebook'){
+        	p.fetchIntervalL.setText(r.fetchInterval, false);
+            p.fetchIntervalContainer.show();
+        }
+        
         if (r.geo){
             p.geoL.setText(r.geo, false);
             if (r.geoR === 'approximate') {
@@ -512,6 +531,14 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             p.geoContainer.hide();
         }
 
+        if(r.fetchInterval != 0){
+        	p.fetchIntervalL.setText(r.fetchInterval, false);
+            p.fetchIntervalContainer.show();
+        }else{
+        	p.fetchIntervalL.setText(this.na, false);
+        	p.fetchIntervalContainer.hide();
+        }
+        
         p.followL.setText(this.ns, false);
         p.followContainer.hide();
         
@@ -570,7 +597,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 "label": duration / 24 + ' days'
             });
         }
-
+        
+        var fetchInterval = r.fetchInterval ? r.fetchInterval : 0;
+        p.fetchInterval.setValue(fetchInterval);
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
         if(r.crisisType!=null){
@@ -857,7 +886,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         var editPanelEl = cmp.up('panel').getEl();
         editPanelEl.mask("Updating...");
-		
+        
+        var fi = 0;
+        
+        if(TYPE === 'Facebook'){
+        	var fi = form.findField('fetchInterval').getValue();
+        }
+        
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/update',
             method: 'POST',
@@ -874,6 +909,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 endDate: endDate,
                 langFilters: form.findField('langFilters').getValue(),
                 durationHours: form.findField('durationHours').getValue(),
+                fetchInterval: fi,
                 crisisType: form.findField('crisisType').getValue(),
                 provider: form.findField('collectionType').getValue()
             },

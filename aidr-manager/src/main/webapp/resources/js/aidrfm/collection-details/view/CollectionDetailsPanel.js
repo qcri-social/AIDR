@@ -122,6 +122,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
         this.geoL = Ext.create('Ext.form.Label', {
             flex: 1});
+        this.fetchIntervalL = Ext.create('Ext.form.Label', {
+            flex: 1});
         this.followL = Ext.create('Ext.form.Label', {flex: 1});
         this.languageFiltersL = Ext.create('Ext.form.Label', {flex: 1});
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
@@ -139,6 +141,19 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     text: 'Geographical boundaries:'
                 },
                 this.geoL
+            ]
+        });
+        
+        this.fetchIntervalContainer = Ext.create('Ext.container.Container', {
+            hidden: true,
+            defaultType: 'label',
+            layout: 'hbox',
+            items: [
+                {
+                    width: 220,
+                    text: 'Fetch Interval:'
+                },
+                this.fetchIntervalL
             ]
         });
 
@@ -311,6 +326,34 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             store: this.durationStore,
 //            default duration is 2 days (48 hours)
             value: 48,
+            queryMode: 'local'
+        });
+        
+        this.fetchIntervalStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 2, "label": '2 hours' },
+                { "val": 6, "label": '6 hours' },
+                { "val": 12, "label": '12 hours' },
+                { "val": 24, "label": '1 day'},
+                { "val": 72, "label": '3 days' },
+                { "val": 168, "label": '7 days' }
+            ]
+        });
+        
+        this.fetchInterval = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Fetch Interval',
+            flex: 1,
+            labelWidth: 130,
+            name: 'fetchInterval',
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.fetchIntervalStore,
+//            default duration is 6 hours
+            value: 6,
             queryMode: 'local'
         });
 
@@ -827,6 +870,24 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '5 0',
+                            id:'fetchIntervalPanel',
+                            items: [
+                                this.fetchInterval,
+                                {
+                                    border: false,
+                                    margin: '5 0 0 0',
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'fetchIntervalInfo'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
                             items: [
                                 this.duration,
                                 {
@@ -1107,6 +1168,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             ]
                         },
                         this.geoContainer,
+                        this.fetchIntervalContainer,
                         this.followContainer,
                         {
                             xtype: 'container',
