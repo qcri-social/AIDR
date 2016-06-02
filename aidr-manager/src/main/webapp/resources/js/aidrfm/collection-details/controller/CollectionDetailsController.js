@@ -453,8 +453,30 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         p.keywordsL.setText(r.track ? r.track : this.na, false);
         
         if(r.collectionType === 'Facebook'){
-        	p.fetchIntervalL.setText(r.fetchInterval, false);
-            p.fetchIntervalContainer.show();
+        	if(r.fetchInterval > 0){
+        		var storeIndex = p.fetchIntervalStore.findExact("val", r.fetchInterval);
+            	var fi = "";
+                if (storeIndex == -1){
+            		if(r.fetchInterval >= 24){
+                		fi = Math.floor(r.fetchInterval/24) +" days ";
+                	}
+                	if(r.fetchInterval % 24 > 0){
+                		fi += r.fetchInterval%24 +" hours ";
+                	}
+                	if(r.fetchInterval > 0){
+                		p.fetchIntervalStore.add({
+                            "val": r.fetchInterval,
+                            "label": fi
+                       });
+                	}
+                }
+                else{
+                	fi = p.fetchIntervalStore.getAt(storeIndex).data.label;
+                }
+
+                p.fetchIntervalL.setText(fi, false);
+                p.fetchIntervalContainer.show();
+        	}
         }
         
         if (r.geo){
@@ -531,12 +553,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             p.geoContainer.hide();
         }
 
-        if(r.fetchInterval != 0){
-        	p.fetchIntervalL.setText(r.fetchInterval, false);
+        if(r.collectionType === 'Facebook'){
+        	p.fetchIntervalL.setText(r.fetchInterval +"hours", false);
             p.fetchIntervalContainer.show();
-        }else{
-        	p.fetchIntervalL.setText(this.na, false);
-        	p.fetchIntervalContainer.hide();
         }
         
         p.followL.setText(this.ns, false);
