@@ -179,7 +179,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             text: 'Configuration',
             padding: '15 0 0 0',
-            cls: 'header-h2'
+            cls: 'header-h2',
+            hidden: true
         });
 
         this.administrationL = Ext.create('Ext.form.Label', {
@@ -241,6 +242,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         
         this.geoR = Ext.create('Ext.form.Panel', {
             id:'geoRPanel',
+            hidden:true,
             items:[{
                 name: 'geoR',
                 xtype: 'radiogroup',
@@ -264,7 +266,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             html: '<span class="redInfo">*</span> ' +
                 'Click here to get coordinates: <a href="#" onclick="App.Demo.openWindow()" >boundingbox.klokantech.com</a> ' +
                 '("Copy/paste CSV format of a boundingbox")',
-            padding: '2 0 2 135'
+            padding: '2 0 2 135',
+            hidden: true
         });
 
         this.followE = Ext.create('Ext.form.field.Text', {
@@ -424,7 +427,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             text: 'Advanced configuration',
             padding: '15 0 0 0',
-            cls: 'header-h2'
+            cls: 'header-h2',
+            hidden: true
+            	
         });
 
         this.saveButton = Ext.create('Ext.Button', {
@@ -805,6 +810,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             margin: '5 0 0 0',
                             padding: '0 0 8 0',
                             id:'langPanel',
+                            hidden: true,
                             items: [
                                 this.langCombo,
                                 {
@@ -847,6 +853,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             margin: '0 0 5 0',
                             id:'geoPanel',
+                            hidden: true,
                             items: [
                                 this.geoE,
                                 {
@@ -867,6 +874,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             margin: '5 0',
                             id:'followPanel',
+                            hidden:true,
                             items: [
                                 this.followE,
                                 {
@@ -1089,6 +1097,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             id:'keywords',
                             defaultType: 'label',
                             layout: 'hbox',
+                            
                             items: [
                                 {
                                     width: 220,
@@ -1105,6 +1114,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             defaultType: 'label',
                             layout: 'hbox',
                             cls: 'bordered-bottom',
+                            hidden: true,
                             items: [
                                 {
                                     width: 220,

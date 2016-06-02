@@ -94,8 +94,8 @@ public class TwitterStreamTracker implements Closeable {
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 		configurationBuilder.setDebugEnabled(false)
 		        .setJSONStoreEnabled(true)
-		        .setOAuthConsumerKey(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_KEY))
-		        .setOAuthConsumerSecret(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_SECRET))
+		        .setOAuthConsumerKey(configProperties.getProperty(CollectorConfigurationProperty.TWITTER_CONSUMER_KEY))
+		        .setOAuthConsumerSecret(configProperties.getProperty(CollectorConfigurationProperty.TWITTER_CONSUMER_SECRET))
 		        .setOAuthAccessToken(task.getAccessToken())
 		        .setOAuthAccessTokenSecret(task.getAccessTokenSecret());
 		Configuration configuration = configurationBuilder.build();
