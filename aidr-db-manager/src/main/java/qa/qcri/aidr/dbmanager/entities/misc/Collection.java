@@ -128,7 +128,7 @@ public class Collection implements java.io.Serializable {
     @Column(name="save_media_enabled", columnDefinition="bit default 0")
     private boolean saveMediaEnabled;
 
-    @Column(name="fetch_interval")
+    @Column(name="fetch_interval", columnDefinition="int default 0")
     private int fetchInterval;
     
 	@PreUpdate

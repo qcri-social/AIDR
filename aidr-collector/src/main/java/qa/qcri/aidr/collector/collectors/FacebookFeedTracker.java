@@ -199,7 +199,7 @@ public class FacebookFeedTracker implements Closeable {
 	    			    	aidrJson.put("doctype", "facebook");
 	    			    	aidrJson.put("crisis_code", task.getCollectionCode());
 							aidrJson.put("crisis_name", task.getCollectionName());
-							aidrJson.put("parent_type", parent.name());
+							aidrJson.put("parent_type", parent.name().toLowerCase());
 							
 	    			    	JSONObject docJson = new JSONObject(gson.toJson(post));
 	    			    	docJson.put("aidr", aidrJson);
