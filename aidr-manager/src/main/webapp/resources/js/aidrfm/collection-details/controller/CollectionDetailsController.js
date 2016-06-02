@@ -554,8 +554,30 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         }
 
         if(r.collectionType === 'Facebook'){
-        	p.fetchIntervalL.setText(r.fetchInterval +"hours", false);
+        	if(r.fetchInterval > 0){
+        		var storeIndex = p.fetchIntervalStore.findExact("val", r.fetchInterval);
+            	var fi = "";
+                if (storeIndex == -1){
+            		if(r.fetchInterval >= 24){
+                		fi = Math.floor(r.fetchInterval/24) +" days ";
+                	}
+                	if(r.fetchInterval % 24 > 0){
+                		fi += r.fetchInterval%24 +" hours ";
+                	}
+                	if(r.fetchInterval > 0){
+                		p.fetchIntervalStore.add({
+                            "val": r.fetchInterval,
+                            "label": fi
+                       });
+                	}
+                }
+                else{
+                	fi = p.fetchIntervalStore.getAt(storeIndex).data.label;
+                }
+        	
+        	p.fetchIntervalL.setText(fi, false);
             p.fetchIntervalContainer.show();
+        	}
         }
         
         p.followL.setText(this.ns, false);
@@ -590,7 +612,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var p = this.DetailsComponent;
         var r = p.currentCollection;
 
-         p.codeE.setValue(r.code);
+        p.codeE.setValue(r.code);
         p.nameE.setValue(r.name);
         p.keywordsE.setValue(r.track);
 
@@ -617,8 +639,24 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             });
         }
         
-        var fetchInterval = r.fetchInterval ? r.fetchInterval : 0;
-        p.fetchInterval.setValue(fetchInterval);
+		storeIndex = p.fetchIntervalStore.findExact("val", r.fetchInterval);
+        if (storeIndex == -1){
+        	var fi = "";
+    		if(r.fetchInterval >= 24){
+        		fi = Math.floor(r.fetchInterval/24) +" days ";
+        	}
+        	if(r.fetchInterval % 24 > 0){
+        		fi += r.fetchInterval%24 +" hours ";
+        	}
+        	if(r.fetchInterval > 0){
+        		p.fetchIntervalStore.add({
+                    "val": r.fetchInterval,
+                    "label": fi
+               });
+        	}
+        }
+        
+        p.fetchInterval.setValue(r.fetchInterval);
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
         if(r.crisisType!=null){
