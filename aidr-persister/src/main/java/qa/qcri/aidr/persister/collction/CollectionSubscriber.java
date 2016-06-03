@@ -214,6 +214,7 @@ public class CollectionSubscriber extends JedisPubSub {
             facebookDataFeed.setFeed(msgJson);
             JSONObject aidrJson = msgJson.getJSONObject("aidr");
 			facebookDataFeed.setAidr(aidrJson);
+			facebookDataFeed.setParentType(aidrJson.getString("parent_type"));
             facebookDataFeedService.persist(facebookDataFeed);
         }catch(Exception e){
         	logger.error("Error in persisting :::: " + message);

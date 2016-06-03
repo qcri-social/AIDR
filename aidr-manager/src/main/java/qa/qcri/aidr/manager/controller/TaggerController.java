@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.manager.dto.CrisisRequest;
-import qa.qcri.aidr.manager.dto.DateHistory;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.manager.dto.TaggerAttribute;
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
@@ -57,7 +56,7 @@ import qa.qcri.aidr.manager.service.TaggerService;
 @RequestMapping("protected/tagger")
 public class TaggerController extends BaseController {
 
-	private Logger logger = Logger.getLogger(TaggerController.class);
+	private final Logger logger = Logger.getLogger(TaggerController.class);
 
 	@Autowired
 	private TaggerService taggerService;
@@ -1057,4 +1056,23 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false, "Sending Email Failed");
 		}
 	}
+	
+	@RequestMapping(value = "/generateFacebookPostDownloadLink", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> generateFacebookPostDownloadLink(@RequestParam String code,
+			@RequestParam Integer count) throws Exception {
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.generateFacebookPostDownloadLink(code, count);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "Something wrong - no file generated!");
+			}
+		} catch (Exception e) {
+			logger.error("Error while generating CSV filtered link for colection: "+code +"/t"+e.getStackTrace());
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+	}
+	
 }

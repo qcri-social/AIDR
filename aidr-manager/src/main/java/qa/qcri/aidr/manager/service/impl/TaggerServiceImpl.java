@@ -23,7 +23,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
@@ -71,7 +70,7 @@ import qa.qcri.aidr.manager.util.ManagerConfigurator;
 @Service("taggerService")
 public class TaggerServiceImpl implements TaggerService {
 
-	private Logger logger = Logger.getLogger(TaggerServiceImpl.class);
+	private final Logger logger = Logger.getLogger(TaggerServiceImpl.class);
 
 	// @Autowired
 	// private Client client;
@@ -2228,5 +2227,31 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 		
 		return labelCount;
+	}
+	
+	@Override
+	public Map<String, Object> generateFacebookPostDownloadLink(String code, Integer count)
+			throws AidrException {
+		
+		try {
+			Client client = ClientBuilder.newBuilder()
+					.register(JacksonFeature.class).build();
+			
+			String url = null;
+			Response clientResponse = null;
+			url = persisterMainUrl + "/taggerPersister/downloadFacebookPosts?collectionCode=" + code
+					+ "&exportLimit=" + count;
+			WebTarget webResource = client.target(url);
+			clientResponse = webResource.request(MediaType.APPLICATION_JSON).get(Response.class);
+			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
+			return jsonResponse;
+		} catch (Exception e) {
+			logger.info(
+					"Error while generating json filtered download link in Persister for collection: "
+							+ code, e);
+			throw new AidrException(
+					"[generateCSVFilteredLink] Error while generating json filtered download link in Persister for collection",
+					e);
+		}
 	}
 }

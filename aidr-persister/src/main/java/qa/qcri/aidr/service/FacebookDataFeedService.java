@@ -1,6 +1,7 @@
 package qa.qcri.aidr.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,11 @@ public class FacebookDataFeedService{
     	}
     	Long fbDataFeedId = (Long) facebookDataFeedDAO.save(facebookJson);
     	return fbDataFeedId;
+    }
+    
+    @Transactional(readOnly = false)
+    public List<FacebookDataFeed> findbyCollectionCode(String code, Integer exportLimit) {
+    	return facebookDataFeedDAO.getAllDataFeedsByCode(code, exportLimit);
     }
     
 }
