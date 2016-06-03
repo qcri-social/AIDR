@@ -426,8 +426,14 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
     setManagers: function(managers) {
         var result = '';
+        var len = 0;
         Ext.Array.each(managers, function(r, index) {
-            result += AIDRFMFunctions.getUserNameWithProviderIcon(r.userName, false) + ', '
+            len += r.userName.length;
+            if(len > 90){
+            	result += '<br/>';
+            	len = 0;
+            }
+            result += AIDRFMFunctions.getUserNameWithProviderIcon(r.userName, false) + ', ';
         });
         result = result.substring(0, result.length - 2);
        // this.DetailsComponent.managersL.setText(result);
