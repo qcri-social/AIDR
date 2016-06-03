@@ -156,7 +156,10 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
         } else {
             logger.info("No collector instances found to be stopped with the given id:" + collectionCode);
         }
-
+		if (task != null) {
+        	task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_STOPPED));
+            return Response.ok(task).build();
+        }
 		return null;
     }
 

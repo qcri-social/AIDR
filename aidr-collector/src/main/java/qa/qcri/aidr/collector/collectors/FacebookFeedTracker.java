@@ -40,7 +40,7 @@ public class FacebookFeedTracker implements Closeable {
 	private FacebookCollectionTask task;
 	private LoadShedder shedder;
 	private static String FIELDS_TO_FETCH = "id,updated_time,message_tags,scheduled_publish_time,"
-			+ "created_time, full_picture,object_id,with_tags,story_tags, is_published, "
+			+ "created_time, full_picture,object_id,with_tags, is_published, "
 			+ "from,to,message,picture,link,name,caption,description,source,properties,"
 			+ "icon,actions,privacy,type,shares,status_type,place,story,"
 			+ "application,targeting,likes.summary(true),comments.summary(true)";
