@@ -3,6 +3,7 @@ package qa.qcri.aidr.collector.api;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
@@ -137,6 +138,21 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
     	FacebookFeedTracker tracker = cache.getFacebookTracker(collectionCode);
     	CollectionTask task = cache.getConfig(collectionCode, "facebook");
 
+    	Long threadId = cache.getFbThreadMap(collectionCode);
+       	Set<Thread> keySet = Thread.getAllStackTraces().keySet();
+       	for (Thread thread : keySet) {
+			if(thread.getId() == threadId){
+				thread.stop();
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					logger.error("Exception while killing the thread", e);
+				}
+			}
+		}
+    	
+    	cache.delFbThreadMap(collectionCode);
+    	
         cache.delFailedCollection(collectionCode);
         cache.deleteCounter(collectionCode);
         cache.delFbConfigMap(collectionCode);

@@ -31,6 +31,7 @@ public class GenericCache {
     private Map<String, FacebookCollectionTask> fbConfigMap =  null;
     private Map<String, FacebookFeedTracker> fbTrackerMap = null; //keeps twitter tracker object
     private Map<String, Integer> reconnectAttempts;
+    private Map<String, Long> fbThreadMap;
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
     
     private GenericCache() {
@@ -44,6 +45,7 @@ public class GenericCache {
         SMSCollections = new HashMap<String, String>();
         collectorStatus = new CollectorStatus();
         reconnectAttempts = new HashMap<String,Integer>();
+        fbThreadMap = new HashMap<String,Long>();
     }
 
     public static GenericCache getInstance() {
@@ -394,6 +396,22 @@ public class GenericCache {
         if (reconnectAttempts.containsKey(key)) {
         	reconnectAttempts.put(key, 0);
         }
+    }
+    
+    public Long getFbThreadMap(String key){
+    	if(fbThreadMap.containsKey(key)){
+    		return fbThreadMap.get(key);
+    	}
+    	return null;
+    }
+    
+    public void setFbThreadMap(String key, Long threadId){
+    	fbThreadMap.put(key, threadId);
+    	
+    }
+    
+    public void delFbThreadMap(String key){
+    	fbThreadMap.remove(key);
     }
 
     public int getReconnectAttempts(String key) {
