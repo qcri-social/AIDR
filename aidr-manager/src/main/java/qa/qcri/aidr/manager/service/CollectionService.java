@@ -99,4 +99,8 @@ public interface CollectionService {
 	Long getRunningCollectionDataCount();
 
 	CollectionStatsInfo getCollectionStatistics();
+	
+	public List<String> fetchEligibleFacebookCollectionsToReRun();
+	
+	public void rerunFacebookCollection(String code); 
 }

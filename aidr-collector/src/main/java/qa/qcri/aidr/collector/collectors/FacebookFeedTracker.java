@@ -43,6 +43,8 @@ public class FacebookFeedTracker implements Closeable {
 	
 	private static final int DEFAULT_OFFSET = 0;
 	private static final int DEFAULT_LIMIT = 100;
+	private static final Long SEVEN_DAYS_IN_MILLISECS = 7*24*60*60*1000L;
+	
 	private static String FIELDS_TO_FETCH = "id,updated_time,message_tags,scheduled_publish_time,"
 			+ "created_time, full_picture,object_id,with_tags, is_published, "
 			+ "from,to,message,picture,link,name,caption,description,source,properties,"
@@ -69,7 +71,7 @@ public class FacebookFeedTracker implements Closeable {
 	public void start() {
 		new Thread(new Runnable() {
 		    public void run() {
-		        collectFacebookData(task);
+		        collectFacebookData();
 		    }
 		}).start();
 	}
@@ -92,7 +94,7 @@ public class FacebookFeedTracker implements Closeable {
 		return configuration;
 	}
 	
-	public void collectFacebookData(FacebookCollectionTask task) {
+	public void collectFacebookData() {
     	
 		this.publisher = JedisPublisher.newInstance();
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
@@ -102,26 +104,23 @@ public class FacebookFeedTracker implements Closeable {
 		for(FacebookEntityType type : FacebookEntityType.values()) {
 			this.fetchPosts(toTimestamp, type);	
 		}
-		
-		task.setLastRunTime(toTimestamp);
 	}
 
     private void fetchPosts(Date toTimestamp, FacebookEntityType type) {
-    	int offset = 0;
     	List<String> entityIds = new ArrayList<String>();
 
     	try {
 	    	switch(type) {
 	    		case PAGE:
-	    			entityIds = this.fetchPageIds(offset);
+	    			entityIds = this.fetchPageIds();
 	    			break;
 	    			
 	    		case EVENT:
-	    			entityIds = this.fetchEventIds(offset);
+	    			entityIds = this.fetchEventIds();
 	    			break;
 					
 	    		case GROUP:
-	    			entityIds = this.fetchGroupIds(offset);
+	    			entityIds = this.fetchGroupIds();
 	    			break;
 	    	}
 			
@@ -130,7 +129,6 @@ public class FacebookFeedTracker implements Closeable {
 		}
 
     	if(entityIds != null && !entityIds.isEmpty()) {
-    		offset = entityIds != null && entityIds.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
     		try {
 				processPost(toTimestamp, entityIds, type);
 			} catch (IOException | FacebookException e) {
@@ -139,8 +137,9 @@ public class FacebookFeedTracker implements Closeable {
     	}
     }
 
-    private List<String> fetchPageIds(int offset) throws FacebookException {
+    private List<String> fetchPageIds() throws FacebookException {
     	List<String> entityIds = new ArrayList<String>();
+    	int offset = 0;
     	while(offset >= 0) {
 			ResponseList<Page> pageList = facebook.searchPages(task.getToTrack(), new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
 			if(pageList != null) {
@@ -148,14 +147,15 @@ public class FacebookFeedTracker implements Closeable {
 					String id = page.getId();
 					entityIds.add(id);
 				}
-				offset = pageList.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
-			}
+			} 
+			offset = pageList != null && pageList.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
     	}
 		return entityIds;
     }
     
-    private List<String> fetchEventIds(int offset) throws FacebookException {
+    private List<String> fetchEventIds() throws FacebookException {
     	List<String> entityIds = new ArrayList<String>();
+    	int offset = 0;
     	while(offset >= 0) {
 			ResponseList<Event> eventList = facebook.searchEvents(task.getToTrack(), new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
 			if(eventList != null) {
@@ -163,14 +163,15 @@ public class FacebookFeedTracker implements Closeable {
 					String id = event.getId();
 					entityIds.add(id);
 				}
-				offset = eventList.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
 			}
+			offset = eventList != null && eventList.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
     	}
 		return entityIds;
     }
     
-    private List<String> fetchGroupIds(int offset) throws FacebookException {
+    private List<String> fetchGroupIds() throws FacebookException {
     	List<String> entityIds = new ArrayList<String>();
+    	int offset = 0;
     	while(offset >= 0) {
 			ResponseList<Group> groupList = facebook.searchGroups(task.getToTrack(), new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
 			if(groupList != null) {
@@ -178,9 +179,11 @@ public class FacebookFeedTracker implements Closeable {
 					String id = group.getId();
 					entityIds.add(id);
 				}
-				offset = groupList.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
 			}
+			
+			offset = groupList != null && groupList.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
     	}
+    	
 		return entityIds;
     }
     
@@ -190,18 +193,18 @@ public class FacebookFeedTracker implements Closeable {
     	String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) 
     			+ "." + task.getCollectionCode(); 
 
-    	Date since = new Date(System.currentTimeMillis() - 7*24*60*60*1000);
+    	Date since = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
     	Gson gson = new Gson();
     	
-    	for (String id : entityIds) {
+    	if(task.getLastExecutionTime() != null) {
+			since = task.getLastExecutionTime();
+		}
+    	
+    	for (String parentId : entityIds) {
     		int postsOffset = 0;
     		while(postsOffset >= 0){
     			
-    			if(task.getLastRunTime() != null) {
-    				since = task.getLastRunTime();
-    			}
-    			
-    			ResponseList<Post> feed = facebook.getFeed(id, new Reading().since(since).until(toTimestamp).order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(postsOffset));
+    			ResponseList<Post> feed = facebook.getFeed(parentId, new Reading().since(since).until(toTimestamp).order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(postsOffset));
     			postsOffset = feed.size() == DEFAULT_LIMIT ? postsOffset + DEFAULT_LIMIT : -1;
     			for (Post post : feed) {
     				try {
@@ -222,10 +225,13 @@ public class FacebookFeedTracker implements Closeable {
 	    					
     			            publisher.publish(channelName, docJson.toString());
 	    				}
-    				} catch (JSONException e) {
-						logger.warn("Issue in parsing data.");
+    				} catch (Exception e) {
+						logger.warn("Post error for parent id : " + parentId + " and type : " + parent);
 					}
     			}
+    			
+    			task.setLastExecutionTime(toTimestamp);
+    			GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task); 
     			GenericCache.getInstance().incrCounter(task.getCollectionCode(), (long) feed.size());
     			if(feed != null && feed.size()>0){
     				String lastDownloadedDoc = feed.get(feed.size()-1).getMessage();

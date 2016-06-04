@@ -422,8 +422,8 @@ public class GenericCache {
 
     	for(Map.Entry pair : this.fbConfigMap.entrySet()) {
     		FacebookCollectionTask task = (FacebookCollectionTask) pair.getValue();
-    		if(task.getLastRunTime() != null) {
-	    		runTime = task.getLastRunTime().getTime() + task.getFetchInterval();
+    		if(task.getLastExecutionTime() != null) {
+	    		runTime = task.getLastExecutionTime().getTime() + task.getFetchInterval();
 	    		if(runTime >= new Date().getTime()) {
 	    			collectionList.add((String) pair.getKey());
 	    		}

@@ -5,14 +5,14 @@ import java.util.Properties;
 
 public class FacebookCollectionTask extends CollectionTask {
 
-	private Date lastRunTime;
+	private Date lastExecutionTime;
 	private int fetchInterval;
 	
-	public Date getLastRunTime() {
-		return lastRunTime;
+	public Date getLastExecutionTime() {
+		return lastExecutionTime;
 	}
-	public void setLastRunTime(Date lastRunTime) {
-		this.lastRunTime = lastRunTime;
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
 	}
 	public int getFetchInterval() {
 		return fetchInterval;
@@ -20,7 +20,6 @@ public class FacebookCollectionTask extends CollectionTask {
 	public void setFetchInterval(int fetchInterval) {
 		this.fetchInterval = fetchInterval;
 	}
-	
 
     @Override
 	public FacebookCollectionTask clone() {
@@ -38,7 +37,7 @@ public class FacebookCollectionTask extends CollectionTask {
         newTask.setPersist(persist);
         newTask.setSourceOutage(sourceOutage);
         newTask.setSaveMediaEnabled(saveMediaEnabled);
-        newTask.setLastRunTime(lastRunTime);
+        newTask.setLastExecutionTime(lastExecutionTime);
         newTask.setFetchInterval(fetchInterval);
         return newTask;
     }
@@ -50,7 +49,7 @@ public class FacebookCollectionTask extends CollectionTask {
 		this.setToTrack(properties.getProperty("toTrack"));
 		this.setCollectionCode(properties.getProperty("collectionCode"));
 		this.setCollectionName(properties.getProperty("collectionName"));
-		this.setLastRunTime(new Date(properties.getProperty("lastRunTime")));
+		this.setLastExecutionTime(new Date(properties.getProperty("lastExecutionTime")));
 		this.setFetchInterval(Integer.valueOf(properties.getProperty("fetchInterval")));
 		if(properties.getProperty("persist")!=null){
 			this.setPersist(Boolean.valueOf(properties.getProperty("persist")));
@@ -65,7 +64,7 @@ public class FacebookCollectionTask extends CollectionTask {
 	public String toString() {
 		return "CollectionTask{" + "collectionCode=" + collectionCode
 				+ ", collectionName=" + collectionName + ", toTrack=" + toTrack
-				+ ", lastRunTime=" + lastRunTime + ", fetchInterval=" + fetchInterval
+				+ ", lastExecutionTime=" + lastExecutionTime + ", fetchInterval=" + fetchInterval
 				+ ", lastDocument=" + lastDocument + ", statusCode="
 				+ statusCode + ", statusMessage=" + statusMessage
 				+ ", persist=" + persist + ", accessToken="

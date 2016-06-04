@@ -131,6 +131,9 @@ public class Collection implements java.io.Serializable {
     @Column(name="fetch_interval", columnDefinition="int default 0")
     private int fetchInterval;
     
+    @Column(name="last_execution_time")
+    private Date lastExecutionTime;
+
 	@PreUpdate
 	protected void onUpdate() {
 		updatedAt = new Timestamp(System.currentTimeMillis());
@@ -447,6 +450,14 @@ public class Collection implements java.io.Serializable {
 
 	public void setFetchInterval(int fetchInterval) {
 		this.fetchInterval = fetchInterval;
+	}
+
+	public Date getLastExecutionTime() {
+		return lastExecutionTime;
+	}
+
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
 	}
 
 }

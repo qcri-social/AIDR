@@ -99,8 +99,11 @@ public class Collection extends BaseEntity {
 
     @Column(name="fetch_interval", columnDefinition="int default 0")
     private int fetchInterval;
-    
-    @Transient
+
+    @Column(name="last_execution_time")
+    private Date lastExecutionTime;
+
+	@Transient
     private boolean isSourceOutage = false;
 
     public boolean isPubliclyListed() {
@@ -311,5 +314,13 @@ public class Collection extends BaseEntity {
 	public void setFetchInterval(int fetchInterval) {
 		this.fetchInterval = fetchInterval;
 	}
-	
+    
+    public Date getLastExecutionTime() {
+		return lastExecutionTime;
+	}
+
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
+	}
+
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -343,10 +344,10 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setGeoR(dbCollection.getGeoR());
 		dto.setLanguageFilter(dbCollection.getLangFilters());
 		dto.setSaveMediaEnabled(dbCollection.isSaveMediaEnabled());
-		dto.setLastRunTime(dbCollection.getStartDate());
 		dto.setFetchInterval(dbCollection.getFetchInterval());
 		dto.setProvider(dbCollection.getProvider().toString());
 		dto.setFetchInterval(dbCollection.getFetchInterval());
+		dto.setLastExecutionTime(dbCollection.getLastExecutionTime());
 		// Added by koushik
 		accessTokenStr = dto.getAccessToken();
 		accessTokenSecretStr = dto.getAccessTokenSecret();
@@ -904,6 +905,19 @@ public class CollectionServiceImpl implements CollectionService {
 		collectionStatsInfo.setOfflineCollectionCount(totalCollectionCount - runningCollectionsCount);
 		
 		return collectionStatsInfo;
+	}
+	
+	@Override
+	public List<String> fetchEligibleFacebookCollectionsToReRun() {
+		List<String> codes = collectionRepository.getEligibleFacebookCollectionsToReRun();
+		return codes;
+	}
+
+	public void rerunFacebookCollection(String code) {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		WebTarget webResource = client.target(fetchMainUrl + "/facebook/rerun?code=" + code);
+		Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+		Map<String, String> result = clientResponse.readEntity(Map.class);
 	}
 	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		

@@ -32,6 +32,7 @@ import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.Constants;
 
 @Repository("collectionRepository")
 @Transactional
@@ -116,15 +117,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Collection> getPaginatedData(final Integer start, final Integer limit, final UserAccount user, final boolean onlyTrashed) {
-		/*List<Collection> result = new ArrayList<Collection>();
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
-		criteria.add(Restrictions.eq("owner.id", user.getId()));
-		if(onlyTrashed) {
-			criteria.add(Restrictions.eq("status", CollectionStatus.TRASHED));
-		} else {
-			criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-		}
-		result =  criteria.list();*/
 		
 		final Long userId = user.getId();
 		final String conditionTrashed;
@@ -547,5 +539,32 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		}
 		
 		return collections;
+	}
+
+	@Override
+	public List<String> getEligibleFacebookCollectionsToReRun() {
+		
+		List<String> collectionCodes = new ArrayList<String>(); 
+		@SuppressWarnings("unchecked")
+		List<Object[]> collections = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				String sql = " SELECT c.code FROM collection c " +
+						" WHERE c.provider = 'Facebook' AND (c.status = 0 OR c.status = 2 OR c.status = 5 OR c.status = 8) "
+						+ "AND (c.last_execution_time + c.fetch_interval * " + Constants.ONE_HOUR_IN_MILLISECS + ") <= now()";
+
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				List<Object[]> codes = sqlQuery.list();
+
+				return codes != null ? codes : Collections.emptyList();
+			}
+		});
+
+		if(collections != null && collections.size() > 0) {
+			for(Object[] col : collections) {
+				collectionCodes.add((String) col[0]);
+			}
+		}
+		return collectionCodes;
 	}
 }

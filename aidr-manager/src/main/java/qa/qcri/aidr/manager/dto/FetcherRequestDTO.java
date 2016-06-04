@@ -23,7 +23,7 @@ public class FetcherRequestDTO implements Serializable {
     private String geoLocation, geoR;
     private String languageFilter;
     private boolean saveMediaEnabled;
-	private Date lastRunTime;
+	private Date lastExecutionTime;
 	private int fetchInterval;
 	private String provider;
     
@@ -125,12 +125,12 @@ public class FetcherRequestDTO implements Serializable {
 		this.saveMediaEnabled = saveMediaEnabled;
 	}
 
-	public Date getLastRunTime() {
-		return lastRunTime;
+	public Date getLastExecutionTime() {
+		return lastExecutionTime;
 	}
 
-	public void setLastRunTime(Date lastRunTime) {
-		this.lastRunTime = lastRunTime;
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
 	}
 
 	public int getFetchInterval() {

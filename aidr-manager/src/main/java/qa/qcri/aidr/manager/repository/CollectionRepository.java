@@ -52,4 +52,6 @@ public interface CollectionRepository extends GenericRepository<Collection, Seri
     
     public List<Collection> findMicromappersFilteredCollections(boolean micromappersEnabled);
 	Long getTotalCollectionsCount();
+	
+	public List<String> getEligibleFacebookCollectionsToReRun();
 }

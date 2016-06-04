@@ -1,6 +1,8 @@
 package qa.qcri.aidr.collector.api;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -119,6 +121,15 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
         response.setMessage("Invalid key. No running collector found for the given id.");
         response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
         return Response.ok(response).build();
+    }
+    
+    @RequestMapping("/rerun")
+    public Map<String, String> rerunCollection(@RequestParam("code") String code) {
+    	FacebookFeedTracker tracker = GenericCache.getInstance().getFacebookTracker(code);
+    	tracker.collectFacebookData();
+    	Map<String, String> message = new HashMap<String, String>();
+    	message.put("message", "SUCCESS");
+    	return message;
     }
 
     protected Response stopCollection(String collectionCode) {
