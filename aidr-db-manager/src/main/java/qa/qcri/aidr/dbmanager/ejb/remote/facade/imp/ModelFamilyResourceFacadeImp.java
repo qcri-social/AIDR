@@ -5,9 +5,12 @@
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
@@ -17,18 +20,21 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
+import qa.qcri.aidr.util.NativeQueryUtil;
 
 
 @Stateless(name="ModelFamilyResourceFacadeImp")
@@ -135,5 +141,51 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		}
 
 		return result;
+	}
+	
+	@Override
+	public List<ModelWrapper> getModelFamilyAggregateDataForCollection(Long collectionId) {
+
+			Map<Long, ModelWrapper> modelFamilyMap = new HashMap<Long, ModelWrapper>();
+			List<Long> modelFamilyIds = new ArrayList<Long>();
+			int index = 0;
+			try {
+				Query query = em.createNativeQuery(NativeQueryUtil.TRAINING_COUNT_FOR_CRISIS);
+				query.setParameter("crisisID", collectionId);
+				
+				List<Object[]> rows = query.getResultList();
+				for (Object[] row : rows) {
+					ModelWrapper modelWrapper = new ModelWrapper();
+					modelWrapper.setAttributeID(((BigInteger)row[0]).longValue());
+					modelWrapper.setAttribute((String)row[1]);
+					modelWrapper.setModelFamilyID(((Integer)row[2]).longValue());
+					modelWrapper.setStatus(((Boolean)row[3]) == Boolean.TRUE ? "Active" : "Inactive");
+					modelWrapper.setTrainingExamples(((BigInteger)row[4]).longValue());
+					modelFamilyMap.put(modelWrapper.getModelFamilyID(), modelWrapper);
+					modelFamilyIds.add(modelWrapper.getModelFamilyID());
+				}
+			} catch (Exception e) {
+				logger.error("exception", e);
+			}
+			
+			if(modelFamilyIds.size() > 0) {
+				try {
+					String modelFamilyIdString = "" + modelFamilyMap.keySet();
+					Query query = em.createNativeQuery(NativeQueryUtil.MODEL_DETAILS_FOR_CRISIS);
+					query.setParameter("modelFamilyIds", modelFamilyIds);
+					
+					List<Object[]> rows = query.getResultList();
+					for (Object[] row : rows) {
+						ModelWrapper modelWrapper = modelFamilyMap.get(((Integer)row[2]).longValue());
+						modelWrapper.setModelID(((Integer)row[0]).longValue());
+						modelWrapper.setAuc((Double)row[1]);
+						modelWrapper.setClassifiedDocuments(((BigDecimal)row[3]).longValue());
+					}
+				} catch (Exception e) {
+					logger.error("exception", e);
+				}
+			}
+		List<ModelWrapper> modelWrapperList  = new ArrayList<ModelWrapper>( modelFamilyMap.values());
+		return modelWrapperList;
 	}
 }

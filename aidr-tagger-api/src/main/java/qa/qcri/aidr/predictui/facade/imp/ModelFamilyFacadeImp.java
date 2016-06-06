@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.predictui.facade.ModelFacade;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
@@ -107,6 +108,12 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
         	logger.error("Error in deleting modelFamilyData with modelFamilyID : " + modelFamilyID);
         }
         return false;
+    }
+    
+    @Override
+    public List<ModelWrapper> getModelFamilyAggregateDataForCollection(Long collectionId) {
+    	List<ModelWrapper> result = remoteModelFamilyEJB.getModelFamilyAggregateDataForCollection(collectionId);
+        return result;
     }
 
 }
