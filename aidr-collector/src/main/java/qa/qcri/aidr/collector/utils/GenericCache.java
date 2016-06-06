@@ -31,7 +31,8 @@ public class GenericCache {
     private Map<String, FacebookCollectionTask> fbConfigMap =  null;
     private Map<String, FacebookFeedTracker> fbTrackerMap = null; //keeps twitter tracker object
     private Map<String, Integer> reconnectAttempts;
-    private Map<String, Long> fbThreadMap;
+    private Map<String, Boolean> fbSyncObjMap;
+    private Map<String, Integer> fbSyncStateMap;
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
     
     private GenericCache() {
@@ -45,7 +46,8 @@ public class GenericCache {
         SMSCollections = new HashMap<String, String>();
         collectorStatus = new CollectorStatus();
         reconnectAttempts = new HashMap<String,Integer>();
-        fbThreadMap = new HashMap<String,Long>();
+        fbSyncObjMap = new ConcurrentHashMap<String, Boolean>();
+        fbSyncStateMap = new ConcurrentHashMap<String, Integer>();
     }
 
     public static GenericCache getInstance() {
@@ -398,22 +400,6 @@ public class GenericCache {
         }
     }
     
-    public Long getFbThreadMap(String key){
-    	if(fbThreadMap.containsKey(key)){
-    		return fbThreadMap.get(key);
-    	}
-    	return null;
-    }
-    
-    public void setFbThreadMap(String key, Long threadId){
-    	fbThreadMap.put(key, threadId);
-    	
-    }
-    
-    public void delFbThreadMap(String key){
-    	fbThreadMap.remove(key);
-    }
-
     public int getReconnectAttempts(String key) {
         return reconnectAttempts.get(key);
     }
@@ -449,6 +435,38 @@ public class GenericCache {
     	}
     	
     	return collectionList;
+    }
+
+    public Boolean getFbSyncObjMap(String key){
+    	if(fbSyncObjMap.containsKey(key)){
+    		return fbSyncObjMap.get(key);
+    	}
+    	return null;
+    }
+    
+    public void setFbSyncObjMap(String key, Boolean obj){
+    		fbSyncObjMap.put(key, obj);
+    }
+    
+    public void delFbSyncObjMap(String key){
+    	fbSyncObjMap.remove(key);
+    }
+
+    
+    public Integer getFbSyncStateMap(String key){
+    	if(fbSyncStateMap.containsKey(key)){
+    		return fbSyncStateMap.get(key);
+    	}
+    	return null;
+    }
+    
+    public void setFbSyncStateMap(String key, Integer state){
+    	fbSyncStateMap.put(key, state);
+    	
+    }
+    
+    public void delFbSyncStateMap(String key){
+    	fbSyncStateMap.remove(key);
     }
     
 }
