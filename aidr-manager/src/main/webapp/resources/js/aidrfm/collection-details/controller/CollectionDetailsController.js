@@ -411,8 +411,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>');
                 }else if(collectionType === 'Facebook'){
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
-					me.DetailsComponent.gotoTaggerButton.hide();
-					me.DetailsComponent.enableTaggerButton.hide();
+					this.DetailsComponent.gotoTaggerButton.hide();
+					//me.DetailsComponent.enableTaggerButton.hide();
                 }
 
                Ext.getCmp('downloadLabel').setText('Downloaded ' + COLLECTION_TYPES[collectionType]['plural'] + ' <br/> (since last re-start):',false);
@@ -532,7 +532,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         	this.DetailsComponent.enableTaggerButton.hide();
     	} else {
     		this.DetailsComponent.gotoTaggerButton.hide();
-			if(TYPE === 'Facebook'){
+			if(TYPE != 'Facebook'){
 				this.DetailsComponent.enableTaggerButton.show();
 			}
     	}
