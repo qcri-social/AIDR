@@ -298,7 +298,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 if (resp.success) {
                     if (resp.data) {
                         console.log('crisis exists', true);
-                        cmp.gotoTaggerButton.show();
+						if(TYPE != 'Facebook'){
+							cmp.gotoTaggerButton.show();	
+						}
                         cmp.enableTaggerButton.hide();
                         //cmp.downloadExportTaggerDisabledPanel.hide();
                         //cmp.downloadExportTaggerEnabledPanel.show();
@@ -411,8 +413,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>');
                 }else if(collectionType === 'Facebook'){
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
-					this.DetailsComponent.gotoTaggerButton.hide();
-					//me.DetailsComponent.enableTaggerButton.hide();
+					Ext.getCmp('enableTagger').hide();
+					Ext.getCmp('goToTagger').hide();
+					//this.DetailsComponent.gotoTaggerButton.hide();
+					//this.DetailsComponent.enableTaggerButton.hide();
                 }
 
                Ext.getCmp('downloadLabel').setText('Downloaded ' + COLLECTION_TYPES[collectionType]['plural'] + ' <br/> (since last re-start):',false);
@@ -528,7 +532,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setTotalCountOfDocuments(r.totalCount);
         this.setLastDowloadedDoc(r.lastDocument);
         if(r.hasTaggerOutput) {
-        	this.DetailsComponent.gotoTaggerButton.show();
+			if(TYPE != 'Facebook'){
+				this.DetailsComponent.gotoTaggerButton.show();
+			}
         	this.DetailsComponent.enableTaggerButton.hide();
     	} else {
     		this.DetailsComponent.gotoTaggerButton.hide();
