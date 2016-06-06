@@ -115,6 +115,7 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
 
         CollectionTask failedTask = GenericCache.getInstance().getFailedCollectionTask(id);
         if (failedTask != null) {
+        	stopCollection(id);
             return Response.ok(failedTask).build();
         }
 

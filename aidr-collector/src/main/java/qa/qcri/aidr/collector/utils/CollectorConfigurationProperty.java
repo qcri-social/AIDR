@@ -35,7 +35,8 @@ public enum CollectorConfigurationProperty implements ConfigurationProperty {
 			RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS("RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS"),
 			COLLECTION_COUNT_UPDATE_CRON("collection.count.update.cron"),
 			TWITTER_CONSUMER_KEY("twitter.consumerKey"),TWITTER_CONSUMER_SECRET("twitter.consumerSecret"),
-			FACEBOOK_CONSUMER_KEY("facebook.consumerKey"),FACEBOOK_CONSUMER_SECRET("facebook.consumerSecret");
+			FACEBOOK_CONSUMER_KEY("facebook.consumerKey"),FACEBOOK_CONSUMER_SECRET("facebook.consumerSecret"),
+			FACEBOOK_MAX_API_HITS_HOURLY_PER_USER("FACEBOOK_MAX_API_HITS_HOURLY_PER_USER"),FACEBOOK_LOAD_CHECK_INTERVAL_MINUTES("FACEBOOK_LOAD_CHECK_INTERVAL_MINUTES");
 
 	private final String configurationProperty;
 

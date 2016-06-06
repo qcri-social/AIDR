@@ -39,11 +39,13 @@ public class FacebookFeedTracker implements Closeable {
 	private JedisPublisher publisher;
 	private Facebook facebook;
 	private FacebookCollectionTask task;
-	private LoadShedder shedder;
+	private LoadShedder fbApiHitShedder;
 
 	private static final int DEFAULT_OFFSET = 0;
 	private static final int DEFAULT_LIMIT = 100;
-	private static final Long SEVEN_DAYS_IN_MILLISECS = 7*24*60*60*1000L;
+	private static final Long HOUR_IN_MILLISECS = 60 * 60 * 1000L;
+	private static final Integer MINUTES_IN_HOUR = 60;
+	private static final Long SEVEN_DAYS_IN_MILLISECS = 7 * 24 * HOUR_IN_MILLISECS;
 
 	private static String FIELDS_TO_FETCH = "id,updated_time,message_tags,scheduled_publish_time,"
 			+ "created_time, full_picture,object_id,with_tags, is_published, "
@@ -57,13 +59,7 @@ public class FacebookFeedTracker implements Closeable {
 		Configuration config = task2configuration(task);
 		this.publisher = JedisPublisher.newInstance();
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
-
-		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "." + task.getCollectionCode();
-		shedder = new LoadShedder(
-				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)),
-				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), 
-				true,channelName);
-
+		fbApiHitShedder = new LoadShedder(Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_MAX_API_HITS_HOURLY_PER_USER)) / MINUTES_IN_HOUR * Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_LOAD_CHECK_INTERVAL_MINUTES)) , Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_LOAD_CHECK_INTERVAL_MINUTES)) , true, "Fb_api_hit_shedder." + task.getCollectionCode());
 		this.facebook = new FacebookFactory(config).getInstance();
 		this.task = task;
 	}
@@ -72,7 +68,7 @@ public class FacebookFeedTracker implements Closeable {
 		new Thread(new Runnable() {
 			public void run() {
 				Boolean pqr = GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode());
-				if(pqr == null){
+				if (pqr == null) {
 					pqr = true;
 				}
 				synchronized (pqr) {
@@ -80,7 +76,7 @@ public class FacebookFeedTracker implements Closeable {
 					GenericCache.getInstance().setFbSyncStateMap(task.getCollectionCode(), 0);
 					collectFacebookData();
 				}
-				
+
 			}
 		}).start();
 	}
@@ -94,10 +90,10 @@ public class FacebookFeedTracker implements Closeable {
 	private static Configuration task2configuration(CollectionTask task) {
 		ConfigurationBuilder builder = new ConfigurationBuilder();
 		builder.setDebugEnabled(false)
-		.setOAuthAppId(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_KEY))
-		.setOAuthAppSecret(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_SECRET))
-		.setJSONStoreEnabled(true)
-		.setOAuthAccessToken(task.getAccessToken());
+				.setOAuthAppId(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_KEY))
+				.setOAuthAppSecret(
+						configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_CONSUMER_SECRET))
+				.setJSONStoreEnabled(true).setOAuthAccessToken(task.getAccessToken());
 
 		Configuration configuration = builder.build();
 		return configuration;
@@ -109,23 +105,25 @@ public class FacebookFeedTracker implements Closeable {
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
 		Date toTimestamp = new Date();
-		
-		for(FacebookEntityType type : FacebookEntityType.values()) {
-			if(GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0){
-				this.fetchPosts(toTimestamp, type);
+		try {
+			for (FacebookEntityType type : FacebookEntityType.values()) {
+				if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
+					this.fetchPosts(toTimestamp, type);
+				} else {
+					GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
+					break;
+				}
 			}
-			else{
-				GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
-				break;
-			}
+		} catch (FacebookException e) {
+			GenericCache.getInstance().setFailedCollection(task.getCollectionCode(), task);
 		}
 	}
 
-	private void fetchPosts(Date toTimestamp, FacebookEntityType type) {
+	private void fetchPosts(Date toTimestamp, FacebookEntityType type) throws FacebookException {
 		List<String> entityIds = new ArrayList<String>();
 
 		try {
-			switch(type) {
+			switch (type) {
 			case PAGE:
 				entityIds = this.fetchPageIds();
 				break;
@@ -141,9 +139,10 @@ public class FacebookFeedTracker implements Closeable {
 
 		} catch (FacebookException e) {
 			logger.error("Error in processing request for : " + type, e);
+			handleFacebookException(e, task.getCollectionCode());
 		}
 
-		if(entityIds != null && !entityIds.isEmpty()) {
+		if (entityIds != null && !entityIds.isEmpty()) {
 			processPost(toTimestamp, entityIds, type);
 		}
 	}
@@ -151,22 +150,22 @@ public class FacebookFeedTracker implements Closeable {
 	private List<String> fetchPageIds() throws FacebookException {
 		List<String> entityIds = new ArrayList<String>();
 		int offset = 0;
-		while(offset >= 0) {
+		while (offset >= 0) {
 			ResponseList<Page> pageList = null;
-			if(GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0){
-				pageList = facebook.searchPages(task.getToTrack(), new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
-			}
-			else{
+			if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
+				pageList = facebook.searchPages(task.getToTrack(),
+						new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
+			} else {
 				GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
 				break;
 			}
-			
-			if(pageList != null) {
+
+			if (pageList != null) {
 				for (Page page : pageList) {
 					String id = page.getId();
 					entityIds.add(id);
 				}
-			} 
+			}
 			offset = pageList != null && pageList.size() == DEFAULT_LIMIT ? offset + DEFAULT_LIMIT : -1;
 		}
 		return entityIds;
@@ -175,16 +174,16 @@ public class FacebookFeedTracker implements Closeable {
 	private List<String> fetchEventIds() throws FacebookException {
 		List<String> entityIds = new ArrayList<String>();
 		int offset = 0;
-		while(offset >= 0) {
+		while (offset >= 0) {
 			ResponseList<Event> eventList = null;
-			if(GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0){
-				eventList = facebook.searchEvents(task.getToTrack(), new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
-			}
-			else{
+			if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
+				eventList = facebook.searchEvents(task.getToTrack(),
+						new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
+			} else {
 				GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
 				break;
 			}
-			if(eventList != null) {
+			if (eventList != null) {
 				for (Event event : eventList) {
 					String id = event.getId();
 					entityIds.add(id);
@@ -198,16 +197,16 @@ public class FacebookFeedTracker implements Closeable {
 	private List<String> fetchGroupIds() throws FacebookException {
 		List<String> entityIds = new ArrayList<String>();
 		int offset = 0;
-		while(offset >= 0) {
+		while (offset >= 0) {
 			ResponseList<Group> groupList = null;
-			if(GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0){
-				groupList = facebook.searchGroups(task.getToTrack(), new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
-			}
-			else{
+			if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
+				groupList = facebook.searchGroups(task.getToTrack(),
+						new Reading().fields("id").order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT).offset(offset));
+			} else {
 				GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
 				break;
 			}
-			if(groupList != null) {
+			if (groupList != null) {
 				for (Group group : groupList) {
 					String id = group.getId();
 					entityIds.add(id);
@@ -221,110 +220,121 @@ public class FacebookFeedTracker implements Closeable {
 	}
 
 	private void processPost(Date toTimestamp, List<String> entityIds, FacebookEntityType parent)
-	{
+			throws FacebookException {
 
-		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) 
-				+ "." + task.getCollectionCode(); 
+		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "."
+				+ task.getCollectionCode();
 
 		Date since = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
 		Gson gson = new Gson();
 
-		if(task.getLastExecutionTime() != null) {
+		if (task.getLastExecutionTime() != null) {
 			since = task.getLastExecutionTime();
 		}
 
 		for (String parentId : entityIds) {
 			int postsOffset = 0;
 			if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
-				while (postsOffset >= 0) {
-					
+				while (postsOffset >= 0 ) {
+
+					while(!fbApiHitShedder.canProcess() && GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0)
+					{
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e) {
+							logger.warn("Interrupted exception while sleeping in load shedder for collection code: "
+									+ task.getCollectionCode());
+						}
+					}
 					if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
 						try {
-							ResponseList<Post> feed = facebook.getFeed(
-									parentId,
-									new Reading().fields(FIELDS_TO_FETCH)
-											.since(since).until(toTimestamp)
-											.order(Ordering.CHRONOLOGICAL)
-											.limit(DEFAULT_LIMIT)
-											.offset(postsOffset));
-							postsOffset = feed.size() == DEFAULT_LIMIT ? postsOffset
-									+ DEFAULT_LIMIT
-									: -1;
+							ResponseList<Post> feed = facebook.getFeed(parentId, new Reading().fields(FIELDS_TO_FETCH)
+									.since(since).until(toTimestamp).order(Ordering.CHRONOLOGICAL).limit(DEFAULT_LIMIT)
+									.offset(postsOffset));
+							postsOffset = feed.size() == DEFAULT_LIMIT ? postsOffset + DEFAULT_LIMIT : -1;
 							for (Post post : feed) {
 								try {
-									if (shedder.canProcess()) {
-										JSONObject aidrJson = new JSONObject();
-										aidrJson.put("doctype", "facebook");
-										aidrJson.put("crisis_code",
-												task.getCollectionCode());
-										aidrJson.put("crisis_name",
-												task.getCollectionName());
-										aidrJson.put("parent_type", parent
-												.name().toLowerCase());
+									JSONObject aidrJson = new JSONObject();
+									aidrJson.put("doctype", "facebook");
+									aidrJson.put("crisis_code", task.getCollectionCode());
+									aidrJson.put("crisis_name", task.getCollectionName());
+									aidrJson.put("parent_type", parent.name().toLowerCase());
 
-										JSONObject docJson = new JSONObject(
-												gson.toJson(post));
-										docJson.put("aidr", aidrJson);
+									JSONObject docJson = new JSONObject(gson.toJson(post));
+									docJson.put("aidr", aidrJson);
 
-										int likeCount = post.getLikes()
-												.getSummary() != null ? post
-												.getLikes().getSummary()
-												.getTotalCount() : 0;
-										docJson.put("likesCount", likeCount);
-										int commentCount = post.getComments()
-												.getSummary() != null ? post
-												.getComments().getSummary()
-												.getTotalCount() : 0;
-										docJson.put("commentsCount",
-												commentCount);
+									int likeCount = post.getLikes().getSummary() != null ? post.getLikes().getSummary()
+											.getTotalCount() : 0;
+									docJson.put("likesCount", likeCount);
+									int commentCount = post.getComments().getSummary() != null ? post.getComments()
+											.getSummary().getTotalCount() : 0;
+									docJson.put("commentsCount", commentCount);
 
-										publisher.publish(channelName,
-												docJson.toString());
-									}
+									publisher.publish(channelName, docJson.toString());
 								} catch (JSONException e) {
-									logger.warn("Post error for parent id : "
-											+ parentId + " and type : "
-											+ parent);
+									logger.warn("Post error for parent id : " + parentId + " and type : " + parent);
 								}
 							}
 
 							task.setLastExecutionTime(toTimestamp);
-							GenericCache.getInstance().setFbConfigMap(
-									task.getCollectionCode(), task);
-							GenericCache.getInstance().incrCounter(
-									task.getCollectionCode(),
-									(long) feed.size());
+							GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task);
+							GenericCache.getInstance().incrCounter(task.getCollectionCode(), (long) feed.size());
 							if (feed != null && feed.size() > 0) {
-								String lastDownloadedDoc = feed.get(
-										feed.size() - 1).getMessage();
-								if (lastDownloadedDoc != null
-										&& !lastDownloadedDoc.isEmpty()
+								String lastDownloadedDoc = feed.get(feed.size() - 1).getMessage();
+								if (lastDownloadedDoc != null && !lastDownloadedDoc.isEmpty()
 										&& lastDownloadedDoc.length() > 500) {
-									lastDownloadedDoc = lastDownloadedDoc
-											.substring(0, 250) + "...";
+									lastDownloadedDoc = lastDownloadedDoc.substring(0, 250) + "...";
 								}
 
-								GenericCache.getInstance()
-										.setLastDownloadedDoc(
-												task.getCollectionCode(),
-												lastDownloadedDoc);
+								GenericCache.getInstance().setLastDownloadedDoc(task.getCollectionCode(),
+										lastDownloadedDoc);
 							}
 						} catch (FacebookException e) {
-							logger.warn("Exception while fetching feeds for id: "
-									+ parentId);
-							//TODO Handle rate limit and oauth exceptions
+							logger.warn("Exception while fetching feeds for id: " + parentId);
+							handleFacebookException(e, task.getCollectionCode());
 						}
-					}else{
+					} else {
 						GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
 						break;
 					}
 				}
-			}else{
-					GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
-					break;
-				}
+			} else {
+				GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
+				break;
 			}
+		}
 
-		
+	}
+
+	private void handleFacebookException(FacebookException e, String collectionCode) throws FacebookException {
+		boolean found = false;
+		switch (e.getErrorCode()) {
+		case 1:
+		case 2:
+		case 4:
+		case 17:
+		case 341:
+			logger.error("Facebook api is rate limited for collectionCode: " + collectionCode, e);
+			found = true;
+			break;
+
+		case 102:
+			logger.error("Oauth Exception. May be access token got expired for collectionCode: " + collectionCode, e);
+			throw new FacebookException(e);
+		}
+
+		if (!found) {
+			switch (e.getErrorSubcode()) {
+			case 458:
+			case 459:
+			case 460:
+			case 463:
+			case 464:
+			case 467:
+				logger.error("Oauth Exception. May be access token got expired for collectionCode: " + collectionCode,
+						e);
+				throw new FacebookException(e);
+			}
+		}
 	}
 }
