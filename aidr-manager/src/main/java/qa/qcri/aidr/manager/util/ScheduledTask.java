@@ -1,10 +1,14 @@
 package qa.qcri.aidr.manager.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,9 @@ public class ScheduledTask {
 
 	public static final long HOUR = 3600*1000; // in milli-seconds.
 
+	@Value("${fetchMainUrl}")
+	private String fetchMainUrl;
+	
 	@Autowired
 	private CollectionService collectionService;
 	
@@ -99,6 +106,25 @@ public class ScheduledTask {
 		if(collectionsToRun != null && collectionsToRun.size() > 0) {
 			for(String code : collectionsToRun) {
 				collectionService.rerunFacebookCollection(code);
+			}
+		}
+	}
+	
+	@Scheduled(cron = "${start.unexpextedly.stopped.collections.cron}")
+	public void startUnexpectedlyStoppedCollections() throws ParseException {
+		
+		int runningCollections = collectionService.getRunningCollectionsCountFromCollector();
+		if(runningCollections == 0) {
+			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date today = formatter.parse(formatter.format(new Date()));
+			List<Collection> unexpectedlyStoppedCollections = collectionService.getUnexpectedlyStoppedCollections(today);
+			for (Collection collection : unexpectedlyStoppedCollections) {
+				try {
+					collectionService.start(collection.getId());
+				} catch (Exception e) {
+					logger.error("Error in startUnexpectedlyStoppedCollections for collection: " + collection.getId());
+					e.printStackTrace();
+				}
 			}
 		}
 	}

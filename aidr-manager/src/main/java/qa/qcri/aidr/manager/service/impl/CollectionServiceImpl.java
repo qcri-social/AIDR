@@ -913,6 +913,7 @@ public class CollectionServiceImpl implements CollectionService {
 		return codes;
 	}
 
+	@Override
 	public void rerunFacebookCollection(String code) {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		WebTarget webResource = client.target(fetchMainUrl + "/facebook/rerun?code=" + code);
@@ -1074,6 +1075,33 @@ public class CollectionServiceImpl implements CollectionService {
     	
     	return filteredTrack.trim();
     	
+    }
+    
+    @Override
+	public int getRunningCollectionsCountFromCollector() {
+    	int runningCollections = 0;
+		try {
+			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+			WebTarget webResource = client.target(fetchMainUrl + "/manage/ping");
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+			if (pingResponse != null && "RUNNING".equals(pingResponse.getCurrentStatus())) {
+				runningCollections = Integer.parseInt(pingResponse.getRunningCollectionsCount());
+			} 
+		} catch (Exception e) {
+			logger.error("Collector is not reachable");
+		}
+		return runningCollections;
+	}
+    
+    @Override
+    public List<Collection> getUnexpectedlyStoppedCollections(Date today) {
+    	return collectionRepository.getUnexpectedlyStoppedCollections(today);
     }
 
 }

@@ -1,5 +1,6 @@
 package qa.qcri.aidr.manager.service;
 
+import java.util.Date;
 import java.util.List;
 
 import qa.qcri.aidr.common.values.UsageType;
@@ -102,5 +103,9 @@ public interface CollectionService {
 	
 	public List<String> fetchEligibleFacebookCollectionsToReRun();
 	
-	public void rerunFacebookCollection(String code); 
+	public void rerunFacebookCollection(String code);
+
+	List<Collection> getUnexpectedlyStoppedCollections(Date today);
+
+	int getRunningCollectionsCountFromCollector(); 
 }

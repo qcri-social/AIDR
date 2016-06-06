@@ -27,12 +27,12 @@ public class GenericCache {
     private Map<String, String> lastDownloadedDocumentMap = null; // stores last downloaded document
     private Map<String, CollectionTask> failedCollections = null; // keeps failed collections
     private CollectorStatus collectorStatus; // keeps collector status inforamtion
-    private Map<String, String> SMSCollections;
+    private final Map<String, String> SMSCollections;
     private Map<String, FacebookCollectionTask> fbConfigMap =  null;
     private Map<String, FacebookFeedTracker> fbTrackerMap = null; //keeps twitter tracker object
-    private Map<String, Integer> reconnectAttempts;
-    private Map<String, Boolean> fbSyncObjMap;
-    private Map<String, Integer> fbSyncStateMap;
+    private final Map<String, Integer> reconnectAttempts;
+    private final Map<String, Boolean> fbSyncObjMap;
+    private final Map<String, Integer> fbSyncStateMap;
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
     
     private GenericCache() {
@@ -237,6 +237,17 @@ public class GenericCache {
                 collections.add(task);
             }
         }
+        if (fbConfigMap != null) {
+             for (Map.Entry pairs : fbConfigMap.entrySet()) {
+                 CollectionTask oldTask = (CollectionTask) pairs.getValue();
+                 CollectionTask task = oldTask.clone();
+                 Long fbPostsCounter = this.countersMap.get(task.getCollectionCode());
+                 String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
+                 task.setCollectionCount(fbPostsCounter);
+                 task.setLastDocument(lastDownloadedDoc);
+                 collections.add(task);
+             }
+         }
         return collections;
     }
     

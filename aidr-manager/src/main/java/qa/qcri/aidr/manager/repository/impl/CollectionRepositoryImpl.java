@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -566,5 +567,23 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 			}
 		}
 		return collectionCodes;
+	}
+	
+	@Override
+	public List<Collection> getUnexpectedlyStoppedCollections(Date today) {
+		
+		List<Collection> collections = new ArrayList<Collection>();
+
+		try {
+			Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
+			criteria.add(Restrictions.gt("updatedAt", today))
+					.add(Restrictions.geProperty("startDate", "endDate"));
+			collections = criteria.list();
+			
+		} catch (HibernateException e) {
+			logger.error("Exception in fetching list of collections.", e);
+		}
+		
+		return collections;
 	}
 }
