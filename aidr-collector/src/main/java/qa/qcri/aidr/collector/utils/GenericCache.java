@@ -289,7 +289,7 @@ public class GenericCache {
         return task;
     }
 
-    public TwitterCollectionTask getConfig(String id, String provider) {
+    public TwitterCollectionTask getTwitterConfig(String id) {
 
     	TwitterCollectionTask task =  null;
         if (!(this.twtConfigMap.containsKey(id))) {

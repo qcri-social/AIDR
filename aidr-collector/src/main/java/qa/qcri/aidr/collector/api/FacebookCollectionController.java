@@ -126,8 +126,12 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
     
     @RequestMapping("/rerun")
     public Map<String, String> rerunCollection(@RequestParam("code") String code) {
-    	FacebookFeedTracker tracker = GenericCache.getInstance().getFacebookTracker(code);
-    	tracker.collectFacebookData();
+    	if(GenericCache.getInstance().getFbConfigMap(code) != null 
+    			&& !GenericCache.getInstance().getFbConfigMap(code).isPullInProgress()) {
+	    	FacebookFeedTracker tracker = GenericCache.getInstance().getFacebookTracker(code);
+	    	tracker.start();
+	    	logger.info("Collection " + code + " started.");
+    	}
     	Map<String, String> message = new HashMap<String, String>();
     	message.put("message", "SUCCESS");
     	return message;
@@ -136,7 +140,7 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
     protected Response stopCollection(String collectionCode) {
     	GenericCache cache = GenericCache.getInstance();
 
-    	cache.setFbSyncStateMap(collectionCode,1);
+    	cache.setFbSyncStateMap(collectionCode, 1);
     	FacebookFeedTracker tracker = null;
     	FacebookCollectionTask task = null;
     	synchronized (cache.getFbSyncObjMap(collectionCode) == null ? Boolean.TRUE : cache.getFbSyncObjMap(collectionCode)) {

@@ -41,10 +41,8 @@ public class FacebookFeedTracker implements Closeable {
 	private FacebookCollectionTask task;
 	private LoadShedder fbApiHitShedder;
 
-	private static final int DEFAULT_OFFSET = 0;
 	private static final int DEFAULT_LIMIT = 100;
 	private static final Long HOUR_IN_MILLISECS = 60 * 60 * 1000L;
-	private static final Integer MINUTES_IN_HOUR = 60;
 	private static final Long SEVEN_DAYS_IN_MILLISECS = 7 * 24 * HOUR_IN_MILLISECS;
 
 	private static String FIELDS_TO_FETCH = "id,updated_time,message_tags,scheduled_publish_time,"
@@ -69,12 +67,12 @@ public class FacebookFeedTracker implements Closeable {
 	public void start() {
 		new Thread(new Runnable() {
 			public void run() {
-				Boolean pqr = GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode());
-				if (pqr == null) {
-					pqr = true;
+				Boolean syncObj = GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode());
+				if (syncObj == null) {
+					syncObj = true;
 				}
-				synchronized (pqr) {
-					GenericCache.getInstance().setFbSyncObjMap(task.getCollectionCode(), pqr);
+				synchronized (syncObj) {
+					GenericCache.getInstance().setFbSyncObjMap(task.getCollectionCode(), syncObj);
 					GenericCache.getInstance().setFbSyncStateMap(task.getCollectionCode(), 0);
 					collectFacebookData();
 				}
@@ -107,7 +105,9 @@ public class FacebookFeedTracker implements Closeable {
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
 		Date toTimestamp = new Date();
+		
 		try {
+			task.setPullInProgress(true);
 			for (FacebookEntityType type : FacebookEntityType.values()) {
 				if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
 					this.fetchPosts(toTimestamp, type);
@@ -116,6 +116,9 @@ public class FacebookFeedTracker implements Closeable {
 					break;
 				}
 			}
+			
+			task.setPullInProgress(false);
+			GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task);
 		} catch (FacebookException e) {
 			GenericCache.getInstance().setFailedCollection(task.getCollectionCode(), task);
 		}

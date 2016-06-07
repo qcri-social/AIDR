@@ -7,6 +7,7 @@ public class FacebookCollectionTask extends CollectionTask {
 
 	private Date lastExecutionTime;
 	private int fetchInterval;
+	private boolean pullInProgress;
 	
 	public Date getLastExecutionTime() {
 		return lastExecutionTime;
@@ -70,6 +71,12 @@ public class FacebookCollectionTask extends CollectionTask {
 				+ ", persist=" + persist + ", accessToken="
 				+ accessToken + ", accessTokenSecret=" + accessTokenSecret
 				+ ", collectionCount=" + collectionCount + '}';
+	}
+	public boolean isPullInProgress() {
+		return pullInProgress;
+	}
+	public void setPullInProgress(boolean pullInProgress) {
+		this.pullInProgress = pullInProgress;
 	}
 
 }
