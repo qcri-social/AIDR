@@ -59,7 +59,9 @@ public class FacebookFeedTracker implements Closeable {
 		Configuration config = task2configuration(task);
 		this.publisher = JedisPublisher.newInstance();
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
-		fbApiHitShedder = new LoadShedder(Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_MAX_API_HITS_HOURLY_PER_USER)) / MINUTES_IN_HOUR * Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_LOAD_CHECK_INTERVAL_MINUTES)) , Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_LOAD_CHECK_INTERVAL_MINUTES)) , true, "Fb_api_hit_shedder." + task.getCollectionCode());
+		fbApiHitShedder = new LoadShedder(Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_MAX_API_HITS_HOURLY_PER_USER)),
+				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.FACEBOOK_LOAD_CHECK_INTERVAL_MINUTES)),
+				true, "FACEBOOK_API_CALL_SHEDDER." + task.getCollectionCode());
 		this.facebook = new FacebookFactory(config).getInstance();
 		this.task = task;
 	}
@@ -227,8 +229,9 @@ public class FacebookFeedTracker implements Closeable {
 
 		Date since = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
 		Gson gson = new Gson();
-
-		if (task.getLastExecutionTime() != null) {
+		
+		if(task.getLastExecutionTime() != null && 
+				(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= SEVEN_DAYS_IN_MILLISECS) {
 			since = task.getLastExecutionTime();
 		}
 

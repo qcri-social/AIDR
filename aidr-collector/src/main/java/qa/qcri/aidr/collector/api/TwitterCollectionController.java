@@ -104,7 +104,7 @@ public class TwitterCollectionController extends BaseController {
             response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
             return Response.ok(response).build();
         }
-        CollectionTask task = GenericCache.getInstance().getConfig(id, "twitter");
+        CollectionTask task = GenericCache.getInstance().getTwitterConfig(id);
         if (task != null) { 
         	return Response.ok(task).build();
         }
@@ -150,7 +150,7 @@ public class TwitterCollectionController extends BaseController {
     protected Response stopCollection(String collectionCode) {
     	GenericCache cache = GenericCache.getInstance();
     	TwitterStreamTracker tracker = cache.getTwitterTracker(collectionCode);
-        CollectionTask task = cache.getConfig(collectionCode, "twitter");
+        CollectionTask task = cache.getTwitterConfig(collectionCode);
 
         cache.delFailedCollection(collectionCode);
         cache.deleteCounter(collectionCode);

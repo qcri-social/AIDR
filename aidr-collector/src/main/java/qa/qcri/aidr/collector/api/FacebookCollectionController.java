@@ -108,7 +108,7 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
             response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
             return Response.ok(response).build();
         }
-        CollectionTask task = GenericCache.getInstance().getConfig(id, "facebook");
+        FacebookCollectionTask task = GenericCache.getInstance().getFacebookConfig(id);
         if (task != null) { 
         	return Response.ok(task).build();
         }
@@ -138,12 +138,10 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
 
     	cache.setFbSyncStateMap(collectionCode,1);
     	FacebookFeedTracker tracker = null;
-    	CollectionTask task = null;
-    	
-    	synchronized (cache.getFbSyncObjMap(collectionCode)) {
+    	FacebookCollectionTask task = null;
+    	synchronized (cache.getFbSyncObjMap(collectionCode) == null ? Boolean.TRUE : cache.getFbSyncObjMap(collectionCode)) {
     		tracker = cache.getFacebookTracker(collectionCode);
-        	task = cache.getConfig(collectionCode, "facebook");
-        	//call status api here to sync the record count
+        	task = cache.getFacebookConfig(collectionCode);
 		}
     	
     	cache.delFbSyncObjMap(collectionCode);

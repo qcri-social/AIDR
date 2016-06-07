@@ -27,12 +27,13 @@ public class GenericCache {
     private Map<String, String> lastDownloadedDocumentMap = null; // stores last downloaded document
     private Map<String, CollectionTask> failedCollections = null; // keeps failed collections
     private CollectorStatus collectorStatus; // keeps collector status inforamtion
-    private final Map<String, String> SMSCollections;
+    private Map<String, String> SMSCollections;
     private Map<String, FacebookCollectionTask> fbConfigMap =  null;
     private Map<String, FacebookFeedTracker> fbTrackerMap = null; //keeps twitter tracker object
-    private final Map<String, Integer> reconnectAttempts;
-    private final Map<String, Boolean> fbSyncObjMap;
-    private final Map<String, Integer> fbSyncStateMap;
+    private Map<String, Integer> reconnectAttempts;
+    private Map<String, Boolean> fbSyncObjMap;
+    private Map<String, Integer> fbSyncStateMap;
+    
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
     
     private GenericCache() {
@@ -237,17 +238,6 @@ public class GenericCache {
                 collections.add(task);
             }
         }
-        if (fbConfigMap != null) {
-             for (Map.Entry pairs : fbConfigMap.entrySet()) {
-                 CollectionTask oldTask = (CollectionTask) pairs.getValue();
-                 CollectionTask task = oldTask.clone();
-                 Long fbPostsCounter = this.countersMap.get(task.getCollectionCode());
-                 String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
-                 task.setCollectionCount(fbPostsCounter);
-                 task.setLastDocument(lastDownloadedDoc);
-                 collections.add(task);
-             }
-         }
         return collections;
     }
     
@@ -299,18 +289,14 @@ public class GenericCache {
         return task;
     }
 
-    public CollectionTask getConfig(String id, String provider) {
+    public TwitterCollectionTask getConfig(String id, String provider) {
 
-    	CollectionTask task =  null;
-        if (!(this.twtConfigMap.containsKey(id) || this.fbConfigMap.containsKey(id))) {
+    	TwitterCollectionTask task =  null;
+        if (!(this.twtConfigMap.containsKey(id))) {
             return null;
         }
         
-        if("twitter".equals(provider)) {
-        	task = this.twtConfigMap.get(id).clone();
-        } else {
-        	task = this.fbConfigMap.get(id).clone();
-        }
+    	task = this.twtConfigMap.get(id).clone();
         
         if (task != null) {
             Long tweetsCounter = this.countersMap.get(task.getCollectionCode());
@@ -319,11 +305,43 @@ public class GenericCache {
             String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
             task.setCollectionCount(tweetsCounter);
             task.setLastDocument(lastDownloadedDoc);
-            return ommitKeys(task);
+            task.setAccessToken(null);
+            task.setAccessTokenSecret(null);
         } else {
-            task = this.failedCollections.get(id);
+            task = (TwitterCollectionTask) this.failedCollections.get(id);
             if (task != null) {
-                return ommitKeys(task);
+                task.setAccessToken(null);
+                task.setAccessTokenSecret(null);
+            }
+        }
+
+        return task;
+
+    }
+
+    public FacebookCollectionTask getFacebookConfig(String id) {
+
+    	FacebookCollectionTask task =  null;
+        if (!(this.fbConfigMap.containsKey(id))) {
+            return null;
+        }
+        
+    	task = this.fbConfigMap.get(id).clone();
+        
+        if (task != null) {
+            Long tweetsCounter = this.countersMap.get(task.getCollectionCode());
+            if(tweetsCounter == null)
+                tweetsCounter = 0L;
+            String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
+            task.setCollectionCount(tweetsCounter);
+            task.setLastDocument(lastDownloadedDoc);
+            task.setAccessToken(null);
+            task.setAccessTokenSecret(null);
+        } else {
+            task = (FacebookCollectionTask) this.failedCollections.get(id);
+            if (task != null) {
+                task.setAccessToken(null);
+                task.setAccessTokenSecret(null);
             }
         }
 
@@ -479,5 +497,4 @@ public class GenericCache {
     public void delFbSyncStateMap(String key){
     	fbSyncStateMap.remove(key);
     }
-    
 }

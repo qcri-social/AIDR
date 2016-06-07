@@ -496,6 +496,7 @@ public class CollectionServiceImpl implements CollectionService {
 			if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
 				collection.setCount(response.getCollectionCount());
 				String lastDocument = response.getLastDocument();
+				collection.setLastExecutionTime(response.getLastExecutionTime());
 				if (lastDocument != null)
 					collection.setLastDocument(lastDocument);
 				collectionRepository.update(collection);
