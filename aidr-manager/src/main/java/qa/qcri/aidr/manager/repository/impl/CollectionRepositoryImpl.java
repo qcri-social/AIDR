@@ -562,8 +562,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		});
 
 		if(collections != null && collections.size() > 0) {
-			for(Object[] col : collections) {
-				collectionCodes.add((String) col[0]);
+			for(Object col : collections) {
+				collectionCodes.add((String) col);
 			}
 		}
 		return collectionCodes;
