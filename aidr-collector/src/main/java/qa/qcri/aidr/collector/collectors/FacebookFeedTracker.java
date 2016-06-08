@@ -67,10 +67,7 @@ public class FacebookFeedTracker implements Closeable {
 	public void start() {
 		new Thread(new Runnable() {
 			public void run() {
-				Boolean syncObj = GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode());
-				if (syncObj == null) {
-					syncObj = true;
-				}
+				Boolean syncObj = GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()) == null ? Boolean.TRUE : GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode());
 				synchronized (syncObj) {
 					GenericCache.getInstance().setFbSyncObjMap(task.getCollectionCode(), syncObj);
 					GenericCache.getInstance().setFbSyncStateMap(task.getCollectionCode(), 0);
@@ -147,8 +144,18 @@ public class FacebookFeedTracker implements Closeable {
 			handleFacebookException(e, task.getCollectionCode());
 		}
 
+		Date fromTimestamp = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
+		
+		if(task.getLastExecutionTime() != null && 
+				(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= SEVEN_DAYS_IN_MILLISECS) {
+			fromTimestamp = task.getLastExecutionTime();
+		}
+		
+		task.setLastExecutionTime(toTimestamp);
+		GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task);
+		
 		if (entityIds != null && !entityIds.isEmpty()) {
-			processPost(toTimestamp, entityIds, type);
+			processPost(toTimestamp, fromTimestamp, entityIds, type);
 		}
 	}
 
@@ -224,20 +231,13 @@ public class FacebookFeedTracker implements Closeable {
 		return entityIds;
 	}
 
-	private void processPost(Date toTimestamp, List<String> entityIds, FacebookEntityType parent)
+	private void processPost(Date toTimestamp, Date since, List<String> entityIds, FacebookEntityType parent)
 			throws FacebookException {
 
 		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "."
 				+ task.getCollectionCode();
-
-		Date since = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
 		Gson gson = new Gson();
 		
-		if(task.getLastExecutionTime() != null && 
-				(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= SEVEN_DAYS_IN_MILLISECS) {
-			since = task.getLastExecutionTime();
-		}
-
 		for (String parentId : entityIds) {
 			int postsOffset = 0;
 			if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
@@ -282,8 +282,6 @@ public class FacebookFeedTracker implements Closeable {
 								}
 							}
 
-							task.setLastExecutionTime(toTimestamp);
-							GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task);
 							GenericCache.getInstance().incrCounter(task.getCollectionCode(), (long) feed.size());
 							if (feed != null && feed.size() > 0) {
 								String lastDownloadedDoc = feed.get(feed.size() - 1).getMessage();
