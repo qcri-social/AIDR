@@ -46,7 +46,8 @@ public enum ManagerConfigurationProperty implements ConfigurationProperty {
 	PUSHER_APP_SECRET("pusher.app.secret"), 
 	FACEBOOK_COLLECTION_DATA_FETCH_CRON("facebook.collection.fetch.data.cron"),
 	START_UNEXPECTEDLY_STOPPED_COLLECTIONS_CRON("start.unexpextedly.stopped.collections.cron"),
-	SAMPLE_COUNT_THRESHOLD("sample.count.threshold");
+	SAMPLE_COUNT_THRESHOLD("sample.count.threshold"),
+	START_UNEXPECTEDLY_STOPPED_COLLECTIONS_ENABLE("start.unexpectedly.stopped.collections.enable");
 	
 	private final String configurationProperty;
 
