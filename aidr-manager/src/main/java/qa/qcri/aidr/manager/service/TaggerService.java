@@ -20,7 +20,6 @@ import qa.qcri.aidr.manager.dto.TaggerUser;
 import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
-import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
 public interface TaggerService {
 
@@ -155,4 +154,6 @@ public interface TaggerService {
 	Map<String, Object> generateTweetIdsOnlyFilteredLink(String code, String queryString, String userName, Integer count, Boolean removeRetweet) throws AidrException;
 
 	Map<String, Object> generateJsonTweetIdsOnlyFilteredLink(String code, String queryString, String jsonType, String userName, Integer exportLimit, Boolean removeRetweet) throws AidrException;
+
+	Map<String, Object> generateFacebookPostDownloadLink(String code,Integer count) throws AidrException;
 }

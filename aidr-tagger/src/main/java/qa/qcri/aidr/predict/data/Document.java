@@ -225,6 +225,8 @@ public abstract class Document implements java.io.Serializable {
 				document = new Tweet();
 			} else if (doc.getDoctype().equalsIgnoreCase(DocumentType.SMS_DOC)) {
 				document = new SMS();
+			} else if (doc.getDoctype().equalsIgnoreCase(DocumentType.FACEBOOK_DOC)) {
+				document = new Facebook();
 			}
 
 			document.setDocumentID(doc.getDocumentID());

@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
@@ -22,6 +23,9 @@ public class FetcherRequestDTO implements Serializable {
     private String geoLocation, geoR;
     private String languageFilter;
     private boolean saveMediaEnabled;
+	private Date lastExecutionTime;
+	private int fetchInterval;
+	private String provider;
     
     public FetcherRequestDTO() {}		
     
@@ -119,5 +123,29 @@ public class FetcherRequestDTO implements Serializable {
 
 	public void setSaveMediaEnabled(boolean saveMediaEnabled) {
 		this.saveMediaEnabled = saveMediaEnabled;
+	}
+
+	public Date getLastExecutionTime() {
+		return lastExecutionTime;
+	}
+
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
+	}
+
+	public int getFetchInterval() {
+		return fetchInterval;
+	}
+
+	public void setFetchInterval(int fetchInterval) {
+		this.fetchInterval = fetchInterval;
+	}
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
 	}
 }

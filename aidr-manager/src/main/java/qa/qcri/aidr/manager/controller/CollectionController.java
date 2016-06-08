@@ -1,11 +1,11 @@
 package qa.qcri.aidr.manager.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +37,7 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.ScheduledTask;
 
 @Controller
 @RequestMapping("protected/collection")
@@ -680,7 +681,7 @@ public class CollectionController extends BaseController{
 		dto.setName(collection.getName());
 		//dto.setTarget(collection.getTarget());
         dto.setGeoR(collection.getGeoR());
-
+        
 		UserAccount user = collection.getOwner();
 		dto.setUser(user);
 
@@ -700,6 +701,7 @@ public class CollectionController extends BaseController{
 			logger.error("Error", e);
 		}
 		dto.setGeo(collection.getGeo());
+		dto.setFetchInterval(collection.getFetchInterval());
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());
 		dto.setEndDate(collection.getEndDate());
@@ -779,5 +781,13 @@ public class CollectionController extends BaseController{
 		}
 	}
 	
+	@Autowired
+	private ScheduledTask scheduledTask;
 	
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	@ResponseBody
+	public String testing() throws ParseException {
+		scheduledTask.startUnexpectedlyStoppedCollections();
+		return "sucess";
+	}
 }

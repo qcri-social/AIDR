@@ -49,4 +49,5 @@
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
 
 	<bean id="dataFeedService" class="qa.qcri.aidr.service.DataFeedService" />
+	<bean id="facebookDataFeedService" class="qa.qcri.aidr.service.FacebookDataFeedService" />
 </beans>

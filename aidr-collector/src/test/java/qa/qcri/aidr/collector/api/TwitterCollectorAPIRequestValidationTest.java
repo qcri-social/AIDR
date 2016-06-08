@@ -7,14 +7,14 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 
-import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
-import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.beans.TwitterCollectionTask;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 
 public class TwitterCollectorAPIRequestValidationTest {
 	
-	private TwitterCollectorAPI instance;
+	private TwitterCollectionController instance;
 	
 	CollectorConfigurator configProperties=CollectorConfigurator.getInstance();
 
@@ -23,21 +23,21 @@ public class TwitterCollectorAPIRequestValidationTest {
 		configProperties.initProperties(
 				CollectorConfigurator.configLoadFileName,
 				CollectorConfigurationProperty.values());
-		instance = new TwitterCollectorAPI();
+		instance = new TwitterCollectionController();
 	}
 
 	@Test
 	public void testStartTask() {
 		//Default task with all values null
 		//Will fail because of twitterConfiguration not available
-		CollectionTask collectionTask = new CollectionTask();
+		TwitterCollectionTask collectionTask = new TwitterCollectionTask();
 		Response response = instance.startTask(collectionTask);
 		ResponseWrapper responseWrapper = (ResponseWrapper) response.getEntity();
 		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 
 		//Default task with all values null except toTrack 
 		//Will fail because of twitterConfiguration not available
-		collectionTask = new CollectionTask();
+		collectionTask = new TwitterCollectionTask();
 		collectionTask.setToTrack("earthquake");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
@@ -45,7 +45,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		
 		//Default task with all values null except toTrack & toFollow
 		//Will fail because of twitterConfiguration not available
-		collectionTask = new CollectionTask();
+		collectionTask = new TwitterCollectionTask();
 		collectionTask.setToTrack("earthquake");
 		collectionTask.setToFollow("2589756661");
 		response = instance.startTask(collectionTask);
@@ -54,7 +54,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		
 		//Default task with all values null except toTrack, toFollow & geoLocation
 		//Will fail because of twitterConfiguration not available
-		collectionTask = new CollectionTask();
+		collectionTask = new TwitterCollectionTask();
 		collectionTask.setToTrack("earthquake");
 		collectionTask.setToFollow("2589756661");
 		collectionTask.setGeoLocation("-74,40,-73,41");
@@ -64,7 +64,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		
 		//Default task with all values null except consumerKey and accessToken
 		//Will fail because of twitter's ConsumerSecret and AccessTokenSecret not available
-		collectionTask = new CollectionTask();
+		collectionTask = new TwitterCollectionTask();
 		collectionTask.setConsumerKey("eCbYFSSkRi20hsfsdfaaQ");
 		collectionTask.setAccessToken("eJSZ34XesdfsdfDBboduYzOFikHDJ9zXVXR0g");
 		response = instance.startTask(collectionTask);
@@ -73,7 +73,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		
 		//Default task with all values null except twitterConfig
 		//Will fail because of task details not available
-		collectionTask = new CollectionTask();
+		collectionTask = new TwitterCollectionTask();
 		collectionTask.setConsumerKey("ekRi20hsfsdfaaQ");
 		collectionTask.setConsumerSecret("eqBmiIRVLbasdfasdfuQS3w5YpR0naYyHSYCY");
 		collectionTask.setAccessToken("32fsdfDBboduYzOFikHDJ9zXVXR0g");
@@ -84,7 +84,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		
 		//Default task with all values null except twitterConfig & toTrack
 		//Will fail because of collectionCode and collectionName not present
-		collectionTask = new CollectionTask();
+		collectionTask = new TwitterCollectionTask();
 		collectionTask.setConsumerKey("wehsfsdfaaQ");
 		collectionTask.setConsumerSecret("wsdfasdfuQS3w5YpR0naYyHSYCY");
 		collectionTask.setAccessToken("fsdfDBboduYzOFikHDJ9zXVXR0g");

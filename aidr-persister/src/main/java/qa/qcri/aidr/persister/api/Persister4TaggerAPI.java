@@ -9,6 +9,7 @@ package qa.qcri.aidr.persister.api;
 
 
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -28,12 +29,16 @@ import net.minidev.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.common.values.DownloadType;
+import qa.qcri.aidr.entity.FacebookDataFeed;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
+import qa.qcri.aidr.service.FacebookDataFeedService;
 import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
@@ -297,6 +302,7 @@ public class Persister4TaggerAPI {
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + result.get("fileName"));
 		
 		JSONObject obj = new JSONObject();
+		obj.put("tweetCount", result.get("count"));
 		if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
@@ -559,6 +565,36 @@ public class Persister4TaggerAPI {
 				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/downloadFacebookPosts")
+	public Response downloadFacebookPosts(@QueryParam("collectionCode") String collectionCode,
+							@QueryParam("exportLimit") Integer exportLimit) throws UnknownHostException {
+		
+		ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
+		FacebookDataFeedService facebookDataFeedService = (FacebookDataFeedService) appContext.getBean("facebookDataFeedService");
+		
+		if (null == exportLimit) {
+			exportLimit = Integer
+					.parseInt(PersisterConfigurator
+							.getInstance()
+							.getProperty(PersisterConfigurationProperty.DEFAULT_FACEBOOK_VOLUME_LIMIT));
+		}
+		
+		List<FacebookDataFeed> fbFeeds = facebookDataFeedService.findbyCollectionCode(collectionCode, exportLimit);
+		JsonDeserializer jsonD = new JsonDeserializer();
+		Map<String, Object> result = jsonD.generateFileForFacebookDataFeed(collectionCode, fbFeeds);
+		JSONObject obj = new JSONObject();
+		obj.putAll(result);
+		return Response.ok(obj.toJSONString()).build();
+				/*.allow("POST", "OPTIONS", "HEAD")
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Credentials", "true")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+				.build();*/
 	}
 
 }

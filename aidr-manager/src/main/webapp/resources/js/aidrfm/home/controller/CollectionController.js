@@ -64,9 +64,9 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         });
         
         //Disabling Create Collection Button if provider is not twitter
-        if(SIGNED_IN_PROVIDER != "twitter"){
+        /*if(SIGNED_IN_PROVIDER != "twitter"){
 			this.mainComponent.newCollectionButton.disable();
-		}
+		}*/
     },
 
     startCollectionCheck: function(id, name, ownerName, ownerId) {

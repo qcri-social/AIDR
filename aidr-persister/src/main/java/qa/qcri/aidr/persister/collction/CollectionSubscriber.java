@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -23,8 +24,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.entity.DataFeed;
+import qa.qcri.aidr.entity.FacebookDataFeed;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.service.DataFeedService;
+import qa.qcri.aidr.service.FacebookDataFeedService;
 import qa.qcri.aidr.service.ImageFeedService;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
@@ -44,6 +47,7 @@ public class CollectionSubscriber extends JedisPubSub {
     private boolean saveMediaEnabled;
     
     private DataFeedService dataFeedService;
+    private FacebookDataFeedService facebookDataFeedService;
     private ImageFeedService imageFeedService;
     
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
@@ -69,6 +73,7 @@ public class CollectionSubscriber extends JedisPubSub {
         
         ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
         dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
+        facebookDataFeedService = (FacebookDataFeedService) appContext.getBean("facebookDataFeedService");
         imageFeedService = (ImageFeedService) appContext.getBean("imageFeedService");
     }
 
@@ -79,8 +84,20 @@ public class CollectionSubscriber extends JedisPubSub {
     @Override
     public void onPMessage(String pattern, String channel, String message) {
         if (redisLoadShedder.get(channel).canProcess()) {
-            writeToFile(message);
-            writeToPostgres(message);
+        	
+        	JSONObject msgJson  = new JSONObject(message);
+            JSONObject aidrJson = msgJson.getJSONObject("aidr");
+			String docType = aidrJson.getString("doctype");
+			
+			if(StringUtils.isNotBlank(docType)) {
+				if(docType.equalsIgnoreCase("facebook")) {
+					writeToFacebookDataFeed(message);
+				} else {
+					writeToFile(message);
+		            writeToDataFeed(message);
+				}
+			}
+            
         } else {
             logger.info("loadshdder denied write for: " + channel);
         }
@@ -154,7 +171,7 @@ public class CollectionSubscriber extends JedisPubSub {
     }
     
     //Persisting To Postgres
-    private void writeToPostgres(String message) {
+    private void writeToDataFeed(String message) {
         try{
         	JSONObject msgJson  = new JSONObject(message);
             DataFeed dataFeed = new DataFeed();
@@ -182,6 +199,23 @@ public class CollectionSubscriber extends JedisPubSub {
             		imageFeedService.checkAndSaveIfNotExists(dataFeedId, collectionCode, imageUrl);
             	}
             }
+        }catch(Exception e){
+        	logger.error("Error in persisting :::: " + message);
+        	logger.error("Exception while persisting to postgres db ", e );
+        }
+    }
+    
+    private void writeToFacebookDataFeed(String message) {
+        try{
+        	JSONObject msgJson  = new JSONObject(message);
+            FacebookDataFeed facebookDataFeed = new FacebookDataFeed();
+            facebookDataFeed.setFb_id(msgJson.getString("id"));
+            facebookDataFeed.setCode(collectionCode);
+            facebookDataFeed.setFeed(msgJson);
+            JSONObject aidrJson = msgJson.getJSONObject("aidr");
+			facebookDataFeed.setAidr(aidrJson);
+			facebookDataFeed.setParentType(aidrJson.getString("parent_type"));
+            facebookDataFeedService.persist(facebookDataFeed);
         }catch(Exception e){
         	logger.error("Error in persisting :::: " + message);
         	logger.error("Exception while persisting to postgres db ", e );

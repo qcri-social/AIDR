@@ -23,7 +23,6 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionType;
-import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 
 @Controller
@@ -40,7 +39,7 @@ public class ScreenController extends BaseController{
     @Autowired
     private CollectionLogService collectionLogService;
 
-	private Logger logger = Logger.getLogger(ScreenController.class);
+	private final Logger logger = Logger.getLogger(ScreenController.class);
     
 	@RequestMapping("protected/home")
 	public ModelAndView home() throws Exception {
@@ -116,10 +115,10 @@ public class ScreenController extends BaseController{
     public ModelAndView collectionCreate() throws Exception {
     	
     	String signInProviderName = getAuthenticatedProviderName();
-    	if(!signInProviderName.equalsIgnoreCase(SocialSignInProvider.TWITTER)){
+    	/*if(!signInProviderName.equalsIgnoreCase(SocialSignInProvider.TWITTER)){
     		logger.info("protected access-error");
     		return new ModelAndView("redirect:/protected/access-error");
-    	}
+    	}*/
     	
         ModelAndView model = new ModelAndView("collection-create");
 

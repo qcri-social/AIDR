@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.TwitterCollectionTask;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorSubscriber;
@@ -46,7 +47,7 @@ import com.google.common.io.Files;
  */
 public class CollectorTesterTest {
 	private static Logger logger = Logger.getLogger(CollectorTesterTest.class.getName());
-	private CollectionTask collectionTask;
+	private TwitterCollectionTask collectionTask;
 	private Long time;
 	private Boolean quiet;
 	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
@@ -77,7 +78,7 @@ public class CollectorTesterTest {
 				try (InputStream input = new FileInputStream(collectionTaskPath);){
 					properties = new Properties();
 					properties.load(input);
-					collectionTask = new CollectionTask(properties);
+					collectionTask = new TwitterCollectionTask(properties);
 				} catch (IOException e) {
 					logger.error("Error in reading Collection Task properties file: " + collectionTaskPath, e);
 				}

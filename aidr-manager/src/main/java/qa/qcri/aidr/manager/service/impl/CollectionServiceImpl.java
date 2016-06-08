@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -97,6 +98,10 @@ public class CollectionServiceImpl implements CollectionService {
 	@Value("${twitter.consumerSecret}")
 	private String consumerSecret;
 
+	@Value("${facebook.consumerKey}")
+	private String facebookConsumerKey;
+	@Value("${facebook.consumerSecret}")
+	private String facebookConsumerSecret;
 	private String accessTokenStr = null;
 	private String accessTokenSecretStr = null;
 
@@ -128,6 +133,7 @@ public class CollectionServiceImpl implements CollectionService {
 			
 			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
 			collection.setFollow(collectionUpdateInfo.getFollow());
+			collection.setFetchInterval(collectionUpdateInfo.getFetchInterval());
 			filteredTrack = collectionUpdateInfo.getTrack();
 			
 			if(!StringUtils.isEmpty(filteredTrack)) {
@@ -329,19 +335,19 @@ public class CollectionServiceImpl implements CollectionService {
 		UserConnection userconnection = userConnectionService.fetchByCombinedUserName(dbCollection.getOwner().getUserName());
 		dto.setAccessToken(userconnection.getAccessToken());
 		dto.setAccessTokenSecret(userconnection.getSecret());
-		dto.setConsumerKey(consumerKey);
-		dto.setConsumerSecret(consumerSecret);
 		dto.setCollectionName(dbCollection.getName());
 		dto.setCollectionCode(dbCollection.getCode());
 
 		dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getOwner().getUserName()));
-		dto.setToFollow(dbCollection.getFollow());
 		dto.setToTrack(dbCollection.getTrack());
 		dto.setGeoLocation(dbCollection.getGeo());
 		dto.setGeoR(dbCollection.getGeoR());
 		dto.setLanguageFilter(dbCollection.getLangFilters());
 		dto.setSaveMediaEnabled(dbCollection.isSaveMediaEnabled());
-		
+		dto.setFetchInterval(dbCollection.getFetchInterval());
+		dto.setProvider(dbCollection.getProvider().toString());
+		dto.setFetchInterval(dbCollection.getFetchInterval());
+		dto.setLastExecutionTime(dbCollection.getLastExecutionTime());
 		// Added by koushik
 		accessTokenStr = dto.getAccessToken();
 		accessTokenSecretStr = dto.getAccessTokenSecret();
@@ -391,8 +397,9 @@ public class CollectionServiceImpl implements CollectionService {
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
-			if (CollectionType.Twitter.equals(collection.getProvider())) {
-				WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
+			if (CollectionType.Twitter.equals(collection.getProvider())
+					|| CollectionType.Facebook.equals(collection.getProvider())) {
+				WebTarget webResource = client.target(fetchMainUrl + "/" +collection.getProvider().toString().toLowerCase() + "/start");
 
 				ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
@@ -446,7 +453,6 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 	}
 
-	//@SuppressWarnings("deprecation")
 	@Override
 	@Transactional(readOnly = false)
 	public Collection stopAidrFetcher(Collection collection, Long userId) {
@@ -456,10 +462,10 @@ public class CollectionServiceImpl implements CollectionService {
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 			String path = "";
-			if (CollectionType.Twitter.equals(collection.getProvider())) {
-				path = "/twitter/stop?id=";
-			} else if(CollectionType.SMS.equals(collection.getProvider())) {
+			if(CollectionType.SMS.equals(collection.getProvider())) {
 				path = "/sms/stop?collection_code=";
+			} else {
+				path = "/" + collection.getProvider().toString().toLowerCase() + "/stop?id=";
 			}
 
 			WebTarget webResource = client.target(fetchMainUrl + path + URLEncoder.encode(collection.getCode(), "UTF-8"));
@@ -490,6 +496,7 @@ public class CollectionServiceImpl implements CollectionService {
 			if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
 				collection.setCount(response.getCollectionCount());
 				String lastDocument = response.getLastDocument();
+				collection.setLastExecutionTime(response.getLastExecutionTime());
 				if (lastDocument != null)
 					collection.setLastDocument(lastDocument);
 				collectionRepository.update(collection);
@@ -562,8 +569,9 @@ public class CollectionServiceImpl implements CollectionService {
 				Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
 				String path = "";
-				if (CollectionType.Twitter.equals(collection.getProvider())) {
-					path = "/twitter/status?id=";
+				if (CollectionType.Twitter.equals(collection.getProvider())
+						|| CollectionType.Facebook.equals(collection.getProvider())) {
+					path = "/" +collection.getProvider().toString().toLowerCase() + "/status?id=";
 				} else if(CollectionType.SMS.equals(collection.getProvider())) {
 					path = "/sms/status?collection_code=";
 				}
@@ -900,6 +908,20 @@ public class CollectionServiceImpl implements CollectionService {
 		return collectionStatsInfo;
 	}
 	
+	@Override
+	public List<String> fetchEligibleFacebookCollectionsToReRun() {
+		List<String> codes = collectionRepository.getEligibleFacebookCollectionsToReRun();
+		return codes;
+	}
+
+	@Override
+	public void rerunFacebookCollection(String code) {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		WebTarget webResource = client.target(fetchMainUrl + "/facebook/rerun?code=" + code);
+		Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+		Map<String, String> result = clientResponse.readEntity(Map.class);
+	}
+	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
 			try {
@@ -952,11 +974,12 @@ public class CollectionServiceImpl implements CollectionService {
 		collection.setGeo(collectionInfo.getGeo());
 		collection.setTrack(collectionInfo.getTrack());
 		collection.setCrisisType(crisisTypeService.getById(collectionInfo.getCrisisType()));
-		collection.setFollow(collection.getFollow());
+		collection.setFollow(collectionInfo.getFollow());
 		collection.setLangFilters(collectionInfo.getLangFilters());
 		collection.setMicromappersEnabled(Boolean.FALSE);
 		collection.setProvider(CollectionType.valueOf(collectionInfo.getProvider()));
 		collection.setPurpose(collectionInfo.getPurpose());
+		collection.setFetchInterval(collectionInfo.getFetchInterval());
 		
 		if(CollectionType.SMS.equals(collectionInfo.getProvider())) {
 			collection.setTrack(null);
@@ -1053,6 +1076,33 @@ public class CollectionServiceImpl implements CollectionService {
     	
     	return filteredTrack.trim();
     	
+    }
+    
+    @Override
+	public int getRunningCollectionsCountFromCollector() {
+    	int runningCollections = 0;
+		try {
+			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+			WebTarget webResource = client.target(fetchMainUrl + "/manage/ping");
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+			if (pingResponse != null && "RUNNING".equals(pingResponse.getCurrentStatus())) {
+				runningCollections = Integer.parseInt(pingResponse.getRunningCollectionsCount());
+			} 
+		} catch (Exception e) {
+			logger.error("Collector is not reachable");
+		}
+		return runningCollections;
+	}
+    
+    @Override
+    public List<Collection> getUnexpectedlyStoppedCollections(Date today) {
+    	return collectionRepository.getUnexpectedlyStoppedCollections(today);
     }
 
 }

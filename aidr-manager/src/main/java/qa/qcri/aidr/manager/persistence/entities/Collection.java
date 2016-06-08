@@ -96,8 +96,14 @@ public class Collection extends BaseEntity {
     
     @Column(name="save_media_enabled", columnDefinition="bit default 0")
     private boolean saveMediaEnabled;
-    
-    @Transient
+
+    @Column(name="fetch_interval", columnDefinition="int default 0")
+    private int fetchInterval;
+
+    @Column(name="last_execution_time")
+    private Date lastExecutionTime;
+
+	@Transient
     private boolean isSourceOutage = false;
 
     public boolean isPubliclyListed() {
@@ -300,5 +306,21 @@ public class Collection extends BaseEntity {
 	public void setUsageType(UsageType usageType) {
 		this.usageType = usageType;
 	}
-	
+
+	public int getFetchInterval() {
+		return fetchInterval;
+	}
+
+	public void setFetchInterval(int fetchInterval) {
+		this.fetchInterval = fetchInterval;
+	}
+    
+    public Date getLastExecutionTime() {
+		return lastExecutionTime;
+	}
+
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
+	}
+
 }

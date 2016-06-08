@@ -1,15 +1,20 @@
 package qa.qcri.aidr.collector.collectors;
 
-import org.junit.Before;
-import org.junit.Test;
-import qa.qcri.aidr.collector.beans.CollectionTask;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.StringReader;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import qa.qcri.aidr.collector.beans.TwitterCollectionTask;
 
 /**
  * Created by noora on 5/19/15.
@@ -21,7 +26,7 @@ public class StrictLocationFilterTest {
 
     @Before
     public void setUp() throws Exception {
-        CollectionTask collectionTask = new CollectionTask();
+        TwitterCollectionTask collectionTask = new TwitterCollectionTask();
         collectionTask.setGeoLocation("51.42,25.22,51.62,25.38,7.3182,45.818,10.4921,47.0335"); // two BB
         strictLocationFilter = new StrictLocationFilter(collectionTask);
     }
