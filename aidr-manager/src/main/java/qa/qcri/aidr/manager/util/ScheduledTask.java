@@ -30,8 +30,8 @@ public class ScheduledTask {
 	@Value("${fetchMainUrl}")
 	private String fetchMainUrl;
 	
-	@Value("${schedule.start.unexpectedly.stopped.collections}")
-	private String scheduleStartUnexpectedlyStoppedCollections;
+	@Value("${start.unexpectedly.stopped.collections.enable}")
+	private String startUnexpectedlyStoppedCollectionsEnable;
 	
 	@Autowired
 	private CollectionService collectionService;
@@ -116,7 +116,7 @@ public class ScheduledTask {
 	
 	@Scheduled(cron = "${start.unexpextedly.stopped.collections.cron}")
 	public void startUnexpectedlyStoppedCollections() throws ParseException {
-		if("false".equalsIgnoreCase(scheduleStartUnexpectedlyStoppedCollections)){
+		if("false".equalsIgnoreCase(startUnexpectedlyStoppedCollectionsEnable)){
 			return;
 		}
 		int runningCollections = collectionService.getRunningCollectionsCountFromCollector();
