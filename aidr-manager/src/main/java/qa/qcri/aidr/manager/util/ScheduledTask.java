@@ -30,6 +30,9 @@ public class ScheduledTask {
 	@Value("${fetchMainUrl}")
 	private String fetchMainUrl;
 	
+	@Value("${schedule.start.unexpectedly.stopped.collections}")
+	private String scheduleStartUnexpectedlyStoppedCollections;
+	
 	@Autowired
 	private CollectionService collectionService;
 	
@@ -113,7 +116,9 @@ public class ScheduledTask {
 	
 	@Scheduled(cron = "${start.unexpextedly.stopped.collections.cron}")
 	public void startUnexpectedlyStoppedCollections() throws ParseException {
-		
+		if("false".equalsIgnoreCase(scheduleStartUnexpectedlyStoppedCollections)){
+			return;
+		}
 		int runningCollections = collectionService.getRunningCollectionsCountFromCollector();
 		if(runningCollections == 0) {
 			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");

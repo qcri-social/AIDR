@@ -1,5 +1,7 @@
 package qa.qcri.aidr.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -32,6 +34,9 @@ public class FacebookDataFeed extends BaseEntity {
 	
 	@Column(name="parent_type", length = 64)
     private String parentType;
+	
+	@Column(updatable = false, name = "feed_created_at")
+	private Date feedCreatedAt;
 
 	public String getFb_id() {
 		return fb_id;
@@ -73,4 +78,11 @@ public class FacebookDataFeed extends BaseEntity {
 		this.parentType = parentType;
 	}
 
+	public Date getFeedCreatedAt() {
+		return feedCreatedAt;
+	}
+
+	public void setFeedCreatedAt(Date feedCreatedAt) {
+		this.feedCreatedAt = feedCreatedAt;
+	}
 }

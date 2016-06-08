@@ -215,6 +215,18 @@ public class CollectionSubscriber extends JedisPubSub {
             JSONObject aidrJson = msgJson.getJSONObject("aidr");
 			facebookDataFeed.setAidr(aidrJson);
 			facebookDataFeed.setParentType(aidrJson.getString("parent_type"));
+			
+			String feedCreatedAtString = msgJson.getString("createdTime");
+			if(StringUtils.isNotBlank(feedCreatedAtString)) {
+				try {
+					SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy hh:mm:ss a");
+					Date feedCreatedAt = sdf.parse(feedCreatedAtString);
+					facebookDataFeed.setFeedCreatedAt(feedCreatedAt);
+				} catch (Exception e) {
+					logger.error("Error in parsing facebook feedCreated Date");
+					e.printStackTrace();
+				}
+			}
             facebookDataFeedService.persist(facebookDataFeed);
         }catch(Exception e){
         	logger.error("Error in persisting :::: " + message);

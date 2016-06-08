@@ -33,6 +33,7 @@ import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.Constants;
 
 @Repository("collectionRepository")
@@ -532,8 +533,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		try {
 			Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 			criteria.add(Restrictions.eq("micromappersEnabled", micromappersEnabled));
+			criteria.add(Restrictions.eq("provider", CollectionType.Twitter));
 			collections = criteria.list();
-			
 		} catch (HibernateException e) {
 			logger.error("Exception in fetching list of collections.", e);
 		}

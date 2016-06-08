@@ -1,0 +1,1 @@
+CREATE INDEX code_index ON facebook_data_feed (code);
