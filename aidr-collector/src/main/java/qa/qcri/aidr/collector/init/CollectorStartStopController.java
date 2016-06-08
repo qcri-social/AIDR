@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.collector.api.FacebookCollectionController;
 import qa.qcri.aidr.collector.api.TwitterCollectionController;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
@@ -59,10 +60,15 @@ public class CollectorStartStopController extends HttpServlet {
 		List<CollectionTask> collections = GenericCache.getInstance()
 				.getAllRunningCollectionTasks();
 		TwitterCollectionController twitterCollector = new TwitterCollectionController();
+		FacebookCollectionController facebookCollector = new FacebookCollectionController();
 		for (CollectionTask collection : collections) {
 			System.out.println("Stopping " + collection.getCollectionCode());
 			logger.info("Stopping " + collection.getCollectionCode());
+			if("Facebook".equalsIgnoreCase(collection.getProvider())) {
+				facebookCollector.stopTask(collection.getCollectionCode());
+			} else {
 				twitterCollector.stopTask(collection.getCollectionCode());
+			}
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
