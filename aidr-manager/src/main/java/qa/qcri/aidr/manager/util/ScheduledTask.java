@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.common.util.EmailClient;
 import qa.qcri.aidr.common.util.NotificationEvent;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.service.CollectionService;
@@ -118,13 +119,20 @@ public class ScheduledTask {
 			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 			Date today = formatter.parse(formatter.format(new Date()));
 			List<Collection> unexpectedlyStoppedCollections = collectionService.getUnexpectedlyStoppedCollections(today);
+			StringBuffer sb = new StringBuffer("Following collections are restarted.\n\n");
+			int count = 0;
 			for (Collection collection : unexpectedlyStoppedCollections) {
 				try {
 					collectionService.start(collection.getId());
+					count++;
+					sb.append(count + ". "+ collection.getName() + " (" + collection.getCode() + ")\n");
 				} catch (Exception e) {
 					logger.error("Error in startUnexpectedlyStoppedCollections for collection: " + collection.getId());
 					e.printStackTrace();
 				}
+			}
+			if(count > 0) {
+				EmailClient.sendErrorMail(" " + count + " Collection Restarted", sb.toString());
 			}
 		}
 	}
