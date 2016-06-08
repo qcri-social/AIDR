@@ -1,6 +1,5 @@
 package qa.qcri.aidr.manager.controller;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +36,6 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
-import qa.qcri.aidr.manager.util.ScheduledTask;
 
 @Controller
 @RequestMapping("protected/collection")
@@ -779,15 +777,5 @@ public class CollectionController extends BaseController{
 			logger.error("Error while getting twitter userIds", e);
 			return getUIWrapper(false, "Exception in twitter user data lookup.");
 		}
-	}
-	
-	@Autowired
-	private ScheduledTask scheduledTask;
-	
-	@RequestMapping(value = "/test", method = RequestMethod.GET)
-	@ResponseBody
-	public String testing() throws ParseException {
-		scheduledTask.startUnexpectedlyStoppedCollections();
-		return "sucess";
 	}
 }
