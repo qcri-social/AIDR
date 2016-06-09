@@ -311,6 +311,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     }
                 }
                 if(TYPE == 'Facebook'){
+                	me.mainComponent.filterFieldSet.hide();
                 	me.mainComponent.downloadFormat.hide();
                 	me.mainComponent.downloadContents.hide();
                 	me.mainComponent.fullTweetInfo.hide();
