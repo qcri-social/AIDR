@@ -128,7 +128,7 @@ this.collectionTpl = new Ext.XTemplate(
     '<span>Classifier ({classifiersNumber})</span>',
     '</button>',
     '<tpl else>',
-    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueDisabled {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
+    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueDisabled {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}>',
     '<span>Enable Classifier</span>',
     '</button>',
     '</tpl>',
@@ -175,8 +175,10 @@ this.collectionTpl = new Ext.XTemplate(
                 '</tpl>',
                 '</div>',
                 {
-                    isEnableClassifierButtonDisabled: function(r){
-                        if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
+                    isEnableClassifierButtonDisabled: function(r, type){
+						if (type == 'Facebook') {
+							return "disabled";
+						} else if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
                             return "";
                         } else {
                             return "disabled";
