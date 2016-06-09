@@ -255,8 +255,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
               valueField: 'val',
               displayField: 'label',
               store: this.fetchIntervalStore,
-//              default duration is 6 hours
-              value: 6
+//              default duration is 2 hours
+              value: 2
         });
 
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
