@@ -26,18 +26,30 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
             "#collectionkeywordsInfo": {
                 render: function (infoPanel, eOpts) {
+                	var infoText = 'This field represents comma separated keywords to filter the Twitter stream.<br>' +
+                    'General rules:<br>' +
+                    '- Not case-sensitive ("bridge" matches "Bridge").<br>' +
+                    '- Whole words match ("bridge" does not match "damagedbridge").<br><br>' +
+                    'Multi-word queries:<br>' +
+                    '- If you include two or more words on a query, all of them must be present in the tweet ("Brooklyn bridge" does not match a tweet that does not contain "Brooklyn" or does not contain "bridge")<br>' +
+                    '- The words does not need to be consecutive or in that order ("Brooklyn bridge" will match "the bridge to Brooklyn")<br><br>' +
+                    'Queries with or without hashtags:<br>' +
+                    '- If you don\'t include \'#\', you also match hashtags ("bridge" matches "#bridge")<br>' +
+                    '- If you do include \'#\', you only match hashtags ("#bridge" does not match "bridge")<br>';
+                    
+                	if(SIGNED_IN_PROVIDER === 'facebook'){
+                		infoText = 'This field represents comma separated keywords to filter the Facebook page/group/event.<br>' +
+                        'General rules:<br>' +
+                        '- Not case-sensitive ("bridge" matches "Bridge").<br>' +
+                        '- If you include two or more keywords in a query, all of them must be present in the page/group/event ("Brooklyn,bridge" does not match a page/group/event that does not contain "Brooklyn" or does not contain "bridge")<br><br>' +
+                        'Multi-word queries:<br>' +
+                        '- If you include two or more words on a query, all of them must be present in the page/group/event ("Brooklyn bridge" does not match a page/group/event that does not contain "Brooklyn" or does not contain "bridge")<br>' +
+                        '- The words does not need to be consecutive or in that order ("Brooklyn bridge" will match "the bridge to Brooklyn")<br>';
+                	}
+                	
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
-                        html: 'This field represents comma separated keywords to filter the Twitter stream.<br>' +
-                            'General rules:<br>' +
-                            '- Not case-sensitive ("bridge" matches "Bridge").<br>' +
-                            '- Whole words match ("bridge" does not match "damagedbridge").<br><br>' +
-                            'Multi-word queries:<br>' +
-                            '- If you include two or more words on a query, all of them must be present in the tweet ("Brooklyn bridge" does not match a tweet that does not contain "Brooklyn" or does not contain "bridge")<br>' +
-                            '- The words does not need to be consecutive or in that order ("Brooklyn bridge" will match "the bridge to Brooklyn")<br><br>' +
-                            'Queries with or without hashtags:<br>' +
-                            '- If you don\'t include \'#\', you also match hashtags ("bridge" matches "#bridge")<br>' +
-                            '- If you do include \'#\', you only match hashtags ("#bridge" does not match "bridge")<br>',
+                        html: infoText,
                         target: infoPanel.el,
                         dismissDelay: 0
                     });
@@ -159,6 +171,13 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             },
 
             "#CollectionType":{
+				render: function(field, newValue, oldValue){
+					if(SIGNED_IN_PROVIDER == 'facebook'){
+						Ext.getCmp('CollectionType').setValue('Facebook');
+					}else{
+						Ext.getCmp('CollectionType').setValue('Twitter');
+					}
+				},
                 change: function(field, newValue, oldValue){
                      if(newValue === 'SMS'){
                          Ext.getCmp('keywordsPanel').hide();
