@@ -34,7 +34,6 @@ import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
-import qa.qcri.aidr.manager.util.Constants;
 
 @Repository("collectionRepository")
 @Transactional
@@ -552,7 +551,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 			public Object doInHibernate(Session session) throws HibernateException {
 				String sql = " SELECT c.code FROM collection c " +
 						" WHERE c.provider = 'Facebook' AND (c.status = 0 OR c.status = 2 OR c.status = 5 OR c.status = 8) "
-						+ "AND (c.last_execution_time + c.fetch_interval * " + Constants.ONE_HOUR_IN_MILLISECS + ") <= now()";
+						+ "AND date_add(c.last_execution_time, interval c.fetch_interval hour) <= now()";
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
 				List<Object[]> codes = sqlQuery.list();

@@ -128,7 +128,7 @@ this.collectionTpl = new Ext.XTemplate(
     '<span>Classifier ({classifiersNumber})</span>',
     '</button>',
     '<tpl else>',
-    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueDisabled {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}>',
+    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueDisabled {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\', \'{[values.collectionType]}\');" {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}>',
     '<span>Enable Classifier</span>',
     '</button>',
     '</tpl>',

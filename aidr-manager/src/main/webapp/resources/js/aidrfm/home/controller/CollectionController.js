@@ -273,8 +273,10 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
             }
         });
     },
-    enableTagger: function(crisisTypeID, code, name) {
-
+    enableTagger: function(crisisTypeID, code, name, collection_type) {
+		if(collection_type == "Facebook") {
+			return false;
+		}
         if (!crisisTypeID) {
             AIDRFMFunctions.setAlert("Error", "Collection type is not selected. Please select type of the collection and save it.");
             return false;
