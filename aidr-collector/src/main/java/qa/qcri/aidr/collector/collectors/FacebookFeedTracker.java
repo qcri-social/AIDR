@@ -102,12 +102,17 @@ public class FacebookFeedTracker implements Closeable {
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
 		Date toTimestamp = new Date();
-		
+		Date fromTimestamp = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
 		try {
 			task.setPullInProgress(true);
+			if(task.getLastExecutionTime() != null && 
+					(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= SEVEN_DAYS_IN_MILLISECS) {
+				fromTimestamp = task.getLastExecutionTime();
+			}
+			
 			for (FacebookEntityType type : FacebookEntityType.values()) {
 				if (GenericCache.getInstance().getFbSyncStateMap(task.getCollectionCode()) == 0) {
-					this.fetchPosts(toTimestamp, type);
+					this.fetchPosts(fromTimestamp, toTimestamp, type);
 				} else {
 					GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
 					break;
@@ -115,13 +120,14 @@ public class FacebookFeedTracker implements Closeable {
 			}
 			
 			task.setPullInProgress(false);
+			task.setLastExecutionTime(toTimestamp);
 			GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task);
 		} catch (FacebookException e) {
 			GenericCache.getInstance().setFailedCollection(task.getCollectionCode(), task);
 		}
 	}
 
-	private void fetchPosts(Date toTimestamp, FacebookEntityType type) throws FacebookException {
+	private void fetchPosts(Date fromTimestamp, Date toTimestamp, FacebookEntityType type) throws FacebookException {
 		List<String> entityIds = new ArrayList<String>();
 
 		try {
@@ -144,14 +150,6 @@ public class FacebookFeedTracker implements Closeable {
 			handleFacebookException(e, task.getCollectionCode());
 		}
 
-		Date fromTimestamp = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
-		
-		if(task.getLastExecutionTime() != null && 
-				(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= SEVEN_DAYS_IN_MILLISECS) {
-			fromTimestamp = task.getLastExecutionTime();
-		}
-		
-		task.setLastExecutionTime(toTimestamp);
 		GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task);
 		
 		if (entityIds != null && !entityIds.isEmpty()) {
