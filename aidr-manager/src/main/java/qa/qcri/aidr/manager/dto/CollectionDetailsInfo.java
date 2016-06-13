@@ -34,6 +34,7 @@ public class CollectionDetailsInfo {
     private Long crisisType;
     private String purpose;
     private int fetchInterval;
+    private int fetchFrom;
     
     public Long getCrisisType() {
 		return crisisType;
@@ -154,5 +155,11 @@ public class CollectionDetailsInfo {
 	}
 	public void setFetchInterval(int fetchInterval) {
 		this.fetchInterval = fetchInterval;
+	}
+	public int getFetchFrom() {
+		return fetchFrom;
+	}
+	public void setFetchFrom(int fetchFrom) {
+		this.fetchFrom = fetchFrom;
 	}
 }

@@ -124,6 +124,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1});
         this.fetchIntervalL = Ext.create('Ext.form.Label', {
             flex: 1});
+		this.fetchFromL = Ext.create('Ext.form.Label', {flex: 1});
         this.followL = Ext.create('Ext.form.Label', {flex: 1});
         this.languageFiltersL = Ext.create('Ext.form.Label', {flex: 1});
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
@@ -154,6 +155,19 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     text: 'Fetch Interval:'
                 },
                 this.fetchIntervalL
+            ]
+        });
+		
+		this.fetchFromContainer = Ext.create('Ext.container.Container', {
+            hidden: true,
+            defaultType: 'label',
+            layout: 'hbox',
+            items: [
+                {
+                    width: 220,
+                    text: 'Fetch From:'
+                },
+                this.fetchFromL
             ]
         });
 
@@ -340,6 +354,17 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 { "val": 168, "label": '7 days' }
             ]
         });
+		
+		this.fetchFromStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 168, "label": '7 days' },
+                { "val": 360, "label": '15 days' },
+                { "val": 720, "label": '1 month' },
+                { "val": 2160, "label": '3 month'},
+                { "val": 4320, "label": '6 month' }
+            ]
+        });
         
         this.fetchInterval = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Fetch Interval',
@@ -354,6 +379,21 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             store: this.fetchIntervalStore,
 //            default duration is 6 hours
             value: 6,
+            queryMode: 'local'
+        });
+		
+		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Fetch From',
+            flex: 1,
+            labelWidth: 130,
+            name: 'fetchFrom',
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.fetchFromStore,
+            value: 168,
             queryMode: 'local'
         });
 
@@ -884,6 +924,24 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
+						{
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            id:'fetchFromPanel',
+                            items: [
+                                this.fetchFrom,
+                                {
+                                    border: false,
+                                    margin: '5 0 0 0',
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'fetchFromInfo'
+                                }
+                            ]
+                        },
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -1169,6 +1227,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         },
                         this.geoContainer,
                         this.fetchIntervalContainer,
+						this.fetchFromContainer,
                         this.followContainer,
                         {
                             xtype: 'container',

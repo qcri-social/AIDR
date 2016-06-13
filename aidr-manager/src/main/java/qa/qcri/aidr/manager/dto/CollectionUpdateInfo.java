@@ -13,6 +13,7 @@ public class CollectionUpdateInfo {
 	private String geo;
 	private String geoR;
 	private int fetchInterval;
+	private int fetchFrom;
 	
 	public String getCode() {
 		return code;
@@ -79,5 +80,11 @@ public class CollectionUpdateInfo {
 	}
 	public void setFetchInterval(int fetchInterval) {
 		this.fetchInterval = fetchInterval;
+	}
+	public int getFetchFrom() {
+		return fetchFrom;
+	}
+	public void setFetchFrom(int fetchFrom) {
+		this.fetchFrom = fetchFrom;
 	}
 }

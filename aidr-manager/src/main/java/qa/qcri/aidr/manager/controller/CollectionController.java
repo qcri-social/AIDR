@@ -700,6 +700,7 @@ public class CollectionController extends BaseController{
 		}
 		dto.setGeo(collection.getGeo());
 		dto.setFetchInterval(collection.getFetchInterval());
+		dto.setFetchFrom(collection.getFetchFrom());
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());
 		dto.setEndDate(collection.getEndDate());

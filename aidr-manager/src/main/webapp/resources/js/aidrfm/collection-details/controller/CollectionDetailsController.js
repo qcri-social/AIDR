@@ -110,6 +110,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     });
                 }
             },
+			
+			"#fetchFromInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection fetch from specifies that from how long you want to collect data.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
 
             "#collectionLangInfo": {
                 render: function (infoPanel, eOpts) {
@@ -411,6 +422,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('configurationsL').hide();
                     Ext.getCmp('durationDescription').hide();
                     Ext.getCmp('fetchIntervalPanel').hide();
+					Ext.getCmp('fetchFromPanel').hide();
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
                     Ext.getCmp('endpointLabel').show();
                 } else if(collectionType === 'Twitter'){
@@ -422,6 +434,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('followPanel').show();
                     Ext.getCmp('geoDescription').show();
                     Ext.getCmp('fetchIntervalPanel').hide();
+					Ext.getCmp('fetchFromPanel').hide();
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>');
                 }else if(collectionType === 'Facebook'){
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
@@ -500,6 +513,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
                 p.fetchIntervalL.setText(fi, false);
                 p.fetchIntervalContainer.show();
+        	}
+			if(r.fetchFrom > 0){
+        		var storeIndex = p.fetchFromStore.findExact("val", r.fetchFrom);
+            	var ff = p.fetchFromStore.getAt(storeIndex).data.label;
+
+                p.fetchFromL.setText(ff, false);
+				p.fetchFromContainer.show();
         	}
         }
         
@@ -606,6 +626,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         	p.fetchIntervalL.setText(fi, false);
             p.fetchIntervalContainer.show();
         	}
+			if(r.fetchInterval > 0){
+        		var storeIndex = p.fetchFromStore.findExact("val", r.fetchFrom);
+            	var ff = p.fetchFromStore.getAt(storeIndex).data.label;
+
+                p.fetchFromL.setText(ff, false);
+				p.fetchFromContainer.show();
+        	}
         }
         
         p.followL.setText(this.ns, false);
@@ -685,6 +712,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         }
         
         p.fetchInterval.setValue(r.fetchInterval);
+		p.fetchFrom.setValue(r.fetchFrom);
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
         if(r.crisisType!=null){
@@ -972,10 +1000,11 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var editPanelEl = cmp.up('panel').getEl();
         editPanelEl.mask("Updating...");
         
-        var fi = 0;
+        var fi = 0, ff = 0;
         
         if(TYPE === 'Facebook'){
         	var fi = form.findField('fetchInterval').getValue();
+			var ff = form.findField('fetchFrom').getValue();
         }
         
         Ext.Ajax.request({
@@ -995,6 +1024,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 langFilters: form.findField('langFilters').getValue(),
                 durationHours: form.findField('durationHours').getValue(),
                 fetchInterval: fi,
+				fetchFrom: ff,
                 crisisType: form.findField('crisisType').getValue(),
                 provider: form.findField('collectionType').getValue()
             },

@@ -69,6 +69,8 @@ public class AidrCollectionTotalDTO {
     
     private int fetchInterval;
     
+    private int fetchFrom;
+    
     public Long getId() {
         return id;
     }
@@ -294,5 +296,13 @@ public class AidrCollectionTotalDTO {
 
 	public void setFetchInterval(int fetchInterval) {
 		this.fetchInterval = fetchInterval;
+	}
+
+	public int getFetchFrom() {
+		return fetchFrom;
+	}
+
+	public void setFetchFrom(int fetchFrom) {
+		this.fetchFrom = fetchFrom;
 	}
 }

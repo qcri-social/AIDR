@@ -25,6 +25,7 @@ public class FetcherRequestDTO implements Serializable {
     private boolean saveMediaEnabled;
 	private Date lastExecutionTime;
 	private int fetchInterval;
+	private int fetchFrom;
 	private String provider;
     
     public FetcherRequestDTO() {}		
@@ -147,5 +148,13 @@ public class FetcherRequestDTO implements Serializable {
 
 	public void setProvider(String provider) {
 		this.provider = provider;
+	}
+
+	public int getFetchFrom() {
+		return fetchFrom;
+	}
+
+	public void setFetchFrom(int fetchFrom) {
+		this.fetchFrom = fetchFrom;
 	}
 }

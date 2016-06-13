@@ -37,9 +37,9 @@ public class FacebookFeedTracker implements Closeable {
 	private static Logger logger = Logger.getLogger(FacebookFeedTracker.class);
 	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
 	private JedisPublisher publisher;
-	private Facebook facebook;
-	private FacebookCollectionTask task;
-	private LoadShedder fbApiHitShedder;
+	private final Facebook facebook;
+	private final FacebookCollectionTask task;
+	private final LoadShedder fbApiHitShedder;
 
 	private static final int DEFAULT_LIMIT = 100;
 	private static final Long HOUR_IN_MILLISECS = 60 * 60 * 1000L;
@@ -66,6 +66,7 @@ public class FacebookFeedTracker implements Closeable {
 
 	public void start() {
 		new Thread(new Runnable() {
+			@Override
 			public void run() {
 				Boolean syncObj = GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()) == null ? Boolean.TRUE : GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode());
 				synchronized (syncObj) {
@@ -78,6 +79,7 @@ public class FacebookFeedTracker implements Closeable {
 		}).start();
 	}
 
+	@Override
 	public void close() throws IOException {
 		facebook.shutdown();
 		publisher.close();
@@ -144,10 +146,11 @@ public class FacebookFeedTracker implements Closeable {
 			handleFacebookException(e, task.getCollectionCode());
 		}
 
-		Date fromTimestamp = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
+		long fetchFromInMiliSecs = task.getFetchFrom() * HOUR_IN_MILLISECS;
+		Date fromTimestamp = new Date(System.currentTimeMillis() - fetchFromInMiliSecs);
 		
 		if(task.getLastExecutionTime() != null && 
-				(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= SEVEN_DAYS_IN_MILLISECS) {
+				(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= fetchFromInMiliSecs) {
 			fromTimestamp = task.getLastExecutionTime();
 		}
 		

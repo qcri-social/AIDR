@@ -99,6 +99,10 @@ public class Collection extends BaseEntity {
 
     @Column(name="fetch_interval", columnDefinition="int default 0")
     private int fetchInterval;
+    
+    //default value 7 days = 24 * 7 hours
+    @Column(name="fetch_from", columnDefinition="int default 168")
+    private int fetchFrom;
 
     @Column(name="last_execution_time")
     private Date lastExecutionTime;
@@ -323,4 +327,12 @@ public class Collection extends BaseEntity {
 		this.lastExecutionTime = lastExecutionTime;
 	}
 
+	public int getFetchFrom() {
+		return fetchFrom;
+	}
+
+	public void setFetchFrom(int fetchFrom) {
+		this.fetchFrom = fetchFrom;
+	}
+	
 }

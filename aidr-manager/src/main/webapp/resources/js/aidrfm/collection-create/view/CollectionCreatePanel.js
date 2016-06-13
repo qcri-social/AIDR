@@ -245,6 +245,17 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             ]
         });
         
+		this.fetchFromStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 168, "label": '7 days' },
+                { "val": 360, "label": '15 days' },
+                { "val": 720, "label": '1 month' },
+                { "val": 2160, "label": '3 month'},
+                { "val": 4320, "label": '6 month' }
+            ]
+        });
+		
         this.fetchInterval = Ext.create('Ext.form.ComboBox', {
         	  fieldLabel: 'Fetch Interval',
               width:698,
@@ -257,6 +268,19 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
               store: this.fetchIntervalStore,
 //              default duration is 2 hours
               value: 2
+        });
+		
+		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
+        	  fieldLabel: 'Fetch From Days',
+              width:698,
+              labelWidth: 240,
+              name: 'fetchFrom',
+              editable: false,
+              text: 'Edit',
+              valueField: 'val',
+              displayField: 'label',
+              store: this.fetchFromStore,
+              value: 168
         });
 
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
@@ -453,6 +477,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
                         wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '12 0', undefined, 'followPanel'),
                         wrapFieldWithInfo(this.fetchInterval, 'fetchIntervalInfo', undefined, '20 0 5 0', 'fetchIntervalPanel'),
+						wrapFieldWithInfo(this.fetchFrom, 'fetchFromInfo', undefined, '20 0 5 0', 'fetchFromPanel'),
                         wrapFieldWithInfo(this.duration, 'collectionDurationInfo', undefined, '20 0 5 0'),
                         this.durationDescription
                     ]

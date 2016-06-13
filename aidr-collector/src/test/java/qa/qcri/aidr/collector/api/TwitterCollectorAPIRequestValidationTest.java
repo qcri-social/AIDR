@@ -65,7 +65,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		//Default task with all values null except consumerKey and accessToken
 		//Will fail because of twitter's ConsumerSecret and AccessTokenSecret not available
 		collectionTask = new TwitterCollectionTask();
-		collectionTask.setConsumerKey("eCbYFSSkRi20hsfsdfaaQ");
+		//collectionTask.setConsumerKey("eCbYFSSkRi20hsfsdfaaQ");
 		collectionTask.setAccessToken("eJSZ34XesdfsdfDBboduYzOFikHDJ9zXVXR0g");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
@@ -74,8 +74,8 @@ public class TwitterCollectorAPIRequestValidationTest {
 		//Default task with all values null except twitterConfig
 		//Will fail because of task details not available
 		collectionTask = new TwitterCollectionTask();
-		collectionTask.setConsumerKey("ekRi20hsfsdfaaQ");
-		collectionTask.setConsumerSecret("eqBmiIRVLbasdfasdfuQS3w5YpR0naYyHSYCY");
+		//collectionTask.setConsumerKey("ekRi20hsfsdfaaQ");
+		//collectionTask.setConsumerSecret("eqBmiIRVLbasdfasdfuQS3w5YpR0naYyHSYCY");
 		collectionTask.setAccessToken("32fsdfDBboduYzOFikHDJ9zXVXR0g");
 		collectionTask.setAccessTokenSecret("fkEXx1z68oks4hm8JCUGeRDw");
 		response = instance.startTask(collectionTask);
@@ -85,8 +85,8 @@ public class TwitterCollectorAPIRequestValidationTest {
 		//Default task with all values null except twitterConfig & toTrack
 		//Will fail because of collectionCode and collectionName not present
 		collectionTask = new TwitterCollectionTask();
-		collectionTask.setConsumerKey("wehsfsdfaaQ");
-		collectionTask.setConsumerSecret("wsdfasdfuQS3w5YpR0naYyHSYCY");
+		//collectionTask.setConsumerKey("wehsfsdfaaQ");
+		//collectionTask.setConsumerSecret("wsdfasdfuQS3w5YpR0naYyHSYCY");
 		collectionTask.setAccessToken("fsdfDBboduYzOFikHDJ9zXVXR0g");
 		collectionTask.setAccessTokenSecret("sszkEXx1z68oks4hm8JCUGeRDw");
 		collectionTask.setToTrack("earthquake");

@@ -134,6 +134,7 @@ public class CollectionServiceImpl implements CollectionService {
 			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
 			collection.setFollow(collectionUpdateInfo.getFollow());
 			collection.setFetchInterval(collectionUpdateInfo.getFetchInterval());
+			collection.setFetchFrom(collectionUpdateInfo.getFetchFrom());
 			filteredTrack = collectionUpdateInfo.getTrack();
 			
 			if(!StringUtils.isEmpty(filteredTrack)) {
@@ -347,6 +348,7 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setFetchInterval(dbCollection.getFetchInterval());
 		dto.setProvider(dbCollection.getProvider().toString());
 		dto.setFetchInterval(dbCollection.getFetchInterval());
+		dto.setFetchFrom(dbCollection.getFetchFrom());
 		dto.setLastExecutionTime(dbCollection.getLastExecutionTime());
 		// Added by koushik
 		accessTokenStr = dto.getAccessToken();
@@ -980,6 +982,7 @@ public class CollectionServiceImpl implements CollectionService {
 		collection.setProvider(CollectionType.valueOf(collectionInfo.getProvider()));
 		collection.setPurpose(collectionInfo.getPurpose());
 		collection.setFetchInterval(collectionInfo.getFetchInterval());
+		collection.setFetchFrom(collectionInfo.getFetchFrom());
 		
 		if(CollectionType.SMS.equals(collectionInfo.getProvider())) {
 			collection.setTrack(null);

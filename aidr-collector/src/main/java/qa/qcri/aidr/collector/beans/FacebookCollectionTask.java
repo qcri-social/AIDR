@@ -8,6 +8,7 @@ public class FacebookCollectionTask extends CollectionTask {
 	private Date lastExecutionTime;
 	private int fetchInterval;
 	private boolean pullInProgress;
+	private int fetchFrom;
 	
 	public Date getLastExecutionTime() {
 		return lastExecutionTime;
@@ -21,8 +22,14 @@ public class FacebookCollectionTask extends CollectionTask {
 	public void setFetchInterval(int fetchInterval) {
 		this.fetchInterval = fetchInterval;
 	}
-
-    @Override
+    public int getFetchFrom() {
+		return fetchFrom;
+	}
+	public void setFetchFrom(int fetchFrom) {
+		this.fetchFrom = fetchFrom;
+	}
+	
+	@Override
 	public FacebookCollectionTask clone() {
 
     	FacebookCollectionTask newTask = new FacebookCollectionTask();
@@ -40,6 +47,7 @@ public class FacebookCollectionTask extends CollectionTask {
         newTask.setSaveMediaEnabled(saveMediaEnabled);
         newTask.setLastExecutionTime(lastExecutionTime);
         newTask.setFetchInterval(fetchInterval);
+        newTask.setFetchFrom(fetchFrom);
         return newTask;
     }
 
@@ -52,6 +60,7 @@ public class FacebookCollectionTask extends CollectionTask {
 		this.setCollectionName(properties.getProperty("collectionName"));
 		this.setLastExecutionTime(new Date(properties.getProperty("lastExecutionTime")));
 		this.setFetchInterval(Integer.valueOf(properties.getProperty("fetchInterval")));
+		this.setFetchFrom(Integer.valueOf(properties.getProperty("fetchFrom")));
 		if(properties.getProperty("persist")!=null){
 			this.setPersist(Boolean.valueOf(properties.getProperty("persist")));
 		}
