@@ -143,10 +143,9 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
     	cache.setFbSyncStateMap(collectionCode, 1);
     	FacebookFeedTracker tracker = null;
     	FacebookCollectionTask task = null;
-    	synchronized (cache.getFbSyncObjMap(collectionCode) == null ? Boolean.TRUE : cache.getFbSyncObjMap(collectionCode)) {
-    		tracker = cache.getFacebookTracker(collectionCode);
-        	task = cache.getFacebookConfig(collectionCode);
-		}
+    	
+		tracker = cache.getFacebookTracker(collectionCode);
+    	task = cache.getFacebookConfig(collectionCode);
     	
     	cache.delFbSyncObjMap(collectionCode);
     	cache.delFbSyncStateMap(collectionCode);
