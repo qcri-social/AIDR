@@ -104,11 +104,11 @@ public class FacebookFeedTracker implements Closeable {
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
 		Date toTimestamp = new Date();
-		Date fromTimestamp = new Date(System.currentTimeMillis() - SEVEN_DAYS_IN_MILLISECS);
+		Date fromTimestamp = new Date(System.currentTimeMillis() - task.getFetchFrom());
 		try {
 			task.setPullInProgress(true);
 			if(task.getLastExecutionTime() != null && 
-					(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= SEVEN_DAYS_IN_MILLISECS) {
+					(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= task.getFetchFrom()) {
 				fromTimestamp = task.getLastExecutionTime();
 			}
 			

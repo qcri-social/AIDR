@@ -440,6 +440,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
 					Ext.getCmp('enableTagger').hide();
 					Ext.getCmp('goToTagger').hide();
+					Ext.getCmp('fetchFromPanel').hide();
 					//this.DetailsComponent.gotoTaggerButton.hide();
 					//this.DetailsComponent.enableTaggerButton.hide();
                 }
@@ -519,7 +520,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             	var ff = p.fetchFromStore.getAt(storeIndex).data.label;
 
                 p.fetchFromL.setText(ff, false);
-				p.fetchFromContainer.show();
+				//p.fetchFromContainer.show();
         	}
         }
         
@@ -631,7 +632,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             	var ff = p.fetchFromStore.getAt(storeIndex).data.label;
 
                 p.fetchFromL.setText(ff, false);
-				p.fetchFromContainer.show();
+				//p.fetchFromContainer.show();
         	}
         }
         
