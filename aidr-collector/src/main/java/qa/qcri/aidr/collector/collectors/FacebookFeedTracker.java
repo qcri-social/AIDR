@@ -295,6 +295,7 @@ public class FacebookFeedTracker implements Closeable {
 						} catch (FacebookException e) {
 							logger.warn("Exception while fetching feeds for id: " + parentId);
 							handleFacebookException(e, task.getCollectionCode());
+							postsOffset = -1;
 						}
 					} else {
 						GenericCache.getInstance().getFbSyncObjMap(task.getCollectionCode()).notifyAll();
