@@ -165,7 +165,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             items: [
                 {
                     width: 220,
-                    text: 'Fetch From:'
+                    text: 'Fetch From Last:'
                 },
                 this.fetchFromL
             ]
@@ -361,8 +361,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 { "val": 168, "label": '7 days' },
                 { "val": 360, "label": '15 days' },
                 { "val": 720, "label": '1 month' },
-                { "val": 2160, "label": '3 month'},
-                { "val": 4320, "label": '6 month' }
+                { "val": 2160, "label": '3 months'},
+                { "val": 4320, "label": '6 months' }
             ]
         });
         
@@ -383,7 +383,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 		
 		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
-            fieldLabel: 'Fetch From',
+            fieldLabel: 'Fetch From Last',
             flex: 1,
             labelWidth: 130,
             name: 'fetchFrom',

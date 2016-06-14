@@ -251,8 +251,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 { "val": 168, "label": '7 days' },
                 { "val": 360, "label": '15 days' },
                 { "val": 720, "label": '1 month' },
-                { "val": 2160, "label": '3 month'},
-                { "val": 4320, "label": '6 month' }
+                { "val": 2160, "label": '3 months'},
+                { "val": 4320, "label": '6 months' }
             ]
         });
 		
@@ -271,7 +271,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
 		
 		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
-        	  fieldLabel: 'Fetch From Days',
+        	  fieldLabel: 'Fetch From Last',
               width:698,
               labelWidth: 240,
               name: 'fetchFrom',
