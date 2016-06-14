@@ -108,15 +108,24 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
             response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
             return Response.ok(response).build();
         }
+        
+        CollectionTask failedTask = GenericCache.getInstance().getFailedCollectionTask(id);
+        if (failedTask != null) {
+        	Response stopTaskResponse = stopCollection(id);
+        	
+            if(stopTaskResponse == null) {
+    	        ResponseWrapper responseWrapper = new ResponseWrapper();
+    	        responseWrapper.setMessage("Invalid key. No running collector found for the given id.");
+    	        responseWrapper.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
+    	        stopTaskResponse = Response.ok(responseWrapper).build();
+            } 
+           
+            return stopTaskResponse;
+        }
+        
         FacebookCollectionTask task = GenericCache.getInstance().getFacebookConfig(id);
         if (task != null) { 
         	return Response.ok(task).build();
-        }
-
-        CollectionTask failedTask = GenericCache.getInstance().getFailedCollectionTask(id);
-        if (failedTask != null) {
-        	stopCollection(id);
-            return Response.ok(failedTask).build();
         }
 
         response.setMessage("Invalid key. No running collector found for the given id.");
@@ -141,11 +150,8 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
     	GenericCache cache = GenericCache.getInstance();
 
     	cache.setFbSyncStateMap(collectionCode, 1);
-    	FacebookFeedTracker tracker = null;
-    	FacebookCollectionTask task = null;
-    	
-		tracker = cache.getFacebookTracker(collectionCode);
-    	task = cache.getFacebookConfig(collectionCode);
+    	FacebookFeedTracker tracker = cache.getFacebookTracker(collectionCode);
+    	FacebookCollectionTask task = cache.getFacebookConfig(collectionCode);
     	
     	cache.delFbSyncObjMap(collectionCode);
     	cache.delFbSyncStateMap(collectionCode);
