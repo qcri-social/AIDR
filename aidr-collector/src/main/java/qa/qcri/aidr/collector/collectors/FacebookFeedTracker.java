@@ -337,6 +337,8 @@ public class FacebookFeedTracker implements Closeable {
 				logger.error("Oauth Exception. May be access token got expired for collectionCode: " + collectionCode,
 						e);
 				throw new FacebookException(e);
+			default:
+				logger.error("Facebook Exception", e);
 			}
 		}
 	}
