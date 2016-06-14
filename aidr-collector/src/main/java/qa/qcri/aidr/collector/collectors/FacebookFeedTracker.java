@@ -104,11 +104,12 @@ public class FacebookFeedTracker implements Closeable {
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
 		Date toTimestamp = new Date();
-		Date fromTimestamp = new Date(System.currentTimeMillis() - task.getFetchFrom());
+		long fetchFromInMiliSecs = task.getFetchFrom() * HOUR_IN_MILLISECS;
+		Date fromTimestamp = new Date(System.currentTimeMillis() - fetchFromInMiliSecs);
 		try {
 			task.setPullInProgress(true);
 			if(task.getLastExecutionTime() != null && 
-					(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= task.getFetchFrom()) {
+					(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= fetchFromInMiliSecs) {
 				fromTimestamp = task.getLastExecutionTime();
 			}
 			
@@ -152,17 +153,6 @@ public class FacebookFeedTracker implements Closeable {
 			handleFacebookException(e, task.getCollectionCode());
 		}
 
-		long fetchFromInMiliSecs = task.getFetchFrom() * HOUR_IN_MILLISECS;
-		fromTimestamp = new Date(System.currentTimeMillis() - fetchFromInMiliSecs);
-		
-		if(task.getLastExecutionTime() != null && 
-				(System.currentTimeMillis() - task.getLastExecutionTime().getTime()) <= fetchFromInMiliSecs) {
-			fromTimestamp = task.getLastExecutionTime();
-		}
-		
-		task.setLastExecutionTime(toTimestamp);
-		GenericCache.getInstance().setFbConfigMap(task.getCollectionCode(), task);
-		
 		if (entityIds != null && !entityIds.isEmpty()) {
 			processPost(toTimestamp, fromTimestamp, entityIds, type);
 		}
