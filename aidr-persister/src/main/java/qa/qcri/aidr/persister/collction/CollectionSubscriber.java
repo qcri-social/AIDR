@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import qa.qcri.aidr.common.redis.LoadShedder;
-import qa.qcri.aidr.entity.DataFeed;
+import qa.qcri.aidr.entity.TwitterDataFeed;
 import qa.qcri.aidr.entity.FacebookDataFeed;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.service.DataFeedService;
@@ -174,7 +174,7 @@ public class CollectionSubscriber extends JedisPubSub {
     private void writeToDataFeed(String message) {
         try{
         	JSONObject msgJson  = new JSONObject(message);
-            DataFeed dataFeed = new DataFeed();
+            TwitterDataFeed dataFeed = new TwitterDataFeed();
             dataFeed.setCode(collectionCode);
             dataFeed.setFeed(msgJson);
             JSONObject aidrJson = msgJson.getJSONObject("aidr");
