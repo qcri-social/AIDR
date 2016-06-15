@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
@@ -34,6 +35,7 @@ public class FetcheResponseDTO implements Serializable{
     private String toFollowAvailable;
     private String geoLocationAvailable;
     private boolean sourceOutage;    
+	private Date lastExecutionTime;
 	
 	public String getId() {
 		return id;
@@ -254,5 +256,11 @@ public class FetcheResponseDTO implements Serializable{
 	}
 	public void setSourceOutage(boolean sourceOutage) {
 		this.sourceOutage = sourceOutage;
+	}
+	public Date getLastExecutionTime() {
+		return lastExecutionTime;
+	}
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
 	}
 }

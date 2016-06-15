@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.repository;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import qa.qcri.aidr.common.values.UsageType;
@@ -52,4 +53,7 @@ public interface CollectionRepository extends GenericRepository<Collection, Seri
     
     public List<Collection> findMicromappersFilteredCollections(boolean micromappersEnabled);
 	Long getTotalCollectionsCount();
+	
+	public List<String> getEligibleFacebookCollectionsToReRun();
+	List<Collection> getUnexpectedlyStoppedCollections(Date today);
 }

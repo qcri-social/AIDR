@@ -64,6 +64,9 @@ public class DocumentJSONConverter {
 		case DocumentType.SMS_DOC:
 			doc = parseSMS(jsonObj);
 			break;
+		case DocumentType.FACEBOOK_DOC:
+			doc = parseFacebook(jsonObj);
+			break;
 		default: 
 			logger.error("Exception when parsing input document: Unhandled doctype");
 			throw new RuntimeException(
@@ -113,12 +116,12 @@ public class DocumentJSONConverter {
 
 			JSONObject user;
 			user = input.getJSONObject("user");
-			t.userID = user.getLong("id");
+			t.userID = Long.parseLong(user.getString("id_str"));
 			t.text = input.getString("text");
 			t.isRetweet = !input.isNull("retweeted_status");
 			t.setDoctype(DocumentType.TWIITER_DOC);
 			if (input.has("coordinates") && !input.isNull("coordinates")) {
-				JSONObject geo = (JSONObject) input
+				JSONObject geo = input
 						.getJSONObject("coordinates");
 				if (geo.getString("type") == "Point") {
 					JSONArray coords = geo.getJSONArray("coordinates");
@@ -129,6 +132,25 @@ public class DocumentJSONConverter {
 				}
 			}
 			return t;
+		} catch (JSONException e) {
+			logger.error("Json exception in parsing tweet: " + input);
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static Facebook parseFacebook(JSONObject input) {
+		// Example of a facebook post:
+		// https://developers.facebook.com/docs/graph-api/reference/v2.6/post
+		try {
+			Facebook fb = new Facebook();
+
+			JSONObject user;
+			user = input.getJSONObject("from");
+			fb.userID = Long.parseLong(user.getString("id"));
+			fb.text = input.getString("message");
+			fb.isShared = false;
+			fb.setDoctype(DocumentType.FACEBOOK_DOC);
+			return fb;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
 			throw new RuntimeException(e);

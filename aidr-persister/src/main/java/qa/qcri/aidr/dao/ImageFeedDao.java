@@ -22,7 +22,7 @@ import qa.qcri.aidr.entity.ImageFeed;
 @Repository
 public class ImageFeedDao extends AbstractDao<ImageFeed, Long>{
 
-	private Logger logger = Logger.getLogger(DataFeedDAO.class);
+	private Logger logger = Logger.getLogger(ImageFeedDao.class);
 
 	protected ImageFeedDao() {
 		super(ImageFeed.class);

@@ -5,7 +5,9 @@
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -15,6 +17,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
@@ -22,17 +26,16 @@ import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.MiscResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
-import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
-import qa.qcri.aidr.dbmanager.entities.task.Document;
-import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.util.NativeQueryUtil;
 
 
 @Stateless(name="ModelResourceFacadeImp")
@@ -42,6 +45,9 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 
 	@EJB
 	private CollectionResourceFacade collectionResourceFacade;
+
+	@EJB
+	private MiscResourceFacade miscResourceFacade;
 	
 	public ModelResourceFacadeImp() {
 		super(Model.class);
@@ -158,27 +164,6 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 							totalClassifiedDocuments += label.getClassifiedDocumentCount();
 						}
 						classifiedElements = totalClassifiedDocuments;
-					}
-				}
-			}
-			//getting trainingCount
-			trainingExamples = 0;
-			Hibernate.initialize(modelFamily.getNominalAttribute());
-			NominalAttribute nominalAttribute = modelFamily.getNominalAttribute();
-			Hibernate.initialize(nominalAttribute.getNominalLabels());
-			List<NominalLabel> nominalLabelList = nominalAttribute.getNominalLabels();//.getNominalLabelCollection();
-			for (NominalLabel label : nominalLabelList) {
-				if (!(label.getNominalLabelCode().equalsIgnoreCase("null"))) {
-					//Collection<Document> dc = label.getDocumentCollection();
-					Hibernate.initialize(label.getDocumentNominalLabels());
-					List<DocumentNominalLabel> documentNominalList = label.getDocumentNominalLabels();
-					if(documentNominalList!=null){
-						for (DocumentNominalLabel docNominalLabel : documentNominalList) {
-							Document doc = docNominalLabel.getDocument();
-							if (!doc.isIsEvaluationSet() && doc.isHasHumanLabels()) {
-								trainingExamples++;
-							}
-						}
 					}
 				}
 			}

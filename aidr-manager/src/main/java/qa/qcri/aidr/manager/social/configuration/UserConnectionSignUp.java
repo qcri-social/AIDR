@@ -18,7 +18,7 @@ import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.UserService;
-import qa.qcri.aidr.manager.util.ConstantUtils;
+import qa.qcri.aidr.manager.util.Constants;
 
 @Component("userConnectionSignUp")
 public class UserConnectionSignUp implements ConnectionSignUp {
@@ -51,14 +51,14 @@ public class UserConnectionSignUp implements ConnectionSignUp {
 	        userConnection.setRank(1);
 	        userConnectionService.register(userConnection);
 	        
-	        if(userService.fetchByUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getUsername()) == null){
+	        if(userService.fetchByUserName(data.getProviderId() + Constants.USER_NAME_SPLITTER + profile.getUsername()) == null){
 	        	Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 		        UserAccount user = new UserAccount();
 		        user.setApiKey(UUID.randomUUID().toString());
 		        user.setCreatedAt(currentTimestamp);
 		        user.setUpdatedAt(currentTimestamp);
 		        user.setProvider(data.getProviderId());
-		        user.setUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getUsername());
+		        user.setUserName(data.getProviderId() + Constants.USER_NAME_SPLITTER + profile.getUsername());
 		        userService.save(user);
 	        }
 	        return profile.getUsername();
@@ -81,14 +81,14 @@ public class UserConnectionSignUp implements ConnectionSignUp {
 			userConnection.setRank(1);
 			userConnectionService.register(userConnection);
 			
-			if(userService.fetchByUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getEmail()) == null){
+			if(userService.fetchByUserName(data.getProviderId() + Constants.USER_NAME_SPLITTER + profile.getEmail()) == null){
 				Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 				UserAccount user = new UserAccount();
 				user.setApiKey(UUID.randomUUID().toString());
 				user.setCreatedAt(currentTimestamp);
 				user.setUpdatedAt(currentTimestamp);
 				user.setProvider(data.getProviderId());
-				user.setUserName(data.getProviderId() + ConstantUtils.USER_NAME_SPLITTER + profile.getEmail());
+				user.setUserName(data.getProviderId() + Constants.USER_NAME_SPLITTER + profile.getEmail());
 				user.setEmail(profile.getEmail());
 				userService.save(user);
 			}

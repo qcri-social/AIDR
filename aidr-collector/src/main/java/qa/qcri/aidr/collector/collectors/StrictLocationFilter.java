@@ -8,7 +8,7 @@ import javax.json.JsonObject;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
-import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.TwitterCollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 
 /**
@@ -25,7 +25,7 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 	
 	private BRect[] square;
 	
-	public StrictLocationFilter(CollectionTask task) throws ParseException{
+	public StrictLocationFilter(TwitterCollectionTask task) throws ParseException{
 		String locations = task.getGeoLocation();
 		try {
 			if (locations == null || locations.trim().isEmpty())

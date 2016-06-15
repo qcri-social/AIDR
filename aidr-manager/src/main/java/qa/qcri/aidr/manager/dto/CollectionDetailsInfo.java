@@ -33,6 +33,8 @@ public class CollectionDetailsInfo {
     private Integer durationHours;
     private Long crisisType;
     private String purpose;
+    private int fetchInterval;
+    private int fetchFrom;
     
     public Long getCrisisType() {
 		return crisisType;
@@ -147,5 +149,17 @@ public class CollectionDetailsInfo {
 	}
 	public void setPurpose(String purpose) {
 		this.purpose = purpose;
+	}
+	public int getFetchInterval() {
+		return fetchInterval;
+	}
+	public void setFetchInterval(int fetchInterval) {
+		this.fetchInterval = fetchInterval;
+	}
+	public int getFetchFrom() {
+		return fetchFrom;
+	}
+	public void setFetchFrom(int fetchFrom) {
+		this.fetchFrom = fetchFrom;
 	}
 }

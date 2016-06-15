@@ -25,7 +25,11 @@ public class ModelWrapper implements Serializable{
 	@XmlElement private long classifiedDocuments;
 	@XmlElement private double auc;
 
-	public ModelWrapper() {}
+	public ModelWrapper() {
+		modelID = 0L;
+		modelFamilyID = 0L;
+		attributeID = 0L;
+	}
     /**
      * @return the attribute
      */

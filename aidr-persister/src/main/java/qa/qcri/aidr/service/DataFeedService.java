@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.dao.DataFeedDAO;
-import qa.qcri.aidr.entity.DataFeed;
+import qa.qcri.aidr.dao.TwitterDataFeedDAO;
+import qa.qcri.aidr.entity.TwitterDataFeed;
 import qa.qcri.aidr.utils.DataFeedInfo;
 
 @Service
@@ -18,10 +18,10 @@ public class DataFeedService{
     protected static Logger logger = Logger.getLogger(DataFeedService.class);
 
     @Autowired
-    DataFeedDAO dataFeedDAO;
+    TwitterDataFeedDAO dataFeedDAO;
 
     @Transactional(readOnly = false)
-    public Long persist(DataFeed twitterJson){
+    public Long persist(TwitterDataFeed twitterJson){
     	twitterJson.setUpdatedAt(new Date());
     	if(twitterJson.getId()==null){
     		twitterJson.setCreatedAt(twitterJson.getUpdatedAt());

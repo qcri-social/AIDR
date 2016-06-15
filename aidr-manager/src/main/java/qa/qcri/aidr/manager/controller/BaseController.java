@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.UserService;
-import qa.qcri.aidr.manager.util.ConstantUtils;
+import qa.qcri.aidr.manager.util.Constants;
 import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 public class BaseController {
@@ -84,8 +84,8 @@ public class BaseController {
 	
 	private String getProviderFromUserName(String userName){
 		String provider = SocialSignInProvider.TWITTER;
-		if(userName.contains(ConstantUtils.USER_NAME_SPLITTER)){
-			provider = userName.substring(0,userName.indexOf(ConstantUtils.USER_NAME_SPLITTER));
+		if(userName.contains(Constants.USER_NAME_SPLITTER)){
+			provider = userName.substring(0,userName.indexOf(Constants.USER_NAME_SPLITTER));
 			if(!provider.equalsIgnoreCase(SocialSignInProvider.TWITTER) && !provider.equalsIgnoreCase(SocialSignInProvider.GOOGLE) && !provider.equalsIgnoreCase(SocialSignInProvider.FACEBOOK) ){
 				provider = SocialSignInProvider.TWITTER;
 			}

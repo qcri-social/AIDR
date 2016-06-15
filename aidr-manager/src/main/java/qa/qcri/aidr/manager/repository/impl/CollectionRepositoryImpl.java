@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -32,6 +33,7 @@ import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
 
 @Repository("collectionRepository")
 @Transactional
@@ -115,15 +117,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Collection> getPaginatedData(final Integer start, final Integer limit, final UserAccount user, final boolean onlyTrashed) {
-		/*List<Collection> result = new ArrayList<Collection>();
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
-		criteria.add(Restrictions.eq("owner.id", user.getId()));
-		if(onlyTrashed) {
-			criteria.add(Restrictions.eq("status", CollectionStatus.TRASHED));
-		} else {
-			criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-		}
-		result =  criteria.list();*/
 		
 		final Long userId = user.getId();
 		final String conditionTrashed;
@@ -539,6 +532,51 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		try {
 			Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 			criteria.add(Restrictions.eq("micromappersEnabled", micromappersEnabled));
+			criteria.add(Restrictions.eq("provider", CollectionType.Twitter));
+			collections = criteria.list();
+		} catch (HibernateException e) {
+			logger.error("Exception in fetching list of collections.", e);
+		}
+		
+		return collections;
+	}
+
+	@Override
+	public List<String> getEligibleFacebookCollectionsToReRun() {
+		
+		List<String> collectionCodes = new ArrayList<String>(); 
+		@SuppressWarnings("unchecked")
+		List<Object[]> collections = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				String sql = " SELECT c.code FROM collection c " +
+						" WHERE c.provider = 'Facebook' AND (c.status = 0 OR c.status = 2 OR c.status = 5 OR c.status = 8) "
+						+ "AND date_add(c.last_execution_time, interval c.fetch_interval hour) <= now()";
+
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				List<Object[]> codes = sqlQuery.list();
+
+				return codes != null ? codes : Collections.emptyList();
+			}
+		});
+
+		if(collections != null && collections.size() > 0) {
+			for(Object col : collections) {
+				collectionCodes.add((String) col);
+			}
+		}
+		return collectionCodes;
+	}
+	
+	@Override
+	public List<Collection> getUnexpectedlyStoppedCollections(Date today) {
+		
+		List<Collection> collections = new ArrayList<Collection>();
+
+		try {
+			Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
+			criteria.add(Restrictions.gt("updatedAt", today))
+					.add(Restrictions.geProperty("startDate", "endDate"));
 			collections = criteria.list();
 			
 		} catch (HibernateException e) {

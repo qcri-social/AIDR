@@ -546,7 +546,7 @@ public class TextClickerPybossaFormatter {
         appInfo.put("task_presenter", templateString);
 
         appInfo.put("tutorial", tutorialString);
-        appInfo.put("thumbnail", "http://i.imgur.com/lgZAWIc.png");
+        appInfo.put("thumbnail", "http://i.imgur.com/hNgw5fJ.png");
 
         JSONObject app = new JSONObject();
         app.put("info", appInfo );

@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import qa.qcri.aidr.data.util.ActivityType;
-import qa.qcri.aidr.data.util.CommonUtil;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
 import qa.qcri.aidr.data.persistence.entity.UserAccountActivity;
 import qa.qcri.aidr.data.service.PersisterService;
 import qa.qcri.aidr.data.service.UserAcountActivityService;
 import qa.qcri.aidr.data.service.UserService;
+import qa.qcri.aidr.data.util.ActivityType;
+import qa.qcri.aidr.data.util.CommonUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -111,10 +111,10 @@ public class PersisterController {
 			if (!StringUtils.isEmpty(response)) {
 				Map<String, Object> result = new ObjectMapper().readValue(response, Map.class);
 
-				if (result != null && result.containsKey("url")) {
+				if (result != null && (result.containsKey("url") || result.containsKey("data"))) {
 					
 					// update download count of userAccountActivity
-					if(result.containsKey("tweetCount")){
+					if(!isAdmin && result.containsKey("tweetCount")){
 						Object countObject = result.get("tweetCount");						
 						if(userAccountActivity == null){
 							userAccountActivity = new UserAccountActivity(userAccount, fromDate, 0, ActivityType.DOWNLOAD);
@@ -122,9 +122,12 @@ public class PersisterController {
 						Integer downloadedTweets = (Integer)countObject;
 						userAccountActivity.setDownloadCount(downloadedTweets + userAccountActivity.getDownloadCount());
 						userAcountActivityService.save(userAccountActivity);
+						return getUIWrapper(result.get("data"), true);
+					} else {
+						return getUIWrapper(result.get("url"), true);
 					}
 					
-					return getUIWrapper(result.get("url"), true);
+					
 				} else {
 					return getUIWrapper(false, "Something wrong - no file generated!");
 				}

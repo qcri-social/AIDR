@@ -11,6 +11,7 @@ import javax.ejb.Remote;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
@@ -30,4 +31,6 @@ public interface ModelFamilyResourceFacade extends CoreDBServiceFacade<ModelFami
     
     //TODO for Koushik - convert to Hibernate query and remove TaggerForCodes & TaggerForCodesRequest DTOs from db-manager eventually
     public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
+    
+    public List<ModelWrapper> getModelFamilyAggregateDataForCollection(Long collectionId);
 }

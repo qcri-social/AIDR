@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodesRequest;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
@@ -56,17 +57,6 @@ public class ModelFamilyResource {
     @Path("/all")
     public Response getAllModelFamilies() {
         List<ModelFamilyDTO> modelFamilyList = modelFamilyLocalEJB.getAllModelFamilies();
-        ResponseWrapper response = new ResponseWrapper();
-        response.setMessage("SUCCESS");
-        response.setModelFamilies(modelFamilyList);
-        return Response.ok(response).build();
-    }
-
-    @GET
-    @Produces("application/json")
-    @Path("/crisis/{id}")
-    public Response getAllModelFamiliesByCrisisID(@PathParam("id") Long crisisID) {
-        List<ModelFamilyDTO> modelFamilyList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(crisisID);
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage("SUCCESS");
         response.setModelFamilies(modelFamilyList);
@@ -137,15 +127,6 @@ public class ModelFamilyResource {
         return Response.ok(response).build();
     }
 
-    /*
-     private ModelFamily transformModelFamilyDTO(ModelFamilyDTO modelFamilyDTO){
-     ModelFamily modelFamily = new ModelFamily();
-     modelFamily.setCrisis(modelFamilyDTO.getCrisis());
-     modelFamily.setNominalAttribute(modelFamilyDTO.getNominalAttribute());
-     modelFamily.setIsActive(modelFamilyDTO.getIsActive());
-     return modelFamily;
-     }
-     */
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -166,5 +147,19 @@ public class ModelFamilyResource {
 		}
         
 		return Response.ok(responseWrapper).build();
+    }
+    
+    @GET
+    @Produces("application/json")
+    @Path("/crisis/{id}")
+    public Response getModelFamilyAggregateData(@PathParam("id") Long crisisID) {
+        ResponseWrapper response = new ResponseWrapper();
+        List<ModelWrapper> modelFamilyList = modelFamilyLocalEJB.getModelFamilyAggregateDataForCollection(crisisID);
+        if (modelFamilyList == null){
+            response.setMessage("No models found for the given crisis-id");
+            return Response.ok(response).build();
+        }
+        response.setModelWrapper(modelFamilyList);
+        return Response.ok(response).build();
     }
 }

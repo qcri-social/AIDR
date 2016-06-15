@@ -122,6 +122,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
         this.geoL = Ext.create('Ext.form.Label', {
             flex: 1});
+        this.fetchIntervalL = Ext.create('Ext.form.Label', {
+            flex: 1});
+		this.fetchFromL = Ext.create('Ext.form.Label', {flex: 1});
         this.followL = Ext.create('Ext.form.Label', {flex: 1});
         this.languageFiltersL = Ext.create('Ext.form.Label', {flex: 1});
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
@@ -139,6 +142,32 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     text: 'Geographical boundaries:'
                 },
                 this.geoL
+            ]
+        });
+        
+        this.fetchIntervalContainer = Ext.create('Ext.container.Container', {
+            hidden: true,
+            defaultType: 'label',
+            layout: 'hbox',
+            items: [
+                {
+                    width: 220,
+                    text: 'Fetch Interval:'
+                },
+                this.fetchIntervalL
+            ]
+        });
+		
+		this.fetchFromContainer = Ext.create('Ext.container.Container', {
+            hidden: true,
+            defaultType: 'label',
+            layout: 'hbox',
+            items: [
+                {
+                    width: 220,
+                    text: 'Fetch From Last:'
+                },
+                this.fetchFromL
             ]
         });
 
@@ -179,7 +208,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             text: 'Configuration',
             padding: '15 0 0 0',
-            cls: 'header-h2'
+            cls: 'header-h2',
+            hidden: true
         });
 
         this.administrationL = Ext.create('Ext.form.Label', {
@@ -241,6 +271,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         
         this.geoR = Ext.create('Ext.form.Panel', {
             id:'geoRPanel',
+            hidden:true,
             items:[{
                 name: 'geoR',
                 xtype: 'radiogroup',
@@ -264,7 +295,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             html: '<span class="redInfo">*</span> ' +
                 'Click here to get coordinates: <a href="#" onclick="App.Demo.openWindow()" >boundingbox.klokantech.com</a> ' +
                 '("Copy/paste CSV format of a boundingbox")',
-            padding: '2 0 2 135'
+            padding: '2 0 2 135',
+            hidden: true
         });
 
         this.followE = Ext.create('Ext.form.field.Text', {
@@ -310,13 +342,70 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             value: 48,
             queryMode: 'local'
         });
+        
+        this.fetchIntervalStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 2, "label": '2 hours' },
+                { "val": 6, "label": '6 hours' },
+                { "val": 12, "label": '12 hours' },
+                { "val": 24, "label": '1 day'},
+                { "val": 72, "label": '3 days' },
+                { "val": 168, "label": '7 days' }
+            ]
+        });
+		
+		this.fetchFromStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 168, "label": '7 days' },
+                { "val": 360, "label": '15 days' },
+                { "val": 720, "label": '1 month' },
+                { "val": 2160, "label": '3 months'},
+                { "val": 4320, "label": '6 months' }
+            ]
+        });
+        
+        this.fetchInterval = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Fetch Interval',
+            flex: 1,
+            labelWidth: 130,
+            name: 'fetchInterval',
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.fetchIntervalStore,
+//            default duration is 6 hours
+            value: 6,
+            queryMode: 'local'
+        });
+		
+		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Fetch From Last',
+            flex: 1,
+            labelWidth: 130,
+            name: 'fetchFrom',
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.fetchFromStore,
+            value: 168,
+            queryMode: 'local'
+        });
 
+        /*var collection_type = [{ "val": 'SMS', "label": 'SMS' }];
+		if (SIGNED_IN_PROVIDER == "twitter") {
+			collection_type.push({ "val": 'Twitter', "label": 'Twitter' });
+		} else if (SIGNED_IN_PROVIDER == "facebook") {
+			collection_type.push({ "val": 'Facebook', "label": 'Facebook' });
+		}
         this.collectionTypeComboStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
-            data: [
-                { "val": 'Twitter', "label": 'Twitter' },
-                { "val": 'SMS', "label": 'SMS' }
-            ]
+            data: collection_type
         });
 
         this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
@@ -331,7 +420,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             displayField: 'label',
             store: this.collectionTypeComboStore,
             value: 'Twitter'
-        });
+        });*/
+        
+        this.collectionTypeL = Ext.create('Ext.form.Label', {
+			flex: 1
+		});
 
         this.collectionTypeNote = Ext.create('Ext.form.Label', {
             flex: 1,
@@ -417,7 +510,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             text: 'Advanced configuration',
             padding: '15 0 0 0',
-            cls: 'header-h2'
+            cls: 'header-h2',
+            hidden: true
+            	
         });
 
         this.saveButton = Ext.create('Ext.Button', {
@@ -529,12 +624,21 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collection-item">',
 
             '<div class="img">',
-            '<tpl if="[this.getType()] == 0">' +
-            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon2.png" width="70">',
+            
+            '<tpl if="TYPE == \'Twitter\'">'+
+            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">' +
+        	'<tpl elseif="TYPE == \'Facebook\'">'+
+            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/facebook_icon.png" width="70">' +
+            '<tpl else>'+
+            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+            '</tpl>'+
+            
+            /*'<tpl if="[this.getType()] == 0">' +
+            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">',
             '</tpl>',
             '<tpl if="[this.getType()] == 1">' +
             '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">',
-            '</tpl>',
+            '</tpl>',*/
             '</div>',
 
             '<div class="content">',
@@ -732,19 +836,23 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             layout: 'hbox',
+							defaultType: 'label',
                             margin: '5 0 0 0',
                             padding: '0 0 8 0',
                             items: [
-                                this.collectionTypeCombo,
+								{
+                                    width: 135,
+                                    text: 'Collection Type:',
+									cls: 'x-form-item-label-default'
+                                },
+                                this.collectionTypeL,
                                 {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionTypeInfo'
-                                }
+									xtype: 'hiddenfield',
+									name: 'collectionType',
+									value: ''
+								}
                             ]
+
                         },
                         {
                             xtype: 'container',
@@ -785,6 +893,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             margin: '5 0 0 0',
                             padding: '0 0 8 0',
                             id:'langPanel',
+                            hidden: true,
                             items: [
                                 this.langCombo,
                                 {
@@ -794,6 +903,42 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     height: 22,
                                     width: 22,
                                     id: 'collectionLangInfo'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            id:'fetchIntervalPanel',
+                            items: [
+                                this.fetchInterval,
+                                {
+                                    border: false,
+                                    margin: '5 0 0 0',
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'fetchIntervalInfo'
+                                }
+                            ]
+                        },
+						{
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            id:'fetchFromPanel',
+                            items: [
+                                this.fetchFrom,
+                                {
+                                    border: false,
+                                    margin: '5 0 0 0',
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'fetchFromInfo'
                                 }
                             ]
                         },
@@ -827,6 +972,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             margin: '0 0 5 0',
                             id:'geoPanel',
+                            hidden: true,
                             items: [
                                 this.geoE,
                                 {
@@ -847,6 +993,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             margin: '5 0',
                             id:'followPanel',
+                            hidden:true,
                             items: [
                                 this.followE,
                                 {
@@ -907,7 +1054,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     height:50,
                                     width:75,
                                     id:'iconPanel',
-                                    html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
+                                    html: '<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>'
                                 },
                                 {
                                     xtype: 'container',
@@ -1069,6 +1216,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             id:'keywords',
                             defaultType: 'label',
                             layout: 'hbox',
+                            
                             items: [
                                 {
                                     width: 220,
@@ -1078,6 +1226,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             ]
                         },
                         this.geoContainer,
+                        this.fetchIntervalContainer,
+						this.fetchFromContainer,
                         this.followContainer,
                         {
                             xtype: 'container',
@@ -1085,6 +1235,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             defaultType: 'label',
                             layout: 'hbox',
                             cls: 'bordered-bottom',
+                            hidden: true,
                             items: [
                                 {
                                     width: 220,

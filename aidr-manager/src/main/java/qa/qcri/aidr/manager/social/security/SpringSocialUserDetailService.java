@@ -30,7 +30,7 @@ import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.UserService;
-import qa.qcri.aidr.manager.util.ConstantUtils;
+import qa.qcri.aidr.manager.util.Constants;
 
 @Repository
 @Service
@@ -55,8 +55,8 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String combinedUserName)throws UsernameNotFoundException {
-		String provider = combinedUserName.substring(0, combinedUserName.indexOf(ConstantUtils.USER_NAME_SPLITTER));
-		String userName = combinedUserName.substring(combinedUserName.indexOf(ConstantUtils.USER_NAME_SPLITTER)+1);
+		String provider = combinedUserName.substring(0, combinedUserName.indexOf(Constants.USER_NAME_SPLITTER));
+		String userName = combinedUserName.substring(combinedUserName.indexOf(Constants.USER_NAME_SPLITTER)+1);
 		
 		ConnectionRepository connectionRepository = usersConnectionRepository.createConnectionRepository(userName);
 		SpringSocialProfile springSocialProfile = null;

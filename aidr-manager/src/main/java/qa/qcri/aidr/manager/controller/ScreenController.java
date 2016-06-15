@@ -23,7 +23,6 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionType;
-import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 
 @Controller
@@ -40,7 +39,7 @@ public class ScreenController extends BaseController{
     @Autowired
     private CollectionLogService collectionLogService;
 
-	private Logger logger = Logger.getLogger(ScreenController.class);
+	private final Logger logger = Logger.getLogger(ScreenController.class);
     
 	@RequestMapping("protected/home")
 	public ModelAndView home() throws Exception {
@@ -116,10 +115,10 @@ public class ScreenController extends BaseController{
     public ModelAndView collectionCreate() throws Exception {
     	
     	String signInProviderName = getAuthenticatedProviderName();
-    	if(!signInProviderName.equalsIgnoreCase(SocialSignInProvider.TWITTER)){
+    	/*if(!signInProviderName.equalsIgnoreCase(SocialSignInProvider.TWITTER)){
     		logger.info("protected access-error");
     		return new ModelAndView("redirect:/protected/access-error");
-    	}
+    	}*/
     	
         ModelAndView model = new ModelAndView("collection-create");
 
@@ -132,7 +131,7 @@ public class ScreenController extends BaseController{
         return model;
 
     }
-
+    
     @RequestMapping("protected/{code}/tagger-collection-details")
     public ModelAndView taggerCollectionDetails(@PathVariable(value="code") String code) throws Exception {
     	logger.info("Received request for crisis code = " + code);
@@ -145,6 +144,10 @@ public class ScreenController extends BaseController{
         logger.info("returned from getCrisesByCode");
         Collection collection = collectionService.findByCode(code);
         logger.info("returned from findByCode");
+        
+        if(collection.getProvider() == CollectionType.Facebook) {
+        	return new ModelAndView("redirect:/protected/access-error");
+        }
         
         String signInProviderName = getAuthenticatedProviderName();
         Long crisisId = 0L;
@@ -179,6 +182,11 @@ public class ScreenController extends BaseController{
     public ModelAndView predictNewAttribute(@PathVariable(value="code") String code) throws Exception {
         if (!isHasPermissionForCollection(code)){
             return new ModelAndView("redirect:/protected/access-error");
+        }
+        
+        Collection collection = collectionService.findByCode(code);
+        if(collection.getProvider() == CollectionType.Facebook) {
+        	return new ModelAndView("redirect:/protected/access-error");
         }
 
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
@@ -268,6 +276,11 @@ public class ScreenController extends BaseController{
             return new ModelAndView("redirect:/protected/access-error");
         }
 
+        Collection collection = collectionService.findByCode(code);
+        if(collection.getProvider() == CollectionType.Facebook) {
+        	return new ModelAndView("redirect:/protected/access-error");
+        }
+        
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
         Integer crisisId = 0;
         String crisisName = "";
@@ -277,7 +290,7 @@ public class ScreenController extends BaseController{
             crisisName = crisis.getName();
         }
 
-        Collection collection = collectionService.findByCode(code);
+        //Collection collection = collectionService.findByCode(code);
         String signInProviderName = getAuthenticatedProviderName();
         
         ModelAndView model = new ModelAndView("tagger/new-custom-attribute");

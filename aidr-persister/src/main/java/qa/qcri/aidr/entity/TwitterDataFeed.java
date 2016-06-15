@@ -11,8 +11,8 @@ import org.json.JSONObject;
 
 @Entity
 @TypeDefs({ @TypeDef(name = "CustomJsonObject", typeClass = JSONObjectUserType.class) })
-@Table(name="data_feed")
-public class DataFeed  extends BaseEntity {
+@Table(name="twitter_data_feed")
+public class TwitterDataFeed  extends BaseEntity {
 
 	/**
 	 * 

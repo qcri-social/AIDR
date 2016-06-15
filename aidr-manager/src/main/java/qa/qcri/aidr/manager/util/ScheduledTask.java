@@ -1,14 +1,19 @@
 package qa.qcri.aidr.manager.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.common.util.EmailClient;
 import qa.qcri.aidr.common.util.NotificationEvent;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.service.CollectionService;
@@ -22,6 +27,12 @@ public class ScheduledTask {
 
 	public static final long HOUR = 3600*1000; // in milli-seconds.
 
+	@Value("${fetchMainUrl}")
+	private String fetchMainUrl;
+	
+	@Value("${start.unexpectedly.stopped.collections.enable}")
+	private String startUnexpectedlyStoppedCollectionsEnable;
+	
 	@Autowired
 	private CollectionService collectionService;
 	
@@ -90,6 +101,45 @@ public class ScheduledTask {
 	@Scheduled(cron = "${collection.update.notification.cron}")
 	void sendCollectionCountNotification() {
 		pushNotificationService.publishMessage("collection", NotificationEvent.COLLECTION_UPDATED);
+	}
+	
+	@Scheduled(cron = "${facebook.collection.fetch.data.cron}")
+	public void scheduledTaskUpdateFacebookCollections() {
+		
+		List<String> collectionsToRun = collectionService.fetchEligibleFacebookCollectionsToReRun();
+		if(collectionsToRun != null && collectionsToRun.size() > 0) {
+			for(String code : collectionsToRun) {
+				collectionService.rerunFacebookCollection(code);
+			}
+		}
+	}
+	
+	@Scheduled(cron = "${start.unexpextedly.stopped.collections.cron}")
+	public void startUnexpectedlyStoppedCollections() throws ParseException {
+		if("false".equalsIgnoreCase(startUnexpectedlyStoppedCollectionsEnable)){
+			return;
+		}
+		int runningCollections = collectionService.getRunningCollectionsCountFromCollector();
+		if(runningCollections == 0) {
+			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date today = formatter.parse(formatter.format(new Date()));
+			List<Collection> unexpectedlyStoppedCollections = collectionService.getUnexpectedlyStoppedCollections(today);
+			StringBuffer sb = new StringBuffer("Following collections are restarted.\n\n");
+			int count = 0;
+			for (Collection collection : unexpectedlyStoppedCollections) {
+				try {
+					collectionService.start(collection.getId());
+					count++;
+					sb.append(count + ". "+ collection.getName() + " (" + collection.getCode() + ")\n");
+				} catch (Exception e) {
+					logger.error("Error in startUnexpectedlyStoppedCollections for collection: " + collection.getId());
+					e.printStackTrace();
+				}
+			}
+			if(count > 0) {
+				EmailClient.sendErrorMail(" " + count + " Collection Restarted", sb.toString());
+			}
+		}
 	}
 
 }

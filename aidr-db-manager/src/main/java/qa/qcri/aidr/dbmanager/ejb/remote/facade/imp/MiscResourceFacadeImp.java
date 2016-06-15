@@ -8,7 +8,9 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -28,6 +30,7 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.MiscResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.util.NativeQueryUtil;
 
 @Stateless(name="MiscResourceFacadeImp")
 public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long> implements MiscResourceFacade {
@@ -195,6 +198,29 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 			return null;  
 		}
 		return itemToLabel;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Map<Long, Long> getTrainingCountForCrisis(Long crisisID) {
+
+		Map<Long, Long> countMap = new HashMap<Long, Long>();
+		try {
+			Session session = getCurrentSession();
+			Query query = session.createSQLQuery(NativeQueryUtil.TRAINING_COUNT_FOR_CRISIS);
+			query.setParameter("crisisID", crisisID.intValue());
+			
+			List<Object[]> rows = query.list();
+			for (Object[] row : rows) {
+				countMap.put(((BigInteger)row[0]).longValue(), ((BigInteger)row[1]).longValue());
+			}
+				
+		} catch (Exception e) {
+			logger.error("exception", e);
+		}
+		
+		return countMap;
 	}
 
 	private DocumentDTO getNewTask(Long crisisID) {
