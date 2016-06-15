@@ -21,6 +21,7 @@ then
 
 	if [ -z "$glassfishpid" ]
 	then
+		echo ""
 	else
 		cd $AIDR_HOME/aidr-tagger
 		curl --data "module=AIDRTaggerAPI&description=$tagger_stop_description" $SEND_MAIL_API
@@ -67,6 +68,7 @@ else
 
 		if [ -z "$glassfishpid" ]
 		then
+			echo ""
 		else
 			cd $AIDR_HOME/aidr-tagger
 			curl --data "module=AIDRTaggerAPI&description=$tagger_stop_description" $SEND_MAIL_API
