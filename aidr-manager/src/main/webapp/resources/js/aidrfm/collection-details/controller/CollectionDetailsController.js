@@ -51,6 +51,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 	if(TYPE === 'Facebook'){
                 		infoText = 'This field represents comma separated keywords to filter the Facebook page/group/event.<br>' +
                         'General rules:<br>' +
+                        '- No hashTag search allowed.<br>' +
                         '- Not case-sensitive ("bridge" matches "Bridge").<br>' +
                         '- If you include two or more keywords in a query, all of them must be present in the page/group/event ("Brooklyn,bridge" does not match a page/group/event that does not contain "Brooklyn" or does not contain "bridge")<br><br>' +
                         'Multi-word queries:<br>' +

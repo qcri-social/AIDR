@@ -107,7 +107,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
 
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
-            fieldLabel: 'Comma-Separated Terms and Hashtags (Tip: use many terms, and be specific)',
+            fieldLabel: 'Comma-Separated Terms and Hashtags (Tip: Be specific with terms)',
             name: 'track',
             allowBlank: true,
             maxLength: 24000,
