@@ -47,9 +47,8 @@ public class PersisterService {
     		url += "?collectionCode=" + code + "&exportLimit=" + count + "&jsonType=" + jsonType + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
     		downloadLink = sendPost(queryString, url);
     	} else {
-    		url += "/AIDRPersister/webresources/persister/";
-    		url += "genTweetIds";
-    		url += "?collectionCode=" + code + "&downloadLimited=" + false + "&jsonType=" + jsonType + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
+    		url += "/AIDRPersister/webresources/taggerPersister/filter/genTweetIdsOnly";
+    		url += "?collectionCode=" + code + "&exportLimit=" + count + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
     		downloadLink = sendGET(url);
     	}	
 		return downloadLink;

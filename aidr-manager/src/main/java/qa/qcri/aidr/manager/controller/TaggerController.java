@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.manager.dto.CrisisRequest;
-import qa.qcri.aidr.manager.dto.DateHistory;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.manager.dto.TaggerAttribute;
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
@@ -51,13 +50,15 @@ import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.util.ManagerConfigurationProperty;
+import qa.qcri.aidr.manager.util.ManagerConfigurator;
 
 
 @Controller
 @RequestMapping("protected/tagger")
 public class TaggerController extends BaseController {
 
-	private Logger logger = Logger.getLogger(TaggerController.class);
+	private final Logger logger = Logger.getLogger(TaggerController.class);
 
 	@Autowired
 	private TaggerService taggerService;
@@ -194,25 +195,6 @@ public class TaggerController extends BaseController {
 		//logger.info("Getting Attributes For Crisis ID " + id);
 		try {
 			List<TaggerModel> result = taggerService.getModelsForCrisis(id);
-			//logger.info("Fetched result data size = " + (result != null ? result.size() : null));
-			if (result != null) {
-				for (int i = 0;i < result.size();i++) {
-					//logger.info("looking at fetched model family: " + i);
-					Map<String, Object> countResult = getTrainingDataCountByModelIdAndCrisisId(result.get(i).getModelFamilyID(), id);
-					//logger.info("fetched count: " + (countResult != null ? countResult.get("data") : null));
-					if (countResult != null) {
-						try {
-							Integer value = (Integer) countResult.get("data");
-							//logger.info("cast long value: " + value);
-							result.get(i).setTrainingExamples(value.longValue());
-						} catch (Exception e) {
-							logger.error("Error in getModelsForCrisis for crisisId : " + id, e);
-						}
-					}
-					logger.info("For model family id: " + result.get(i).getModelFamilyID() + ", set human labeled count = " + result.get(i).getTrainingExamples());
-				}
-			}
-			//return getUIWrapper(taggerService.getModelsForCrisis(id), true);
 			return getUIWrapper(result, true);
 		} catch (AidrException e) {
 			logger.error("Error in getModelsForCrisis for id : " + id, e);
@@ -223,13 +205,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getRetrainThreshold.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getRetrainThreshold() {
-		//logger.info("Getting Attributes For Crises");
-		try {
-			return getUIWrapper(taggerService.getRetainingThreshold(), true);
-		} catch (AidrException e) {
-			logger.error("Error while getting retrained threshold", e);
-			return getUIWrapper(false, e.getMessage());
-		}
+		return getUIWrapper(ManagerConfigurator.getInstance().getProperty(ManagerConfigurationProperty.SAMPLE_COUNT_THRESHOLD), true);
 	}
 
 	@RequestMapping(value = "/getAllLabelsForModel.action", method = {RequestMethod.GET})
@@ -1057,4 +1033,23 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false, "Sending Email Failed");
 		}
 	}
+	
+	@RequestMapping(value = "/generateFacebookPostDownloadLink", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> generateFacebookPostDownloadLink(@RequestParam String code,
+			@RequestParam Integer count) throws Exception {
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.generateFacebookPostDownloadLink(code, count);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "Something wrong - no file generated!");
+			}
+		} catch (Exception e) {
+			logger.error("Error while generating CSV filtered link for colection: "+code +"/t"+e.getStackTrace());
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+	}
+	
 }

@@ -172,4 +172,19 @@ public class LoadShedder {
 			return true;
 		}
 	}
+
+	/**
+	 * Return the last set time for a process.
+	 * @return the lastSetTime
+	 */
+	public long getLastSetTime() {
+		return lastSetTime;
+	}
+
+	/**
+	 * @param lastSetTime the lastSetTime to set
+	 */
+	public void setLastSetTime(long lastSetTime) {
+		this.lastSetTime = lastSetTime;
+	}
 }

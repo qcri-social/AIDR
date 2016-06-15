@@ -64,9 +64,9 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         });
         
         //Disabling Create Collection Button if provider is not twitter
-        if(SIGNED_IN_PROVIDER != "twitter"){
+        /*if(SIGNED_IN_PROVIDER != "twitter"){
 			this.mainComponent.newCollectionButton.disable();
-		}
+		}*/
     },
 
     startCollectionCheck: function(id, name, ownerName, ownerId) {
@@ -273,8 +273,10 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
             }
         });
     },
-    enableTagger: function(crisisTypeID, code, name) {
-
+    enableTagger: function(crisisTypeID, code, name, collection_type) {
+		if(collection_type == "Facebook") {
+			return false;
+		}
         if (!crisisTypeID) {
             AIDRFMFunctions.setAlert("Error", "Collection type is not selected. Please select type of the collection and save it.");
             return false;

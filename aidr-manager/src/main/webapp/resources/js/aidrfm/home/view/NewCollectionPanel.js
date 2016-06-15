@@ -128,7 +128,7 @@ this.collectionTpl = new Ext.XTemplate(
     '<span>Classifier ({classifiersNumber})</span>',
     '</button>',
     '<tpl else>',
-    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueDisabled {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
+    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueDisabled {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\', \'{[values.collectionType]}\');" {[this.isEnableClassifierButtonDisabled(values.status, values.collectionType)]}>',
     '<span>Enable Classifier</span>',
     '</button>',
     '</tpl>',
@@ -140,8 +140,10 @@ this.collectionTpl = new Ext.XTemplate(
 
     '<div class="img" style="margin-left: -10px">',
     '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
-    '<tpl if="this.isTwitter(values.collectionType)">'+
-    '<img alt="Collection image" height="70" src="resources/img/collection-icon.png" width="70">' +
+    '<tpl if="collectionType == \'Twitter\'">'+
+    '<img alt="Collection image" height="70" src="resources/img/twitter_icon.png" width="70">' +
+	'<tpl elseif="collectionType == \'Facebook\'">'+
+    '<img alt="Collection image" height="70" src="resources/img/facebook_icon.png" width="70">' +
     '<tpl else>'+
     '<img alt="Collection image" height="70" src="resources/img/sms_icon.png" width="70">' +
     '</tpl>'+
@@ -173,8 +175,10 @@ this.collectionTpl = new Ext.XTemplate(
                 '</tpl>',
                 '</div>',
                 {
-                    isEnableClassifierButtonDisabled: function(r){
-                        if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
+                    isEnableClassifierButtonDisabled: function(r, type){
+						if (type == 'Facebook') {
+							return "disabled";
+						} else if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
                             return "";
                         } else {
                             return "disabled";
@@ -202,9 +206,6 @@ this.collectionTpl = new Ext.XTemplate(
                         } else {
                             return 'hidden';
                         }
-                    },
-                    isTwitter: function (r) {
-                        return r == 'Twitter';
                     },
                     getEncodedCode: function(code) {
                        URIString = BASE_URL + '/protected/' + code;
@@ -283,8 +284,10 @@ this.collectionTrashedTpl = new Ext.XTemplate(
 
     '<div class="img" style="margin-left: -10px">',
     '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
-    '<tpl if="this.isTwitter(values.collectionType)">'+
-    '<img alt="Collection image" height="70" src="resources/img/collection-icon.png" width="70">' +
+    '<tpl if="collectionType == \'Twitter\'">'+
+    '<img alt="Collection image" height="70" src="resources/img/twitter_icon.png" width="70">' +
+	'<tpl elseif="collectionType == \'Facebook\'">'+
+    '<img alt="Collection image" height="70" src="resources/img/facebook_icon.png" width="70">' +
     '<tpl else>'+
     '<img alt="Collection image" height="70" src="resources/img/sms_icon.png" width="70">' +
     '</tpl>'+
@@ -316,9 +319,6 @@ this.collectionTrashedTpl = new Ext.XTemplate(
     getEncodedCode: function(code) {
         URIString = BASE_URL + '/protected/' + code;
         return encodeURI(URIString);
-    },
-    isTwitter: function (r) {
-        return r == 'Twitter';
     },
     getSharedBy: function(owner) {
         if (owner.userName == USER_NAME){

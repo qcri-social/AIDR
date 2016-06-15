@@ -310,6 +310,13 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     	me.mainComponent.downloadContents.hide();
                     }
                 }
+                if(TYPE == 'Facebook'){
+                	me.mainComponent.filterFieldSet.hide();
+                	me.mainComponent.downloadFormat.hide();
+                	me.mainComponent.downloadContents.hide();
+                	me.mainComponent.fullTweetInfo.hide();
+                	Ext.getCmp('retweet').hide();
+                }
                 me.updateStatusInfo(jsonData.status, jsonData.endDate, jsonData.collectionType);
             }
         });
@@ -372,10 +379,12 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         };
 
         if(!Ext.DOWNLOAD_ENABLED) {
-        	contents = 'ids;'
+        	contents = 'ids';
         }
         
-        if(format == 'csv'){
+        if(TYPE == 'Facebook') {
+        	url = '/protected/tagger/generateFacebookPostDownloadLink';
+        } else if(format == 'csv'){
             if (contents == 'full') {
                 url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
             } else {

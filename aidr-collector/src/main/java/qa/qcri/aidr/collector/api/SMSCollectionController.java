@@ -42,9 +42,9 @@ import qa.qcri.aidr.common.redis.LoadShedder;
  */
 @Controller
 @RequestMapping("/sms")
-public class SMSCollectorAPI  {
+public class SMSCollectionController  {
     
-    private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
+    private static Logger logger = Logger.getLogger(SMSCollectionController.class.getName());
     
     private static CollectorConfigurator configProperties= CollectorConfigurator.getInstance();
     

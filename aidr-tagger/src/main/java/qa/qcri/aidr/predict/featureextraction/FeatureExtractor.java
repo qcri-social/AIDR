@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.predict.common.DocumentType;
 import qa.qcri.aidr.predict.common.PipelineProcess;
 import qa.qcri.aidr.predict.data.Document;
+import qa.qcri.aidr.predict.data.Facebook;
 import qa.qcri.aidr.predict.data.SMS;
 import qa.qcri.aidr.predict.data.Tweet;
 
@@ -23,6 +24,7 @@ public class FeatureExtractor extends PipelineProcess {
 
 	private static Logger logger = Logger.getLogger(FeatureExtractor.class);
 	private static String SINGLE_QUOTE_PATTERN_AT_EXTREME = "(^')|('$)";
+	@Override
 	protected void processItem(Document doc) {
 
 		//logger.info("Received doc class: " + doc.getClass());
@@ -34,6 +36,8 @@ public class FeatureExtractor extends PipelineProcess {
 			processTweet((Tweet) doc);
 		} else if (doc.getDoctype().equals(DocumentType.SMS_DOC)){
 			processSMS((SMS) doc);
+		} else if (doc.getDoctype().equals(DocumentType.FACEBOOK_DOC)){
+			processFacebook((Facebook) doc);
 		} else {
 			logger.error("Unknown datatype: " + doc + ", doctype = " + doc.getDoctype());
 			throw new RuntimeException("Unknown doctype: " + doc.getDoctype());
@@ -46,6 +50,14 @@ public class FeatureExtractor extends PipelineProcess {
 		String text = tweet.getText();
 		wordSet.addAll(getWordsInStringWithBigrams(text, false));
 		tweet.addFeatureSet(wordSet);
+	}
+	
+	void processFacebook(Facebook facebook) {
+		logger.debug("processing facebook doc");
+		WordSet wordSet = new WordSet();
+		String text = facebook.getText();
+		wordSet.addAll(getWordsInStringWithBigrams(text, false));
+		facebook.addFeatureSet(wordSet);
 	}
 
 	void processSMS(SMS sms) {

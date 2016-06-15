@@ -8,13 +8,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 
-import qa.qcri.aidr.entity.DataFeed;
+import qa.qcri.aidr.entity.TwitterDataFeed;
 import qa.qcri.aidr.utils.DataFeedInfo;
 
 @Repository
-public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
+public class TwitterDataFeedDAO extends AbstractDao<TwitterDataFeed, Long> {
 	
-	private Logger logger = Logger.getLogger(DataFeedDAO.class);
+	private Logger logger = Logger.getLogger(TwitterDataFeedDAO.class);
 	
 	private static final String SELECT_DATA_FEED_BY_CODE = "SELECT "
 			+ "feed->>\'text\' AS text, "
@@ -24,7 +24,7 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 			+ "aidr->\'nominal_labels\'->0->>\'label_name\' AS label_name, "
 			+ "aidr->\'nominal_labels\'->0->>\'attribute_code\' AS attribute_code, "
 			+ "aidr->\'nominal_labels\'->0->>\'attribute_name\' AS attribute_name "
-			+ "FROM data_feed "
+			+ "FROM twitter_data_feed "
 			+ "where code =  ? and "
 			+ "(geo is not null or place is not null) "
 			+ "order by created_at desc";
@@ -38,14 +38,14 @@ public class DataFeedDAO extends AbstractDao<DataFeed, Long> {
 			+ "aidr->\'nominal_labels\'->0->>\'attribute_code\' AS attribute_code, "
 			+ "aidr->\'nominal_labels\'->0->>\'attribute_name\' AS attribute_name, "
 			+ "cast(aidr->\'nominal_labels\'->0->>\'confidence\' AS float) as conf "
-			+ "FROM data_feed "
+			+ "FROM twitter_data_feed "
 			+ "where code =  ? and "
 			+ "(geo is not null or place is not null) and "
 			+ "cast(aidr->'nominal_labels'->0->>'confidence' AS float)>= ? "
 			+ "order by created_at desc";
 	
-	protected DataFeedDAO() {
-		super(DataFeed.class);
+	protected TwitterDataFeedDAO() {
+		super(TwitterDataFeed.class);
 	}
 	
 	//Fetching text, created_at, geo, location, label_code, label_name, attribute_code & attribut_name

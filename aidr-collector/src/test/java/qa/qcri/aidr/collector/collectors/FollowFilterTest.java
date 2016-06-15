@@ -1,13 +1,21 @@
 package qa.qcri.aidr.collector.collectors;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.StringReader;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import qa.qcri.aidr.collector.beans.CollectionTask;
-import javax.json.Json;
-import javax.json.*;
-import java.io.StringReader;
-import static org.junit.Assert.*;
+
+import qa.qcri.aidr.collector.beans.TwitterCollectionTask;
 
 /**
  * Created by noora on 5/19/15.
@@ -18,7 +26,7 @@ public class FollowFilterTest {
 
     @Before
     public void setUp() throws Exception {
-        CollectionTask collectionTask = new CollectionTask(); 
+    	TwitterCollectionTask collectionTask = new TwitterCollectionTask(); 
         collectionTask.setToFollow("1105766504");
         followFilter = new FollowFilter(collectionTask);
     }

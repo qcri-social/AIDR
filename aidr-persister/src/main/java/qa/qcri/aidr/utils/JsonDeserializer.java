@@ -45,6 +45,7 @@ import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
+import qa.qcri.aidr.entity.FacebookDataFeed;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.io.ReadWriteCSV;
 
@@ -62,6 +63,7 @@ public class JsonDeserializer {
 	private static final String HUMAN_TAGGED_FILE_PREFIX = "-human_labeled_filtered-";
 	private static final String ZIP_EXTENSION = ".zip";
 	private static final String CSV_EXTENSION = ".csv";
+	private static final String FACEBOOK_PREFIX = "_fb_posts";
 	private static final String TWEETS_PREFIX = "_last_100k_tweets";
 	private static final String TWEET_IDS_PREFIX = "_tweetIds_filtered";
 	private static final String TWEET_IDS = "_tweetIds";
@@ -71,7 +73,7 @@ public class JsonDeserializer {
 	private static final String WITH_RETWEET = "with-retweet";
 	private static final String WITHOUT_RETWEET = "without-retweet";
 	private static final String VOLUME_STRING = "vol";
-	private MD5HashGenerator MD5Hash;
+	private final MD5HashGenerator MD5Hash;
 
 	public JsonDeserializer() {
 		MD5Hash = new MD5HashGenerator();
@@ -2456,5 +2458,63 @@ public class JsonDeserializer {
 		// fileToDelete);
 		logger.info("Deleted raw file post compression: " + fileToDelete);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
+	}
+
+	/**
+	 * Return a file URL which consists Facebook post data for a particular collection 
+	 * 
+	 * @param collectionCode
+	 * @param fbFeeds
+	 * @return 
+	 */
+	public Map<String, Object> generateFileForFacebookDataFeed(String collectionCode, List<FacebookDataFeed> fbFeeds) {
+		String folderLocation = PersisterConfigurator
+				.getInstance()
+				.getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH)
+				+ collectionCode;
+		String extension = DownloadJsonType.JSON_OBJECT.getSuffix();
+		
+		String downloadFileURL = null;
+		
+		//  delete the file if already created 
+		String fileName = collectionCode + FACEBOOK_PREFIX;
+		String fileToDelete = folderLocation + FILE_SEPARATOR + fileName;
+		FileSystemOperations.deleteFile(fileToDelete + ZIP_EXTENSION);
+						
+		// create new file 
+		StringBuffer outputFile = new StringBuffer().append(folderLocation)
+								  .append(FILE_SEPARATOR)
+								  .append(fileName)
+								  .append(extension);
+		BufferedWriter beanWriter;
+		try {
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
+			beanWriter.write("[");
+			beanWriter.newLine();
+			boolean isFirstFeed = true;
+			for (FacebookDataFeed facebookDataFeed : fbFeeds) {
+				if(isFirstFeed){
+					isFirstFeed = false;
+				} else {
+					beanWriter.write(",");
+				}
+				beanWriter.write(facebookDataFeed.getFeed().toString());
+				beanWriter.newLine();
+			}
+			beanWriter.write("]");
+			beanWriter.flush();
+			beanWriter.close();
+			
+			// Compressing generated file
+			FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName + extension);
+			downloadFileURL = PersisterConfigurator.getInstance()
+					   .getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) 
+					   + collectionCode + FILE_SEPARATOR + compressor.zip();
+			FileSystemOperations.deleteFile(outputFile.toString());
+		} catch (IOException e) {
+			logger.error(collectionCode + ": IO Exception for Facebook Posts File Generation", e);
+		}
+		
+		return ResultStatus.getUIWrapper(collectionCode, "File Generated", downloadFileURL, true);
 	}
 }

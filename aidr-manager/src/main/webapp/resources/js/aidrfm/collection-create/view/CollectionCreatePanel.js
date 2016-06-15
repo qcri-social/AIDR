@@ -107,7 +107,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
 
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
-            fieldLabel: 'Comma-Separated Terms and Hashtags (Tip: use many terms, and be specific)',
+            fieldLabel: 'Comma-Separated Terms and Hashtags (Tip: Be specific with terms)',
             name: 'track',
             allowBlank: true,
             maxLength: 24000,
@@ -232,6 +232,56 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 //            default duration is 2 days (48 hours)
             value: 48
         });
+        
+        this.fetchIntervalStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 2, "label": '2 hours' },
+                { "val": 6, "label": '6 hours' },
+                { "val": 12, "label": '12 hours' },
+                { "val": 24, "label": '1 day'},
+                { "val": 72, "label": '3 days' },
+                { "val": 168, "label": '7 days' }
+            ]
+        });
+        
+		this.fetchFromStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 168, "label": '7 days' },
+                { "val": 360, "label": '15 days' },
+                { "val": 720, "label": '1 month' },
+                { "val": 2160, "label": '3 months'},
+                { "val": 4320, "label": '6 months' }
+            ]
+        });
+		
+        this.fetchInterval = Ext.create('Ext.form.ComboBox', {
+        	  fieldLabel: 'Fetch Interval',
+              width:698,
+              labelWidth: 240,
+              name: 'fetchInterval',
+              editable: false,
+              text: 'Edit',
+              valueField: 'val',
+              displayField: 'label',
+              store: this.fetchIntervalStore,
+//              default duration is 2 hours
+              value: 2
+        });
+		
+		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
+        	  fieldLabel: 'Fetch From Last',
+              width:698,
+              labelWidth: 240,
+              name: 'fetchFrom',
+              editable: false,
+              text: 'Edit',
+              valueField: 'val',
+              displayField: 'label',
+              store: this.fetchFromStore,
+              value: 168
+        });
 
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
             autoDestroy: true,
@@ -271,13 +321,16 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             html:'<div></div>',
             padding: '2 0 2 245'
         });
-
+        
+        var collection_type = [{ "val": 'SMS', "label": 'SMS' }];
+		if (SIGNED_IN_PROVIDER == "twitter") {
+			collection_type.push({ "val": 'Twitter', "label": 'Twitter' });
+		} else if (SIGNED_IN_PROVIDER == "facebook") {
+			collection_type.push({ "val": 'Facebook', "label": 'Facebook' });
+		}
         this.collectionTypeComboStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
-            data: [
-                { "val": 'Twitter', "label": 'Twitter' },
-                { "val": 'SMS', "label": 'SMS' }
-            ]
+            data: collection_type
         });
 
         this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
@@ -291,7 +344,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             valueField: 'val',
             displayField: 'label',
             store: this.collectionTypeComboStore,
-            value: 'Twitter'
+            value: ''
         });
 
         this.notesL = Ext.create('Ext.form.Label', {
@@ -423,7 +476,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         this.geoR,
 
                         wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '12 0', undefined, 'followPanel'),
-
+                        wrapFieldWithInfo(this.fetchInterval, 'fetchIntervalInfo', undefined, '20 0 5 0', 'fetchIntervalPanel'),
+						wrapFieldWithInfo(this.fetchFrom, 'fetchFromInfo', undefined, '20 0 5 0', 'fetchFromPanel'),
                         wrapFieldWithInfo(this.duration, 'collectionDurationInfo', undefined, '20 0 5 0'),
                         this.durationDescription
                     ]

@@ -1,6 +1,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Remote;
 
@@ -18,4 +19,5 @@ public interface MiscResourceFacade extends CoreDBServiceFacade<Document, Long>{
 	
 	public ItemToLabelDTO getItemToLabel(Long crisisID, Long modelFamilyID);
 	
+	public Map<Long, Long> getTrainingCountForCrisis(Long crisisID);
 }
