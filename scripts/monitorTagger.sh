@@ -19,10 +19,8 @@ then
 	glassfishpids=($(echo ${glassfishpid}))
 	glassfishpid=$(ps -el | grep ${glassfishpids[0]} | grep java | awk '{print $4}')
 
-	if [ -z "$glassfishpid" ]
+	if [ -n "$glassfishpid" ]
 	then
-		echo ""
-	else
 		cd $AIDR_HOME/aidr-tagger
 		curl --data "module=AIDRTaggerAPI&description=$tagger_stop_description" $SEND_MAIL_API
 		screen -d -m java -Xmx4096m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:target/aidr-tagger-1.0-jar-with-dependencies.jar:lib-non-maven/* qa.qcri.aidr.predict.Controller
@@ -66,10 +64,8 @@ else
 		glassfishpids=($(echo ${glassfishpid}))
 		glassfishpid=$(ps -el | grep ${glassfishpids[0]} | grep java | awk '{print $4}')
 
-		if [ -z "$glassfishpid" ]
+		if [ -n "$glassfishpid" ]
 		then
-			echo ""
-		else
 			cd $AIDR_HOME/aidr-tagger
 			curl --data "module=AIDRTaggerAPI&description=$tagger_stop_description" $SEND_MAIL_API
 			screen -d -m java -Xmx4096m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:target/aidr-tagger-1.0-jar-with-dependencies.jar:lib-non-maven/* qa.qcri.aidr.predict.Controller
