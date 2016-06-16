@@ -470,6 +470,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                     anchor:'100%',
                     collapsible:true,
                     collapsed:true,
+					titleCollapse:true,
                     cls:'collapse-style',
                    // bodyPadding: '5 5 20 5',
                     margin: '20 0 0 0',
