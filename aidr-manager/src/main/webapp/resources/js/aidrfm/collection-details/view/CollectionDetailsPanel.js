@@ -240,6 +240,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fieldLabel: 'Name',
             name: 'name',
             allowBlank: false,
+			suspendLayout: true,
             maxLength: 50,
             maxLengthText: 'The maximum length for this field is 50',
             emptyText: 'e.g., Hurricane Sandy',
@@ -253,6 +254,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fieldLabel: 'Keyword(s)',
             name: 'track',
             allowBlank: true,
+			suspendLayout: true,
             maxLength: 24000,
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
@@ -263,6 +265,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.geoE = Ext.create('Ext.form.field.Text', {
             fieldLabel: 'Geographical boundaries',
+			suspendLayout: true,
             labelWidth: 130,
             name: 'geo',
             flex: 1,
@@ -277,6 +280,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 xtype: 'radiogroup',
                 fieldLabel: 'Geographical boundary strictness',
                 labelWidth: 130,
+				suspendLayout: true,
                 // Arrange radio buttons into two columns, distributed vertically
                 columns: 1,
                 vertical: true,
@@ -292,6 +296,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             //added additional onclick event to display bounding box in a popup window instead of opening up in a new tab
             id:'geoDescription',
+			suspendLayout: true,
             html: '<span class="redInfo">*</span> ' +
                 'Click here to get coordinates: <a href="#" onclick="App.Demo.openWindow()" >boundingbox.klokantech.com</a> ' +
                 '("Copy/paste CSV format of a boundingbox")',
@@ -303,6 +308,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fieldLabel: 'Follow specific users',
             name: 'follow',
             labelWidth: 130,
+			suspendLayout: true,
             flex: 1,
             emptyText: 'e.g., 47423744, 53324456 (max 5000)'
         });
@@ -310,6 +316,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.durationDescription = Ext.create('Ext.form.Label', {
             flex: 1,
             id:'durationDescription',
+			suspendLayout: true,
             html: '<span class="redInfo">*</span> If you need to run your collection for more than 7 days, please contact the AIDR team.',
             padding: '2 0 2 135'
         });
@@ -333,6 +340,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             labelWidth: 130,
             name: 'durationHours',
             editable: false,
+			suspendLayout: true,
             text: 'Edit',
             valueField: 'val',
             displayField: 'label',
@@ -372,6 +380,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             labelWidth: 130,
             name: 'fetchInterval',
             editable: false,
+			suspendLayout: true,
             text: 'Edit',
             valueField: 'val',
             displayField: 'label',
@@ -389,6 +398,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             name: 'fetchFrom',
             editable: false,
             text: 'Edit',
+			suspendLayout: true,
             valueField: 'val',
             displayField: 'label',
             width: 125,
@@ -459,6 +469,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             multiSelect: true,
             fieldLabel: 'Language(s)',
             labelWidth: 130,
+			suspendLayout: true,
             editable: false,
             name: 'langFilters',
             flex: 1,
@@ -777,6 +788,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             queryMode: 'local',
             displayField: 'name',
             valueField: 'crisisTypeID',
+			suspendLayout: true,
             fieldLabel: 'Type',
             flex: 1,
             name: 'crisisType',
@@ -1354,6 +1366,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             width: 300,
             pageSize: true,
             triggerAction: 'query',
+			suspendLayout: true,
             margin: '1 0 0 0',
             emptyText: 'Please select a user',
             displayField: 'userName',

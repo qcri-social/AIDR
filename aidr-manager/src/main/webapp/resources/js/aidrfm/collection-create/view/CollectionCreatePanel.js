@@ -95,6 +95,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             fieldLabel: 'Crisis Name',
             id: 'nameTextField',
             name: 'name',
+			suspendLayout:true,
             allowBlank: false,
             labelWidth: 240,
             maxLength: 50,
@@ -110,6 +111,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             fieldLabel: 'Comma-Separated Terms and Hashtags (Tip: Be specific with terms)',
             name: 'track',
             allowBlank: true,
+			suspendLayout:true,
             maxLength: 24000,
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
@@ -143,6 +145,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 labelWidth: 240,
                 width: 698,
                 xtype: 'textareafield',
+				suspendLayout:true,
                 growMax: 100,
                 name: 'geo',
                 anchor: '100%',
@@ -157,6 +160,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         	items:[{
             	name: 'geoR',
             	xtype: 'radiogroup',
+				suspendLayout:true,
             	fieldLabel: 'Geographical boundary strictness',
             	labelWidth: 240,
             	columns: 1,
@@ -167,12 +171,6 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                     { margin: '0 0 0 -5', boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
                     { margin: '0 0 0 -5', boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'}
                 ],
-        	
-	        	listeners: {
-					change: function(ctl, val) {
-						Ext.suspendLayouts();
-					}
-				}
         	}]
         });
 
@@ -180,6 +178,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             flex: 1,
             //added additional onclick event to display bounding box in a popup window instead of opening up in a new tab
             id:'geoDescription',
+			suspendLayout:true,
             html: '<span class="redInfo">*</span> ' +
                 'Click here to get coordinates: <a href="#" onclick="App.Demo.openWindow()" >boundingbox.klokantech.com</a> ' +
                 '("Copy/paste CSV format of a boundingbox")',
@@ -190,6 +189,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             fieldLabel: 'Additionally, collect all tweets from these twitter user ids, independent of their keywords or location',
             labelWidth: 230,
             labelPad: 15,
+			suspendLayout:true,
             name: 'follow',
             width:698,
             emptyText: 'e.g. cnnbrk, bbcbreaking, fema, lastquake'
@@ -198,6 +198,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         this.durationDescription = Ext.create('Ext.form.Label', {
             flex: 1,
             id:'durationDescription',
+			suspendLayout:true,
             html: '<span class="redInfo">*</span> A normal setting for most crises is 2 to 5 days. If you need more than 7 days contact the <a href="https://github.com/qcri-social/AIDR/issues" target="_blank">AIDR team</a>.',
             padding: '2 0 2 245'
         });
@@ -224,6 +225,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             width:698,
             labelWidth: 240,
             name: 'durationHours',
+			suspendLayout:true,
             editable: false,
             text: 'Edit',
             valueField: 'val',
@@ -262,6 +264,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
               labelWidth: 240,
               name: 'fetchInterval',
               editable: false,
+			  suspendLayout:true,
               text: 'Edit',
               valueField: 'val',
               displayField: 'label',
@@ -276,6 +279,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
               labelWidth: 240,
               name: 'fetchFrom',
               editable: false,
+			  suspendLayout:true,
               text: 'Edit',
               valueField: 'val',
               displayField: 'label',
@@ -300,6 +304,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             displayField: 'name',
             valueField: 'code',
             multiSelect: true,
+			suspendLayout:true,
             editable: false,
             fieldLabel: 'Language of tweets',
             flex:1,
@@ -338,6 +343,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             flex:1,
             labelWidth: 240,
             id: 'CollectionType',
+			suspendLayout:true,
             name: 'collectionType',
             editable: false,
             text: 'Edit',
@@ -402,6 +408,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             displayField: 'name',
             valueField: 'crisisTypeID',
             fieldLabel: 'Crisis Type',
+			suspendLayout:true,
             flex: 1,
             name: 'crisisType',
             editable: false,
@@ -415,6 +422,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 id:wrapId,
                 layout: 'hbox',
                 margin:fieldMargin,
+				suspendLayout:true,
                 items: [
                     field,
                     {
@@ -462,6 +470,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                     anchor:'100%',
                     collapsible:true,
                     collapsed:true,
+					titleCollapse:true,
                     cls:'collapse-style',
                    // bodyPadding: '5 5 20 5',
                     margin: '20 0 0 0',
