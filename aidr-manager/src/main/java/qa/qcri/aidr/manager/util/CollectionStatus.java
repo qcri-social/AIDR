@@ -9,7 +9,8 @@ public enum CollectionStatus {
 	RUNNING_WARNING("RUNNING_WARNING"),
 	NOT_RUNNING("NOT_RUNNING"),
 	TRASHED("TRASHED"),
-	WARNING("WARNING");
+	WARNING("WARNING"),
+	EXCEPTION("EXCEPTION");
 
 	private CollectionStatus(String status) {
 		this.status = status;

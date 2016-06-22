@@ -543,6 +543,13 @@ public class CollectionServiceImpl implements CollectionService {
 					if(prevStatus != CollectionStatus.FATAL_ERROR || prevStatus != CollectionStatus.NOT_RUNNING || prevStatus != CollectionStatus.STOPPED)
 						this.stopFatalError(collection.getId(), accountId);
 					break;
+				case EXCEPTION:	
+					logger.warn("Rejected Thread Execution Exception, restarting collection " + collection.getId());
+						if(prevStatus!=CollectionStatus.EXCEPTION){
+							this.stopFatalError(collection.getId(), accountId);
+							this.start(collection.getId());
+						}
+					break;
 				default:
 					break;
 				}
