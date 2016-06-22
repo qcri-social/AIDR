@@ -132,7 +132,7 @@ public class Persister4CollectorAPI {
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         
         JSONObject obj = new JSONObject();
-        obj.put("tweetCount", result.get("count"));
+        obj.put("feedCount", result.get("count"));
 		if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)) ) {
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));

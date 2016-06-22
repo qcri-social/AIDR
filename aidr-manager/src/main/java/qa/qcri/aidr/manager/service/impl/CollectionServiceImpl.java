@@ -1039,7 +1039,7 @@ public class CollectionServiceImpl implements CollectionService {
     	summaryInfo.setGeo(collection.getGeo());
     	summaryInfo.setLabelCount(taggerService.getLabelCount(collection.getId()));
     	summaryInfo.setPubliclyListed(collection.isPubliclyListed());
-    	
+    	summaryInfo.setProvider(collection.getProvider().toString());
     	return summaryInfo;
     }
 

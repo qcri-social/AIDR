@@ -50,13 +50,23 @@ public class PersisterController {
 	private CommonUtil commonUtil;
 
 	@PreAuthorize("hasRole('ROLE_USER_SPRINGSOCIALSECURITY')")
+	@RequestMapping(value = "/test")
+	@ResponseBody
+	public String test() throws Exception{
+		UserAccount userAccount = commonUtil.getAuthenticatedUser();
+		UserAccountActivity userAccountActivity = new UserAccountActivity(userAccount
+				, new Date(), 1021, ActivityType.DOWNLOAD);
+		userAcountActivityService.save(userAccountActivity);
+		return "sucess";
+	}
+	
+	@PreAuthorize("hasRole('ROLE_USER_SPRINGSOCIALSECURITY')")
 	@RequestMapping(value = "/generateDownloadLink", method = RequestMethod.POST)
 	@ResponseBody
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> generateCSVLink(@RequestParam String code, @RequestParam Integer count,
-			@RequestParam boolean removeRetweet,
-			@RequestParam(value = "createdTimestamp", required = false) Long createdTimestamp,
-			@RequestParam(value = "type", defaultValue = "CSV", required = false) String jsonType, String queryString)
+			@RequestParam String provider,
+			@RequestParam(value = "createdTimestamp", required = false) Long createdTimestamp, String queryString)
 			throws Exception {
 		String response = null;
 		try {
@@ -75,10 +85,10 @@ public class PersisterController {
 			if (createdTimestamp != null) {
 				createdDate = new Date(createdTimestamp);
 			}
-			
 			UserAccountActivity userAccountActivity = null;
 			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 			Date fromDate = formatter.parse(formatter.format(new Date()));
+			
 			// if user is not admin then check download limit for a user
 			if(!isAdmin){		
 				
@@ -101,26 +111,28 @@ public class PersisterController {
 				if(count <= 0){
 					return getUIWrapper(false, "You have reached at your daily download limit. Please try tomorrow to download!");
 				}
-				
-				//Integer tweetCount = (Integer) result.get("tweetCount");
-				System.out.println(activities);
 			}
-
-			response = persisterService.generateDownloadLink(code, queryString, userName, count, removeRetweet,
-					jsonType, createdDate);
+			
+			if("facebook".equalsIgnoreCase(provider)) {
+				response = persisterService.generateDownloadFacebookLink(code, count);
+			} else {
+				response = persisterService.generateDownloadTwitterLink(code, queryString, userName, count, false,
+						"CSV", createdDate);
+			}
+			
 			if (!StringUtils.isEmpty(response)) {
 				Map<String, Object> result = new ObjectMapper().readValue(response, Map.class);
 
 				if (result != null && (result.containsKey("url") || result.containsKey("data"))) {
 					
 					// update download count of userAccountActivity
-					if(!isAdmin && result.containsKey("tweetCount")){
-						Object countObject = result.get("tweetCount");						
+					if(!isAdmin && result.containsKey("feedCount")){
+						Object countObject = result.get("feedCount");						
 						if(userAccountActivity == null){
 							userAccountActivity = new UserAccountActivity(userAccount, fromDate, 0, ActivityType.DOWNLOAD);
 						}
-						Integer downloadedTweets = (Integer)countObject;
-						userAccountActivity.setDownloadCount(downloadedTweets + userAccountActivity.getDownloadCount());
+						Integer downloadedFeeds = (Integer)countObject;
+						userAccountActivity.setDownloadCount(downloadedFeeds + userAccountActivity.getDownloadCount());
 						userAcountActivityService.save(userAccountActivity);
 						return getUIWrapper(result.get("data"), true);
 					} else {

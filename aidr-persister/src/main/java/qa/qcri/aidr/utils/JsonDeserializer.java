@@ -2477,7 +2477,7 @@ public class JsonDeserializer {
 		String downloadFileURL = null;
 		
 		//  delete the file if already created 
-		String fileName = collectionCode + FACEBOOK_PREFIX;
+		String fileName = collectionCode;
 		String fileToDelete = folderLocation + FILE_SEPARATOR + fileName;
 		FileSystemOperations.deleteFile(fileToDelete + ZIP_EXTENSION);
 						

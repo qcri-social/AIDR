@@ -180,7 +180,7 @@ public class Persister4TaggerAPI {
 		
 		JSONObject obj = new JSONObject();
 		obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
-		obj.put("tweetCount", generatedFileMap.get("currentSize"));
+		obj.put("feedCount", generatedFileMap.get("currentSize"));
 		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 		return Response.ok(obj.toJSONString())
 				.allow("POST", "OPTIONS", "HEAD")
@@ -302,7 +302,7 @@ public class Persister4TaggerAPI {
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + result.get("fileName"));
 		
 		JSONObject obj = new JSONObject();
-		obj.put("tweetCount", result.get("count"));
+		obj.put("feedCount", result.get("count"));
 		if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), result.get("fileName").toString(), true));
@@ -420,7 +420,7 @@ public class Persister4TaggerAPI {
 		
 		JSONObject obj = new JSONObject();
 		obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
-		obj.put("tweetCount", generatedFileMap.get("currentSize"));
+		obj.put("feedCount", generatedFileMap.get("currentSize"));
 		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 		return Response.ok(obj.toJSONString()).build();
 	}
@@ -587,6 +587,7 @@ public class Persister4TaggerAPI {
 		JsonDeserializer jsonD = new JsonDeserializer();
 		Map<String, Object> result = jsonD.generateFileForFacebookDataFeed(collectionCode, fbFeeds);
 		JSONObject obj = new JSONObject();
+		result.put("feedCount", fbFeeds.size());
 		obj.putAll(result);
 		return Response.ok(obj.toJSONString()).build();
 				/*.allow("POST", "OPTIONS", "HEAD")

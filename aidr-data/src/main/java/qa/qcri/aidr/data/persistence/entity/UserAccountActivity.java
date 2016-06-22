@@ -76,5 +76,13 @@ public class UserAccountActivity extends BaseEntity {
 	public void setDownloadCount(Integer downloadCount) {
 		this.downloadCount = downloadCount;
 	}
+
+	@Override
+	public String toString() {
+		return "UserAccountActivity [account=" + account + ", activityDate="
+				+ activityDate + ", downloadCount=" + downloadCount
+				+ ", activityType=" + activityType + "]";
+	}
+	
 	
 }
