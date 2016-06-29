@@ -49,6 +49,7 @@ public class CollectionSummaryService {
     		collectionSummary = adaptCollectionSummaryInfoToCollectionSummary(summaryInfo, collectionSummary);
     		listToSave.add(collectionSummary);
     	}
+    	
     	collectionSummaryDao.saveUpdateCollectionSummaryList(listToSave);
     }
 
