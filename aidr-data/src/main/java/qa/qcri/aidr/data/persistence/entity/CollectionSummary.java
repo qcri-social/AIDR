@@ -38,6 +38,8 @@ public class CollectionSummary extends BaseEntity {
 	
 	private String status;
 	
+	private String provider;
+	
 	public boolean isPubliclyListed() {
 		return publiclyListed;
 	}
@@ -140,6 +142,14 @@ public class CollectionSummary extends BaseEntity {
 
 	public void setCollectionCreationDate(Date collectionCreationDate) {
 		this.collectionCreationDate = collectionCreationDate;
+	}
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
 	}
 	
 }

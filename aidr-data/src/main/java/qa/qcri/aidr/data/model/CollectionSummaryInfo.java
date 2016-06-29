@@ -23,6 +23,7 @@ public class CollectionSummaryInfo {
 	private Integer labelCount;
 	private Integer humanTaggedCount;
 	private boolean publiclyListed;
+	private String provider;
 	
 	public boolean isPubliclyListed() {
 		return publiclyListed;
@@ -108,5 +109,10 @@ public class CollectionSummaryInfo {
 	public void setHumanTaggedCount(Integer humanTaggedCount) {
 		this.humanTaggedCount = humanTaggedCount;
 	}
-	
+	public String getProvider() {
+		return provider;
+	}
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
 }

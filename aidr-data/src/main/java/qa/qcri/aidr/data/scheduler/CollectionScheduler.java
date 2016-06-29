@@ -58,6 +58,7 @@ public class CollectionScheduler {
 	    	CollectionSummaryInfo[] summaryInfos = mapper.readValue(response.toString(), CollectionSummaryInfo[].class);
 	    	
 	    	if(summaryInfos.length > 0) {
+	    		logger.info(summaryInfos.length + " collections will be sync.");
 	    		collectionSummaryService.saveUpdateCollectionSummary(Arrays.asList(summaryInfos));
 	    	} else {
 	    		logger.info("No collection to update/insert");

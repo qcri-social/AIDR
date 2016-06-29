@@ -70,7 +70,9 @@
 					<div class="list-group-item active" >
 						{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}</div>
 					<div class="list-group-item1">
-						<b>Tweets</b><img id="twitter" src="resources/img/twitter_icon3.png"/>
+						<b>Feeds</b> 
+						<img id="twitter" style="height:20px" src="resources/img/twitter-circular-icon.png" ng-show="letter.provider == 'Twitter'" />
+						<img id="facebook" style="height:20px" src="resources/img/facebook-circular-icon.png" ng-show="letter.provider == 'Facebook'" />
 						<span id="lang" ng-if="letter.status == 'RUNNING'"><span class="pull-right">{{letter.totalCount}}<img id="count" src="resources/img/arrow-up.png" style="margin-top: -2px"/></span></span>
 						<span id="lang" ng-if="letter.status !== 'RUNNING'"><span class="pull-right">{{letter.totalCount}}</span></span>					
 					</div>
@@ -131,7 +133,7 @@
             <h3 class="modal-title">{{collection.name}}</h3>
         </div>
         <div class="modal-body" >
-            <b>Total Collected Tweets:</b> <p class="text-right"> {{collection.totalCount}}</p>
+            <b>Total Collected Feeds:</b> <p class="text-right"> {{collection.totalCount}}</p>
         </div>
         <div class="modal-body" >
            <b>Status:</b> <p class="text-right"> {{collection.status}}</p>
@@ -159,9 +161,9 @@
            <b>Curator:</b> <p class="text-right">{{splittedName}}</p>
         </div>
         <div class="modal-body">
-			<button ng-hide="busy" ng-disabled="busy" ng-click="openTerms(collection)" class="btn btn-primary center-block">Download 50000 sample tweets </button>
-            <button ng-show="busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets <i class="fa fa-spinner fa-spin"></i></button>
-			<!-- <button disabled class="btn btn-primary center-block">Download 50000 sample tweets</button> -->
+			<button ng-hide="busy" ng-disabled="busy" ng-click="openTerms(collection)" class="btn btn-primary center-block">Download 50000 sample feeds </button>
+            <button ng-show="busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample feeds <i class="fa fa-spinner fa-spin"></i></button>
+			<!-- <button disabled class="btn btn-primary center-block">Download 50000 sample feeds</button> -->
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
 		
