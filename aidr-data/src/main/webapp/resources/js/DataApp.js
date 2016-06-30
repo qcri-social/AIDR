@@ -159,9 +159,8 @@ angular.module('DataApp').controller('TermsCtrl',
 			$http.post(
 					'/aidr-data/persister/generateDownloadLink?' + 'code='
 							+ $scope.collection.code + '&count=50000'
-							+ '&removeRetweet=false' + '&createdTimestamp='
-							+ $scope.collection.collectionCreationDate
-							+ '&type=CSV').then(function(response) {
+							+ '&createdTimestamp=' + $scope.collection.collectionCreationDate
+							+ '&provider=' + $scope.collection.provider).then(function(response) {
 								
 				$scope.busy = false;
 				$scope.results = response;
@@ -207,10 +206,8 @@ angular.module('DataApp').controller(
 				$http.post(
 						'/aidr-data/persister/generateDownloadLink?' + 'code='
 								+ $scope.collection.code + '&count=50000'
-								+ '&removeRetweet=false' + '&createdTimestamp='
-								+ $scope.collection.collectionCreationDate
-								+ '&type=CSV').then(function(response) {
-									
+								+ '&createdTimestamp=' + $scope.collection.collectionCreationDate
+								+ '&provider=' + $scope.collection.provider).then(function(response) {
 					$scope.busy = false;
 					$scope.results = response;
 					if(!$scope.results.data.success) {

@@ -23,6 +23,7 @@ public class CollectionSummaryInfo {
 	private Long labelCount;
 	private Long humanTaggedCount;
 	private boolean publiclyListed;
+	private String provider;
 	
 	public boolean isPubliclyListed() {
 		return publiclyListed;
@@ -107,5 +108,11 @@ public class CollectionSummaryInfo {
 	}
 	public void setCollectionCreationDate(Date collectionCreationDate) {
 		this.collectionCreationDate = collectionCreationDate;
+	}
+	public String getProvider() {
+		return provider;
+	}
+	public void setProvider(String provider) {
+		this.provider = provider;
 	}
 }

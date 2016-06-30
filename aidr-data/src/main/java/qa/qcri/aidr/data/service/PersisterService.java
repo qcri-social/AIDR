@@ -24,7 +24,7 @@ public class PersisterService {
 	@Autowired
 	private CommonUtil commonUtil;
 
-    public String generateDownloadLink(String code, String queryString, String userName, Integer count, boolean removeRetweet, String jsonType, Date createdTimestamp) throws Exception {
+    public String generateDownloadTwitterLink(String code, String queryString, String userName, Integer count, boolean removeRetweet, String jsonType, Date createdTimestamp) throws Exception {
 		String url = "";
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, -3);
@@ -124,4 +124,13 @@ public class PersisterService {
         }
         return str;
     }
+
+	public String generateDownloadFacebookLink(String code, Integer count) {
+		String url = Configurations.getPersisterURL();
+    	String downloadLink = null;
+    	url += "/AIDRPersister/webresources/taggerPersister/downloadFacebookPosts";
+    	url += "?collectionCode=" + code + "&exportLimit=" + count;
+    	downloadLink = sendGET(url);
+		return downloadLink;
+	}
 }

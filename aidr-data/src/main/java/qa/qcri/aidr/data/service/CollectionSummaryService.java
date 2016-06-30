@@ -49,6 +49,7 @@ public class CollectionSummaryService {
     		collectionSummary = adaptCollectionSummaryInfoToCollectionSummary(summaryInfo, collectionSummary);
     		listToSave.add(collectionSummary);
     	}
+    	
     	collectionSummaryDao.saveUpdateCollectionSummaryList(listToSave);
     }
 
@@ -70,6 +71,7 @@ public class CollectionSummaryService {
     	collectionSummary.setStatus(summaryInfo.getStatus());
     	collectionSummary.setLanguage(summaryInfo.getLanguage());
     	collectionSummary.setPubliclyListed(summaryInfo.isPubliclyListed());
+    	collectionSummary.setProvider(summaryInfo.getProvider());
     	
     	return collectionSummary;
     }
@@ -105,6 +107,7 @@ public class CollectionSummaryService {
     	
     	summaryInfo.setLanguage(lang);
     	summaryInfo.setPubliclyListed(collectionSummary.isPubliclyListed());
+    	summaryInfo.setProvider(collectionSummary.getProvider());
     	return summaryInfo;
     }
 }
