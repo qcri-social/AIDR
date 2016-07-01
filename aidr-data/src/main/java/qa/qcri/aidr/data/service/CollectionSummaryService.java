@@ -47,6 +47,8 @@ public class CollectionSummaryService {
     	for(CollectionSummaryInfo summaryInfo : collectionSummaryInfos) {
     		CollectionSummary collectionSummary = collectionSummaryDao.getByCode(summaryInfo.getCode());
     		collectionSummary = adaptCollectionSummaryInfoToCollectionSummary(summaryInfo, collectionSummary);
+    		System.out.println("Fetched Collection from aidr: "+ summaryInfo);
+    		System.out.println("Populated Collectionsr: "+ collectionSummary);
     		listToSave.add(collectionSummary);
     	}
     	
