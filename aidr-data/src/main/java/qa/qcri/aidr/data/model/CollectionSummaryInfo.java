@@ -115,4 +115,17 @@ public class CollectionSummaryInfo {
 	public void setProvider(String provider) {
 		this.provider = provider;
 	}
+	@Override
+	public String toString() {
+		return "CollectionSummaryInfo [code=" + code + ", name=" + name
+				+ ", totalCount=" + totalCount + ", language=" + language
+				+ ", curator=" + curator + ", collectionCreationDate="
+				+ collectionCreationDate + ", endDate=" + endDate
+				+ ", startDate=" + startDate + ", keywords=" + keywords
+				+ ", geo=" + geo + ", status=" + status + ", labelCount="
+				+ labelCount + ", humanTaggedCount=" + humanTaggedCount
+				+ ", publiclyListed=" + publiclyListed + ", provider="
+				+ provider + "]";
+	}
+	
 }
