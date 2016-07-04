@@ -1,5 +1,4 @@
 body {
-	/*padding-top:70px;*/
 	font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial,
 		sans-serif;
 	background-image: url("../img/aidr-bg-clouds.jpg");
@@ -7,7 +6,6 @@ body {
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
-	padding-bottom: 300px;
 	margin-right: 0px;
 }
 
@@ -42,6 +40,12 @@ a {
 	color: #A80000;
 }
 
+.wrap {
+	min-height: 100%;
+	height: auto !important;
+	margin: 0 auto -70px;
+}
+
 /* Important part */
 .modal-dialog {
 	overflow-y: initial !important
@@ -51,8 +55,8 @@ a {
 	overflow-y: auto;
 }
 
-.modal-open .modal {
-	overflow-y: hidden;
+.center-modal {
+	position: absolute;
 }
 
 #key {
@@ -371,16 +375,6 @@ form.form-search:before {
 	text-align: center;
 }
 
-.center-modal {
-	position: fixed;
-	top: 10%;
-	left: 18.5%;
-	z-index: 1050;
-	width: 80%;
-	height: 80%;
-	margin-left: -10%;
-}
-
 .header {
 	margin: 0 auto;
 	padding-left: 18px;
@@ -542,6 +536,7 @@ form.form-search:before {
 	margin-bottom: 0;
 	border-width: 1px 0 0;
 	background-color: #464646;
+	position: relative;
 }
 .aidr_text_logo{
 	color: white;
