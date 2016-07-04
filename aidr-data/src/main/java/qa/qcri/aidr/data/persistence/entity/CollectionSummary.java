@@ -151,5 +151,17 @@ public class CollectionSummary extends BaseEntity {
 	public void setProvider(String provider) {
 		this.provider = provider;
 	}
+
+	@Override
+	public String toString() {
+		return "CollectionSummary [name=" + name + ", code=" + code
+				+ ", totalCount=" + totalCount + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", collectionCreationDate="
+				+ collectionCreationDate + ", geo=" + geo + ", curator="
+				+ curator + ", labelCount=" + labelCount + ", publiclyListed="
+				+ publiclyListed + ", keywords=" + keywords + ", language="
+				+ language + ", status=" + status + ", provider=" + provider
+				+ "]";
+	}
 	
 }
