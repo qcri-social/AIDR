@@ -74,6 +74,9 @@ public class CollectionSummaryService {
     	collectionSummary.setLanguage(summaryInfo.getLanguage());
     	collectionSummary.setPubliclyListed(summaryInfo.isPubliclyListed());
     	collectionSummary.setProvider(summaryInfo.getProvider());
+    	collectionSummary.setHumanTaggedCount(summaryInfo.getHumanTaggedCount());
+    	collectionSummary.setMachineTagCount(summaryInfo.getMachineTagCount());
+    	collectionSummary.setCrisisType(summaryInfo.getCrisisType());
     	
     	return collectionSummary;
     }
@@ -110,6 +113,9 @@ public class CollectionSummaryService {
     	summaryInfo.setLanguage(lang);
     	summaryInfo.setPubliclyListed(collectionSummary.isPubliclyListed());
     	summaryInfo.setProvider(collectionSummary.getProvider());
+    	summaryInfo.setHumanTaggedCount(collectionSummary.getHumanTaggedCount());
+    	summaryInfo.setMachineTagCount(collectionSummary.getMachineTagCount());
+    	summaryInfo.setCrisisType(collectionSummary.getCrisisType());
     	return summaryInfo;
     }
 }

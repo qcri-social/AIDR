@@ -544,3 +544,6 @@ form.form-search:before {
 	padding: 0px;
 	font-family: fantasy;
 }
+.tooltip-class {
+	z-index: 999;
+}

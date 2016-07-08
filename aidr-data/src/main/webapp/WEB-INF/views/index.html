@@ -69,13 +69,24 @@
 					<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
 					<div class="list-group" >
 						<div class="list-group-item active" >
-							{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}</div>
+							{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}
+							<span class="pull-right badge" style="margin-top: 8px" ng-if="letter.crisisType">
+								{{letter.crisisType}}
+							</span>
+						</div>
 						<div class="list-group-item1">
 							<b>Feeds</b> 
 							<img id="twitter" style="height:20px" src="resources/img/twitter-circular-icon.png" ng-show="letter.provider == 'Twitter'" />
 							<img id="facebook" style="height:20px" src="resources/img/facebook-circular-icon.png" ng-show="letter.provider == 'Facebook'" />
-							<span id="lang" ng-if="letter.status == 'RUNNING'"><span class="pull-right">{{letter.totalCount}}<img id="count" src="resources/img/arrow-up.png" style="margin-top: -2px"/></span></span>
-							<span id="lang" ng-if="letter.status !== 'RUNNING'"><span class="pull-right">{{letter.totalCount}}</span></span>					
+							<!-- <span id="lang">
+								<span class="pull-right">
+									{{letter.totalCount}}
+									<img id="count" src="resources/img/arrow-up.png" ng-if="letter.status == 'RUNNING'" style="margin-top: -2px"/>
+								</span>
+							</span> -->
+							<span class="pull-right badge" tooltip-placement="left" uib-tooltip="Human Tagged | Machine Tagged | Total Count" data-container="body">
+								{{letter.humanTaggedCount}} | {{letter.machineTagCount}} | {{letter.totalCount}} 
+							</span>				
 						</div>
 						<div class="list-group-item">
 							<b>Languages</b>
