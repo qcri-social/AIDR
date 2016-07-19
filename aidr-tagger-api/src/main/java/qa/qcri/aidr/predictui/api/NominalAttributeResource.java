@@ -150,9 +150,6 @@ public class NominalAttributeResource {
     public Response getCrisisForNominalAttributeById(@PathParam("attributeID") Integer attributeID, @QueryParam("crisisType") Integer crisisType, @QueryParam("langFilters") String languageFilters) {
      
 		List<CollectionBriefInfo> crisisList = collectionResourceFacade.getCrisisForNominalAttributeById(attributeID, crisisType, languageFilters);
-        ResponseWrapper response = new ResponseWrapper();
-        response.setMessage("SUCCESS");
-        response.setDataObject(crisisList);
-        return Response.ok(response).build();
+        return Response.ok(crisisList).build();
     }
 }

@@ -3,6 +3,7 @@ package qa.qcri.aidr.manager.service;
 import java.util.List;
 import java.util.Map;
 
+import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.manager.dto.TaggerAttribute;
@@ -156,4 +157,10 @@ public interface TaggerService {
 	Map<String, Object> generateJsonTweetIdsOnlyFilteredLink(String code, String queryString, String jsonType, String userName, Integer exportLimit, Boolean removeRetweet) throws AidrException;
 
 	Map<String, Object> generateFacebookPostDownloadLink(String code,Integer count) throws AidrException;
+
+	List<CollectionBriefInfo> fetchCollectionsByAttribute(Long attributeId,
+			Long sourceCollectionId);
+
+	public String importTrainingData(Long targetCollectionId,
+			String sourceCollectionCode, Long attributeId);
 }
