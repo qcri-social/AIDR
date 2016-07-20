@@ -311,10 +311,14 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 	}
 	
 	@Override
-	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID, Integer crisis_type, String lang_filters) throws PropertyNotSetException {
+	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID, Integer crisis_type, String lang_filters, Long collectionId) throws PropertyNotSetException {
 		List<CollectionBriefInfo> result = new ArrayList<CollectionBriefInfo>();
 		
 		String finalSQLQuery = SELECT_COLLECTION_FOR_ATTRIBUTE_CRISIS_TYPE;
+		
+		if(collectionId != null) {
+			finalSQLQuery += "AND c.id != :collectionId ";
+		}
 		
 		String intermediateCriteria = "";
 		if(lang_filters != null && !lang_filters.isEmpty()) {
@@ -341,7 +345,9 @@ public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collecti
 		Query query = em.createNativeQuery(finalSQLQuery);
 		query.setParameter("nominalAttributeID", attributeID);
 		query.setParameter("crisis_type", crisis_type);
-	
+		if (collectionId != null) {
+			query.setParameter("collectionId", collectionId);
+		}
 		List<Object[]> rows = null;
 		try {
 			rows = query.getResultList();

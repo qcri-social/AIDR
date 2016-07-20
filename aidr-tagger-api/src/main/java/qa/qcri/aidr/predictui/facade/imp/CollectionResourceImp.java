@@ -30,7 +30,7 @@ import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
 @Stateless
 public class CollectionResourceImp implements CollectionResourceFacade {
 
-	private Logger logger = Logger.getLogger(CollectionResourceImp.class);
+	private final Logger logger = Logger.getLogger(CollectionResourceImp.class);
 	
 	@PersistenceContext(unitName = "qa.qcri.aidr.collectorManager-PU")
 	private EntityManager em;
@@ -38,6 +38,7 @@ public class CollectionResourceImp implements CollectionResourceFacade {
 	@EJB
     private qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade collectionResourceFacade;
 	
+	@Override
 	public List<Collection> getAllRunningCollectionsByUserID(int userID) {
 		List<Collection> collections = new ArrayList<Collection>();
 		Query q = em.createNativeQuery("SELECT id, code, name, owner_id "
@@ -66,13 +67,19 @@ public class CollectionResourceImp implements CollectionResourceFacade {
 	}
 	
 	@Override
-	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID,Integer crisis_type,String lang_filters) {
+	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(
+			Integer attributeID, Integer crisisType, String langFilters,
+			Long collectionId) {
 		List<CollectionBriefInfo> collections = new ArrayList<>();
-        try {
-        	collections = collectionResourceFacade.getCrisisForNominalAttributeById(attributeID,crisis_type,lang_filters);
-        } catch (PropertyNotSetException pe) {
-            logger.error("Error in fetching crises list for attribute Id : " + attributeID+" having crisis type :"+crisis_type + " and language filters "+lang_filters, pe);
-        }
-        return collections;
+		try {
+			collections = collectionResourceFacade
+					.getCrisisForNominalAttributeById(attributeID, crisisType,
+							langFilters, collectionId);
+		} catch (PropertyNotSetException pe) {
+			logger.error("Error in fetching crises list for attribute Id : "
+					+ attributeID + " having crisis type :" + crisisType
+					+ " and language filters " + langFilters, pe);
+		}
+		return collections;
 	}
 }

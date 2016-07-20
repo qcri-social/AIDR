@@ -147,9 +147,16 @@ public class NominalAttributeResource {
 	@GET
     @Produces("application/json")
     @Path("/{attributeID}/collections")
-    public Response getCrisisForNominalAttributeById(@PathParam("attributeID") Integer attributeID, @QueryParam("crisisType") Integer crisisType, @QueryParam("langFilters") String languageFilters) {
+    public Response getCrisisForNominalAttributeById(@PathParam("attributeID") Integer attributeID, 
+    		@QueryParam("crisisType") Integer crisisType, @QueryParam("langFilters") String languageFilters
+    		,@QueryParam("collectionId") Integer collectionId) {
      
-		List<CollectionBriefInfo> crisisList = collectionResourceFacade.getCrisisForNominalAttributeById(attributeID, crisisType, languageFilters);
+		Long val = null;
+		if(collectionId != null) {
+			val = collectionId.longValue();
+		}
+		List<CollectionBriefInfo> crisisList = collectionResourceFacade.getCrisisForNominalAttributeById
+				(attributeID, crisisType, languageFilters, val);
         return Response.ok(crisisList).build();
     }
 }

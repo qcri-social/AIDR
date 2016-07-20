@@ -2275,7 +2275,7 @@ public class TaggerServiceImpl implements TaggerService {
 	   Collection collection = collectionService.findById(sourceCollectionId);
 	   if(collection != null) {
 	    WebTarget webResource = client.target(taggerMainUrl
-	      + "/attribute/" + attributeId + "/collections?crisisType=" + collection.getCrisisType().getId() + "&langFilters=" + collection.getLangFilters());
+	      + "/attribute/" + attributeId + "/collections?crisisType=" + collection.getCrisisType().getId() + "&collectionId=" + collection.getId() + "&langFilters=" + collection.getLangFilters());
 	 
 	    clientResponse = webResource.request(
 	      MediaType.APPLICATION_JSON).get();
