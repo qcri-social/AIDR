@@ -25,7 +25,7 @@ public class CollectionSummaryInfo {
 	private boolean publiclyListed;
 	private String provider;
 	private Long machineTagCount;
-	private String crisis_type;
+	private String crisisType;
 	
 	
 	public boolean isPubliclyListed() {
@@ -124,10 +124,11 @@ public class CollectionSummaryInfo {
 	public void setMachineTagCount(Long machineTagCount) {
 		this.machineTagCount = machineTagCount;
 	}
-	public String getCrisis_type() {
-		return crisis_type;
+	public String getCrisisType() {
+		return crisisType;
 	}
-	public void setCrisis_type(String crisis_type) {
-		this.crisis_type = crisis_type;
+	public void setCrisisType(String crisisType) {
+		this.crisisType = crisisType;
 	}
+	
 }

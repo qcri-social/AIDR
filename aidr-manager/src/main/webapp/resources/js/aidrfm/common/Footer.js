@@ -11,7 +11,7 @@ Ext.define('AIDRFM.common.Footer', {
         '</div>' +
 
         '<div class="left">' +
-        '<a href="http://aidr.data.qcri.org/aidr-data/resources/QSS-Usr-Agr-Print-Version.docx.pdf" target="_blank">Terms of Service</a> - ' +
+        '<a href="http://aidr.qcri.org/r/tos" target="_blank">Terms of Service</a> - ' +
         '<a href="http://aidr.qcri.org/r/manual">Help</a> - ' +
         '<a href="http://aidr.qcri.org/r/credits">Credits</a>' +
         '</div>' +
