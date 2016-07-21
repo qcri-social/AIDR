@@ -40,6 +40,15 @@ public class CollectionSummary extends BaseEntity {
 	
 	private String provider;
 	
+	@Column(name = "human_tag_count")
+	private Long humanTaggedCount;
+	
+	@Column(name = "machine_tag_count")
+	private Long machineTagCount;
+	
+	@Column(name = "crisis_type")
+	private String crisisType;
+	
 	public boolean isPubliclyListed() {
 		return publiclyListed;
 	}
@@ -150,6 +159,41 @@ public class CollectionSummary extends BaseEntity {
 
 	public void setProvider(String provider) {
 		this.provider = provider;
+	}
+	
+	public Long getHumanTaggedCount() {
+		return humanTaggedCount;
+	}
+
+	public void setHumanTaggedCount(Long humanTaggedCount) {
+		this.humanTaggedCount = humanTaggedCount;
+	}
+
+	public Long getMachineTagCount() {
+		return machineTagCount;
+	}
+
+	public void setMachineTagCount(Long machineTagCount) {
+		this.machineTagCount = machineTagCount;
+	}
+	public String getCrisisType() {
+		return crisisType;
+	}
+
+	public void setCrisisType(String crisisType) {
+		this.crisisType = crisisType;
+	}
+
+	@Override
+	public String toString() {
+		return "CollectionSummary [name=" + name + ", code=" + code
+				+ ", totalCount=" + totalCount + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", collectionCreationDate="
+				+ collectionCreationDate + ", geo=" + geo + ", curator="
+				+ curator + ", labelCount=" + labelCount + ", publiclyListed="
+				+ publiclyListed + ", keywords=" + keywords + ", language="
+				+ language + ", status=" + status + ", provider=" + provider
+				+ "]";
 	}
 	
 }

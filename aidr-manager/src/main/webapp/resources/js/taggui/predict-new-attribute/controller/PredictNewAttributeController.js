@@ -106,6 +106,99 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
             }
         });
 
-    }
+    },
+
+    viewImportCrisisDataModal : function(nominalAttributeID) {
+        var store = Ext.create('Ext.data.Store', {
+            storeId: 'trainingDataStore1',
+            fields: ['code', 'name', 'language', 'trainingCount', 'owner'],
+            proxy: {
+                type: 'ajax',
+                url: BASE_URL + '/protected/tagger/attribute/'+ nominalAttributeID +'/collections?collectionId=' + CRISIS_ID,
+                reader: {
+                    rootProperty: 'data'
+                }
+            },
+            autoLoad: true
+        });
+
+        importTrainingSetGrid = new Ext.grid.GridPanel({
+            store: store,
+            loadMask: true,
+            //title: 'Collection List',
+            width: 800,
+            height: 320,
+            border: true,
+            renderTo:Ext.getBody(),
+            columns: [
+                { header: 'Collection Code',  dataIndex: 'code', width: 200 },
+                { header: 'Collection Name', dataIndex: 'name',  width: 200 },
+                { header: 'Language',  dataIndex: 'language',  width: 100 },
+                { header: 'Training Count', dataIndex: 'trainingCount',  width: 100  },
+                { 
+                	header: 'Owner', dataIndex: 'owner', width: 200,
+                	renderer: function renderTopic(value, p, record){
+                        return AIDRFMFunctions.getUserNameWithProviderIcon(value, true);
+                    }
+                }
+               ],
+            viewConfig: {
+              deferEmptyText: false,
+              emptyText: '<div style="text-align: center; margin-top: 50px">No Collections are using this Classifier</div>'
+            }
+        });
+
+        var window = Ext.create('Ext.window.Window', {
+            title: 'Import Training set from other collections',
+            height: 400,
+            width: 800,
+            modal : true,
+            resizable : false,
+            items: [ importTrainingSetGrid ],
+            bbar: [{
+                text: 'Import/Add Classifier',
+                handler: function(btn) {
+                  if(importTrainingSetGrid.getSelectionModel().hasSelection()) {
+                    var selectedCollectionCode = importTrainingSetGrid.getSelectionModel().getSelection()[0].data.code;
+                    Ext.Ajax.request({
+                        url: BASE_URL + '/protected/tagger/import/training-set',
+                        params: {
+                            sourceCollectionCode: selectedCollectionCode,
+                            attributeId: nominalAttributeID,
+                            targetCollectionId: CRISIS_ID
+                        },
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        success: function (response) {
+                            var resp = Ext.decode(response.responseText);
+                            if (resp.success) {
+                                document.location.href = BASE_URL + '/protected/' + CRISIS_CODE +'/tagger-collection-details';
+                            } else {
+                                AIDRFMFunctions.setAlert("Error", resp.message);
+                                AIDRFMFunctions.reportIssue(response);
+                            }
+                        }
+                    });
+
+                  } else {
+                    predictNewAttributeController.addAttributeToCrises(nominalAttributeID, COLLECTION_NAME, 'standard');
+                  }
+                }
+            }, {
+                text: 'Cancel',
+                handler: function(btn) {
+                  var win = Ext.WindowManager.getActive();
+                  if (win) {
+                    win.close();
+                  }
+                }
+            }]
+        });
+        window.show();
+
+		// then iframe
+		//Ext.DomHelper.insertFirst(window.body, div)
+	}
 
 });

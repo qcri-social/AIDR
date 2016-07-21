@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
@@ -59,6 +61,7 @@ import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.dto.TrainingDataRequest;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.ManagerConfigurationProperty;
@@ -84,6 +87,9 @@ public class TaggerServiceImpl implements TaggerService {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private CollectionService collectionService;
 
 	TaggerServiceImpl() {
 		taggerMainUrl = ManagerConfigurator.getInstance().getProperty(
@@ -2253,5 +2259,75 @@ public class TaggerServiceImpl implements TaggerService {
 					"[generateCSVFilteredLink] Error while generating json filtered download link in Persister for collection",
 					e);
 		}
+	}
+	
+	@Override
+	 public List<CollectionBriefInfo> fetchCollectionsByAttribute(Long attributeId, Long sourceCollectionId) {
+
+	  List<CollectionBriefInfo> result = new ArrayList<CollectionBriefInfo>();
+	  Client client = ClientBuilder.newBuilder()
+	    .register(JacksonFeature.class).build();
+	  Response clientResponse = null;
+	  ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+	  
+	  try {
+	   
+	   Collection collection = collectionService.findById(sourceCollectionId);
+	   if(collection != null) {
+	    WebTarget webResource = client.target(taggerMainUrl
+	      + "/attribute/" + attributeId + "/collections?crisisType=" + collection.getCrisisType().getId() + "&collectionId=" + collection.getId() + "&langFilters=" + collection.getLangFilters());
+	 
+	    clientResponse = webResource.request(
+	      MediaType.APPLICATION_JSON).get();
+	 
+	    String jsonResponse = clientResponse.readEntity(String.class);
+	 
+	    CollectionBriefInfo[] collections = objectMapper.readValue(jsonResponse.toString(), CollectionBriefInfo[].class);
+	    if(collections != null && collections.length > 0) {
+	     result.addAll(Arrays.asList(collections));
+	    }
+	   }
+	  } catch (Exception e) {
+	   logger.error("Error in contacting AIDRTaggerAPI: " + clientResponse, e);
+	  }
+	  
+	  return result;
+	 }
+
+	@Override
+	public String importTrainingData(Long targetCollectionId,
+			String sourceCollectionCode, Long attributeId) {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		Response clientResponse = null;
+		String jsonResponse = null;
+		try {
+			Collection collection = collectionService.findByCode(sourceCollectionCode);
+			if (collection != null) {
+				WebTarget webResource = client.target(crowdsourcingAPIMainUrl
+						+ "/document/import/training-set");
+				/*Map<String, Object> attributeMap = new HashMap<>();
+				attributeMap.put("targetCollectionId", targetCollectionId);
+				attributeMap.put("sourceCollectionId", collection.getId());
+				attributeMap.put("attributeId", attributeId);
+				clientResponse = webResource
+						.request(MediaType.APPLICATION_JSON).post(Entity.json(attributeMap),
+								Response.class);*/
+				
+				Form form = new Form();
+				form.param("targetCollectionId", targetCollectionId.toString());
+				form.param("sourceCollectionId", collection.getId().toString());
+				form.param("attributeId", attributeId.toString());
+				
+				clientResponse = webResource.request().post(
+						Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED),Response.class);
+
+				jsonResponse = clientResponse.readEntity(String.class);
+			}
+		} catch (Exception e) {
+			logger.error(
+					"Error in contacting AIDRTrainerAPI: " + clientResponse, e);
+		}
+		return jsonResponse;
 	}
 }

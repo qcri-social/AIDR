@@ -853,13 +853,13 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	public List<CollectionSummaryInfo> getAllCollectionDataByUsage(UsageType usage) {
-		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
+		/*List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
 		
 		List<Collection> collections = collectionRepository.getAllCollectionsByUsage(usage);
 		if(collections != null) {
 			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
-		}
-		
+		}*/
+		List<CollectionSummaryInfo> collectionSummaryInfos = collectionRepository.getAllCollectionForAidrData();
 		return collectionSummaryInfos;
 	}
 	

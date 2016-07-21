@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import qa.qcri.aidr.common.values.UsageType;
+import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
@@ -56,4 +57,5 @@ public interface CollectionRepository extends GenericRepository<Collection, Seri
 	
 	public List<String> getEligibleFacebookCollectionsToReRun();
 	List<Collection> getUnexpectedlyStoppedCollections(Date today);
+	List<CollectionSummaryInfo> getAllCollectionForAidrData();
 }

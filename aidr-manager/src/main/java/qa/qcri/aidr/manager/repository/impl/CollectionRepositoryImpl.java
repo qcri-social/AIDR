@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.repository.impl;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.sql.Timestamp;
@@ -8,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 //import org.apache.log4j.Logger;
@@ -23,15 +26,19 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import qa.qcri.aidr.common.values.UsageType;
+import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
+import qa.qcri.aidr.manager.service.CollectionLogService;
+import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 
@@ -39,6 +46,12 @@ import qa.qcri.aidr.manager.util.CollectionType;
 @Transactional
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, Serializable> implements CollectionRepository{
 	private final Logger logger = Logger.getLogger(CollectionRepositoryImpl.class);
+	
+	@Autowired
+	private CollectionLogService collectionLogService;
+	
+	@Autowired
+	private TaggerService taggerService;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -521,6 +534,94 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		}
 		
 		return collections;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<CollectionSummaryInfo> getAllCollectionForAidrData() {
+		List<CollectionSummaryInfo> listOfCollectionSummaryInfos = new ArrayList<>();
+		Map<Long, Long> humanTagCountMap = new HashMap<>();
+		
+		List<Object[]> humangTagCounts = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				String sql = "SELECT c.id, COALESCE(count(1),0) as humantagcount"
+								+" FROM collection c, document d, document_nominal_label dnl"
+								+" WHERE d.documentID = dnl.documentID AND d.crisisID = c.id"
+								+" group by c.id;";
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				List<Object[]> data = sqlQuery.list();
+				return data != null ? data : Collections.emptyList();
+			}
+		});
+		for (Object[] objects : humangTagCounts) {
+			Long collectionId = ((BigInteger) objects[0]).longValue();
+			Long humanTagCount = ((BigInteger) objects[1]).longValue();
+			humanTagCountMap.put(collectionId, humanTagCount);
+		}
+		
+		List<Object[]> collections = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				String sql = "SELECT" 
+							 	+" c.id, c.code, c.name, c.start_date, c.end_date, c.created_at, c.count, c.status, c.lang_filters, c.track, c.geo, c.publicly_listed, c.provider,"
+								+" SUM(aa.classify) AS machinetagcount,"
+							    +" account.user_name,"
+							    +" ct.name as crisis_type"
+							+" FROM"
+							    +" account,"
+							    +" collection c"
+							    +" LEFT JOIN"
+							    +" (SELECT "
+							        +" mnl.classifiedDocumentCount AS classify, mf.crisisID AS dd"
+							    +" FROM"
+							        +" model_family mf, model m, model_nominal_label mnl"
+							    +" WHERE"
+							        +" mf.modelFamilyID = m.modelFamilyID"
+							            +" AND m.modelID = mnl.modelID) AS aa ON c.id = aa.dd,"
+							     +" collection c2 LEFT JOIN crisis_type ct ON c2.crisis_type = ct.id" 
+							+" WHERE"
+							    +" account.id = c.owner_id"
+							    +" and c2.id = c.id"
+							+" GROUP BY c.id;";
+				
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				List<Object[]> data = sqlQuery.list();
+				return data != null ? data : Collections.emptyList();
+			}
+		});
+		CollectionStatus[] collectionStatus = CollectionStatus.values();
+		for (Object[] objects : collections) {
+			CollectionSummaryInfo collectionSummaryInfo = new CollectionSummaryInfo();
+			Long collectionId = ((BigInteger) objects[0]).longValue();
+			collectionSummaryInfo.setCode((String) objects[1]);
+			collectionSummaryInfo.setName((String) objects[2]);
+			collectionSummaryInfo.setStartDate((Date) objects[3]);
+			collectionSummaryInfo.setEndDate((Date) objects[4]);
+			collectionSummaryInfo.setCollectionCreationDate((Date) objects[5]);
+			try {
+				collectionSummaryInfo.setTotalCount(collectionLogService.countTotalDownloadedItemsForCollection(collectionId));
+			} catch (Exception e) {
+				logger.warn("Error in fetch count from collection log.", e);
+				collectionSummaryInfo.setTotalCount((Integer) objects[6]);
+			}
+			collectionSummaryInfo.setStatus(collectionStatus[(Integer) objects[7]].getStatus());
+			collectionSummaryInfo.setLanguage((String) objects[8]);
+			collectionSummaryInfo.setKeywords((String) objects[9]);
+			collectionSummaryInfo.setGeo((String) objects[10]);
+			collectionSummaryInfo.setLabelCount(taggerService.getLabelCount(collectionId));
+			collectionSummaryInfo.setPubliclyListed((Boolean) objects[11]);
+			collectionSummaryInfo.setProvider((String) objects[12]);
+			if(objects[13] == null) objects[13] = new BigDecimal(0);
+			collectionSummaryInfo.setMachineTagCount(((BigDecimal) objects[13]).longValue());
+			collectionSummaryInfo.setCurator((String) objects[14]);
+			collectionSummaryInfo.setCrisis_type((String) objects[15]);
+			Long humanTagCount = humanTagCountMap.get(collectionId) != null ? humanTagCountMap.get(collectionId) : 0; 
+			collectionSummaryInfo.setHumanTaggedCount(humanTagCount);
+			
+			listOfCollectionSummaryInfos.add(collectionSummaryInfo);
+		}
+		return listOfCollectionSummaryInfos;
 	}
 
 	@SuppressWarnings("unchecked")

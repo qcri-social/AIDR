@@ -21,9 +21,11 @@ public class CollectionSummaryInfo {
 	private String geo;
 	private String status;
 	private Integer labelCount;
-	private Integer humanTaggedCount;
+	private Long humanTaggedCount;
 	private boolean publiclyListed;
 	private String provider;
+	private Long machineTagCount;
+	private String crisisType;
 	
 	public boolean isPubliclyListed() {
 		return publiclyListed;
@@ -103,10 +105,10 @@ public class CollectionSummaryInfo {
 	public void setLabelCount(Integer labelCount) {
 		this.labelCount = labelCount;
 	}
-	public Integer getHumanTaggedCount() {
+	public Long getHumanTaggedCount() {
 		return humanTaggedCount;
 	}
-	public void setHumanTaggedCount(Integer humanTaggedCount) {
+	public void setHumanTaggedCount(Long humanTaggedCount) {
 		this.humanTaggedCount = humanTaggedCount;
 	}
 	public String getProvider() {
@@ -115,4 +117,30 @@ public class CollectionSummaryInfo {
 	public void setProvider(String provider) {
 		this.provider = provider;
 	}
+	
+	public Long getMachineTagCount() {
+		return machineTagCount;
+	}
+	public void setMachineTagCount(Long machineTagCount) {
+		this.machineTagCount = machineTagCount;
+	}
+	public String getCrisisType() {
+		return crisisType;
+	}
+	public void setCrisisType(String crisisType) {
+		this.crisisType = crisisType;
+	}
+	@Override
+	public String toString() {
+		return "CollectionSummaryInfo [code=" + code + ", name=" + name
+				+ ", totalCount=" + totalCount + ", language=" + language
+				+ ", curator=" + curator + ", collectionCreationDate="
+				+ collectionCreationDate + ", endDate=" + endDate
+				+ ", startDate=" + startDate + ", keywords=" + keywords
+				+ ", geo=" + geo + ", status=" + status + ", labelCount="
+				+ labelCount + ", humanTaggedCount=" + humanTaggedCount
+				+ ", publiclyListed=" + publiclyListed + ", provider="
+				+ provider + "]";
+	}
+	
 }

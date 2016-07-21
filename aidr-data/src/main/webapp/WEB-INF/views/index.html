@@ -16,100 +16,128 @@
 		
 	</head>
 	<body ng-app="DataApp" ng-controller="appCtrl" style="overflow: auto">
-		<div class="headerWrapper">
-        	<div class="header">
-        		<div class="col-md-2 col-xs-2" style="padding-left: 55px; margin-top: -6px" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
-        			<a href="http://aidr.qcri.org" class="pull-left">
-        				<img src="resources/img/aidr_logo_50h.png">			
-        			</a>        			
-        		</div>
-        		<!-- <div class="col-md-1 col-xs-1 aidr_text_logo" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
-        			<span>AIDR</span>
-        		</div> -->
-        		<div class="col-md-6 col-xs-3">        			
-        		</div>
-        		<div class="col-md-2 col-xs-4">
-        			<div class="input-group" style="">
-					  <span class="input-group-addon" id="basic-addon1"><i class="fa fa-search"></i></span>
-					  <input type="text" class="form-control" placeholder="Search collection" aria-describedby="basic-addon1" ng-model="search" ng-change="figureOutItemsToDisplay()" >
-					</div>	
-        		</div>
-        		<div class="col-md-2 col-xs-3">
-        			<div class="btn-group" uib-dropdown dropdown-append-to-body>
-				      <!-- <button id="btn-append-to-body" type="button" class="btn btn-default btn-lg" uib-dropdown-toggle style="margin-top: 45px">
-				        <i class="fa fa-bars"></i> 
-				      </button> -->
-				      <div class="dropdown-toggle" uib-dropdown-toggle style="cursor: pointer; color: white">				      	      	
-				      	<img ng-src="{{profile.profile_pic}}" height="32" width="32" style="border-radius: 4px">
-				      	<b>{{profile.name}}</b>
-				      	<i class="fa fa-caret-down"></i>
-				      </div>
-				      <ul class="uib-dropdown-menu" role="menu" aria-labelledby="btn-append-to-body" style="margin-left: -12px;">
-				        <li role="menuitem" ng-click="openProfile(letter)"><a href><i class="fa fa-user"></i> Profile</a></li>
-				        <li class="divider"></li>
-				        <li role="menuitem"><a href="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
-				      </ul>
-				    </div>        			
-        		</div>
-				<!-- <form class="form-search form-inline">
-					<a href="logout" class="btn btn-default btn-sm" style="margin-top:-81px;margin-left: 54%">
-			          <span class="fa fa-sign-out"></span> Log out
-			        </a>
-			        <br/>
-		       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
-		     	</form> -->
-		     	
+		<div class="wrap">
+			<div class="headerWrapper">
+	        	<div class="header">
+	        		<div class="col-md-2 col-xs-2" style="padding-left: 55px; margin-top: -6px" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
+	        			<a href="http://aidr.qcri.org" class="pull-left">
+	        				<img src="resources/img/aidr_logo_50h.png">			
+	        			</a>        			
+	        		</div>
+	        		<!-- <div class="col-md-1 col-xs-1 aidr_text_logo" tooltip-placement="right" uib-tooltip="ARTIFICIAL INTELLIGENCE FOR DISASTER RESPONSE">
+	        			<span>AIDR</span>
+	        		</div> -->
+	        		<div class="col-md-6 col-xs-3">        			
+	        		</div>
+	        		<div class="col-md-2 col-xs-4">
+	        			<div class="input-group" style="">
+						  <span class="input-group-addon" id="basic-addon1"><i class="fa fa-search"></i></span>
+						  <input type="text" class="form-control" placeholder="Search collection" aria-describedby="basic-addon1" ng-model="search" ng-change="figureOutItemsToDisplay()" >
+						</div>	
+	        		</div>
+	        		<div class="col-md-2 col-xs-3">
+	        			<div class="btn-group" uib-dropdown dropdown-append-to-body>
+					      <!-- <button id="btn-append-to-body" type="button" class="btn btn-default btn-lg" uib-dropdown-toggle style="margin-top: 45px">
+					        <i class="fa fa-bars"></i> 
+					      </button> -->
+					      <div class="dropdown-toggle" uib-dropdown-toggle style="cursor: pointer; color: white">				      	      	
+					      	<img ng-src="{{profile.profile_pic}}" height="32" width="32" style="border-radius: 4px">
+					      	<b>{{profile.name}}</b>
+					      	<i class="fa fa-caret-down"></i>
+					      </div>
+					      <ul class="uib-dropdown-menu" role="menu" aria-labelledby="btn-append-to-body" style="margin-left: -12px;">
+					        <li role="menuitem" ng-click="openProfile(letter)"><a href><i class="fa fa-user"></i> Profile</a></li>
+					        <li class="divider"></li>
+					        <li role="menuitem"><a href="logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+					      </ul>
+					    </div>        			
+	        		</div>
+					<!-- <form class="form-search form-inline">
+						<a href="logout" class="btn btn-default btn-sm" style="margin-top:-81px;margin-left: 54%">
+				          <span class="fa fa-sign-out"></span> Log out
+				        </a>
+				        <br/>
+			       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
+			     	</form> -->
+			     	
+		        </div>
 	        </div>
-        </div>
-        <div ng-hide="flag" id="loading">
-        </div>
-		<div ng-show="flag" class="col-md-12">
-  			<div id="myDiv">
-				<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
-				<div class="list-group" >
-					<div class="list-group-item active" >
-						{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}</div>
-					<div class="list-group-item1">
-						<b>Feeds</b> 
-						<img id="twitter" style="height:20px" src="resources/img/twitter-circular-icon.png" ng-show="letter.provider == 'Twitter'" />
-						<img id="facebook" style="height:20px" src="resources/img/facebook-circular-icon.png" ng-show="letter.provider == 'Facebook'" />
-						<span id="lang" ng-if="letter.status == 'RUNNING'"><span class="pull-right">{{letter.totalCount}}<img id="count" src="resources/img/arrow-up.png" style="margin-top: -2px"/></span></span>
-						<span id="lang" ng-if="letter.status !== 'RUNNING'"><span class="pull-right">{{letter.totalCount}}</span></span>					
-					</div>
-					<div class="list-group-item">
-						<b>Languages</b>
-						<p class="text-right" id="lang"><span>{{letter.language | limitTo: 20 }}{{letter.language.length > 20 ? '...' : ''}}</span></p>
-					</div>
-					<div class="list-group-item" >
-						<b>Status</b>
-						<p class="text-right" id="status"><span  ng-style="letter.status === 'RUNNING' && {'background-color' : '#41B6B0'} || 
-	                 letter.status === 'STOPPED' && {'background' : '#A80000'}">{{letter.status}}</span></p> 
-					</div>				
-					<div class="list-group-item" ng-if="letter.status == 'RUNNING'">
-						<span class="col-md-12" style="font-size: 11px; text-align: center">
-							<img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>Running Since {{letter.startDate| date:'medium'}}</b>
-						</span>
-						<!-- <p id="date"><span style="margin-left:70px"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>Running Since {{letter.startDate| date:'medium'  }}</b></span></p> -->
-					</div>
-	
-					<div class="list-group-item" ng-if="letter.status !== 'RUNNING'">
-						<span class="col-md-12" style="font-size: 11px; text-align: center">
-							<img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>{{letter.startDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b>
-						</span>
-						<!-- <p id="date"><span style="margin-left:40px"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>{{letter.startDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p> -->
-					</div>
-					<div class="list-group-item last">
-						<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
+	        <div ng-hide="flag" id="loading">
+	        </div>
+			<div ng-show="flag" class="col-md-12">
+	  			<div id="myDiv">
+					<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
+					<div class="list-group" >
+						<div class="list-group-item active" >
+							{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}
+							<span class="pull-right badge" style="margin-top: 8px" ng-if="letter.crisisType">
+								{{letter.crisisType}}
+							</span>
+						</div>
+						<div class="list-group-item1">
+							<b>Feeds</b> 
+							<img id="twitter" style="height:20px" src="resources/img/twitter-circular-icon.png" ng-show="letter.provider == 'Twitter'" />
+							<img id="facebook" style="height:20px" src="resources/img/facebook-circular-icon.png" ng-show="letter.provider == 'Facebook'" />
+							<!-- <span id="lang">
+								<span class="pull-right">
+									{{letter.totalCount}}
+									<img id="count" src="resources/img/arrow-up.png" ng-if="letter.status == 'RUNNING'" style="margin-top: -2px"/>
+								</span>
+							</span> -->
+							<span class="pull-right badge" tooltip-placement="left" uib-tooltip="Human Tagged | Machine Tagged | Total Count" data-container="body">
+								{{letter.humanTaggedCount}} | {{letter.machineTagCount}} | {{letter.totalCount}} 
+							</span>				
+						</div>
+						<div class="list-group-item">
+							<b>Languages</b>
+							<p class="text-right" id="lang"><span>{{letter.language | limitTo: 20 }}{{letter.language.length > 20 ? '...' : ''}}</span></p>
+						</div>
+						<div class="list-group-item" >
+							<b>Status</b>
+							<p class="text-right" id="status"><span  ng-style="letter.status === 'RUNNING' && {'background-color' : '#41B6B0'} || 
+		                 letter.status === 'STOPPED' && {'background' : '#A80000'}">{{letter.status}}</span></p> 
+						</div>				
+						<div class="list-group-item" ng-if="letter.status == 'RUNNING'">
+							<span class="col-md-12" style="font-size: 11px; text-align: center">
+								<img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>Running Since {{letter.startDate| date:'medium'}}</b>
+							</span>
+							<!-- <p id="date"><span style="margin-left:70px"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>Running Since {{letter.startDate| date:'medium'  }}</b></span></p> -->
+						</div>
+		
+						<div class="list-group-item" ng-if="letter.status !== 'RUNNING'">
+							<span class="col-md-12" style="font-size: 11px; text-align: center">
+								<img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>{{letter.startDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b>
+							</span>
+							<!-- <p id="date"><span style="margin-left:40px"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>{{letter.startDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p> -->
+						</div>
+						<div class="list-group-item last">
+							<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		
+		<pagination boundary-links="true" max-size="8" items-per-page="itemsPerPage" total-items="filterLength" ng-model="currentPage" ng-change="pageChanged()">
+		</pagination>
+		
+		<div style="height:90px"></div>
 	</div>
-	<pagination ng-show="flag" boundary-links="true" max-size="8" items-per-page="itemsPerPage" total-items="filterLength" ng-model="currentPage" ng-change="pageChanged()">
-	</pagination>
 	
-	
-    
+    <div class="footer navbar-fixed-bottom" id="footer">
+      	<div class="footer">
+      		<div class="right">
+  	    		<a href="http://www.qcri.qa/">
+  	    		<span style="position: absolute;margin-top: 15px;right: 120px;">A project by</span>
+  	    		<img align="middle" src="resources/img/qcri_75x60.png"/></a>
+      		</div>
+	        <div class="left">
+	   	    	<a href="resources/QSS-Usr-Agr-Print-Version.docx.pdf" target="_blank">Terms of Service</a>
+	       		<a href="http://aidr.qcri.org/r/manual">Help</a>
+	       		<a href="http://aidr.qcri.org/r/credits">Credits</a>
+	       	</div>
+      	</div>
+    </div>
     
 	
 	<script type="text/ng-template" id="terms.html">
@@ -155,7 +183,6 @@
 			<div class="col-md-10" style="text-align: right">
 				{{collection.keywords}}
 			</div>
-           <!-- <b>Keywords:</b> <p class="text-right" id="key">{{collection.keywords}}</p> -->
         </div>
          <div class="modal-body" >
            <b>Curator:</b> <p class="text-right">{{splittedName}}</p>
@@ -163,10 +190,8 @@
         <div class="modal-body">
 			<button ng-hide="busy" ng-disabled="busy" ng-click="openTerms(collection)" class="btn btn-primary center-block">Download 50000 sample feeds </button>
             <button ng-show="busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample feeds <i class="fa fa-spinner fa-spin"></i></button>
-			<!-- <button disabled class="btn btn-primary center-block">Download 50000 sample feeds</button> -->
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
-		
     </script>
     <script type="text/ng-template" id="profile.html">
         <div class="modal-header" style="background-color: white">
@@ -208,20 +233,7 @@
 	      </div>
     </script>
     
-    <div class="footer navbar-fixed-bottom" id="footer">
-      	<div class="footer">
-      		<div class="right">
-  	    		<a href="http://www.qcri.qa/">
-  	    		<span style="position: absolute;margin-top: 15px;right: 120px;">A project by</span>
-  	    		<img align="middle" src="resources/img/qcri_75x60.png"/></a>
-      		</div>
-	        <div class="left">
-	   	    	<a href="resources/QSS-Usr-Agr-Print-Version.docx.pdf" target="_blank">Terms of Service</a>
-	       		<a href="http://aidr.qcri.org/r/manual">Help</a>
-	       		<a href="http://aidr.qcri.org/r/credits">Credits</a>
-	       	</div>
-      	</div>
-    </div>
+    
     
 	</body>
 </html>
