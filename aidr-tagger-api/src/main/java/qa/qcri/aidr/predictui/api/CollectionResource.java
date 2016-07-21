@@ -61,7 +61,7 @@ public class CollectionResource {
     @Path("/trainingData")
     public Response getCrisisForNominalAttributeById(@QueryParam("id") Integer attributeID,@QueryParam("crisis_type") Integer crisis_type,@QueryParam("lang_filters") String lang_filters) {
      
-		List<CollectionBriefInfo> crisisList = collectionLocalEJB.getCrisisForNominalAttributeById(attributeID,crisis_type,lang_filters);
+		List<CollectionBriefInfo> crisisList = collectionLocalEJB.getCrisisForNominalAttributeById(attributeID,crisis_type,lang_filters, null);
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage("SUCCESS");
         response.setDataObject(crisisList);

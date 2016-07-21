@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
@@ -19,12 +20,14 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.common.values.DownloadType;
+import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.manager.dto.CrisisRequest;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
@@ -1049,6 +1052,31 @@ public class TaggerController extends BaseController {
 		} catch (Exception e) {
 			logger.error("Error while generating CSV filtered link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+	}
+	
+	@RequestMapping(value = "/attribute/{attributeId}/collections", method = {RequestMethod.GET})
+	 @ResponseBody
+	 public Map<String, Object> getCollectionsByAttribute(@PathVariable Long attributeId, @RequestParam Long collectionId) {
+	  try {
+	   List<CollectionBriefInfo> collections = taggerService.fetchCollectionsByAttribute(attributeId, collectionId);
+	   return getUIWrapper(collections, true);
+	  } catch (Exception e) {
+	   logger.error("Error while fetching all crisisTypes", e);
+	   return getUIWrapper(false, "Error in fetching data.");
+	  }
+	 }
+	
+	@RequestMapping(value = "/import/training-set", method = { RequestMethod.POST })
+	@ResponseBody
+	public Map<String, Object> importTrainingSet(@RequestParam @NotNull Long targetCollectionId,
+    		@RequestParam String sourceCollectionCode, @RequestParam Long attributeId) {
+		try {
+			taggerService.importTrainingData(targetCollectionId, sourceCollectionCode, attributeId);
+			return getUIWrapper("Crisis Training Set imported sucessfully !!", true);
+		} catch (Exception e) {
+			logger.error("Error while importing training set.", e);
+			return getUIWrapper(false, "Error in fetching data.");
 		}
 	}
 	

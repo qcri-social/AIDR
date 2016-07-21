@@ -48,5 +48,5 @@ public interface CollectionResourceFacade extends CoreDBServiceFacade<Collection
 
 	public List findAllCrisisIds();
 	
-	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID,Integer crisis_type,String lang_filters)  throws PropertyNotSetException;
+	public List<CollectionBriefInfo> getCrisisForNominalAttributeById(Integer attributeID,Integer crisis_type,String lang_filters, Long collectionId)  throws PropertyNotSetException;
 }

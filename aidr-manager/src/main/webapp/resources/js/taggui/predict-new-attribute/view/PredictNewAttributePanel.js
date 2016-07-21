@@ -86,7 +86,8 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
 
             '<div class="attribute-item">',
 
-            '<button class="btn btn-green" onclick="predictNewAttributeController.addAttributeToCrises({nominalAttributeID}, \'{name}\', \'standard\')">',
+            //'<button class="btn btn-green" onclick="predictNewAttributeController.addAttributeToCrises({nominalAttributeID}, \'{name}\', \'custom\')">',
+            '<button class="btn btn-green" onclick="predictNewAttributeController.viewImportCrisisDataModal({nominalAttributeID})">',
             '<span>Add</span>',
             '</button>',
 
