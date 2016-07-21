@@ -135,8 +135,13 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
                 { header: 'Collection Name', dataIndex: 'name',  width: 200 },
                 { header: 'Language',  dataIndex: 'language',  width: 100 },
                 { header: 'Training Count', dataIndex: 'trainingCount',  width: 100  },
-                { header: 'Owner', dataIndex: 'owner', width: 200
-            }],
+                { 
+                	header: 'Owner', dataIndex: 'owner', width: 200,
+                	renderer: function renderTopic(value, p, record){
+                        return AIDRFMFunctions.getUserNameWithProviderIcon(value, true);
+                    }
+                }
+               ],
             viewConfig: {
               deferEmptyText: false,
               emptyText: '<div style="text-align: center; margin-top: 50px">No Collections are using this Classifier</div>'
