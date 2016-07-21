@@ -361,7 +361,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         
         this.notetextL = Ext.create('Ext.form.Label', {
         	flex: 1,
-        	html: 'By creating a collection you agree to our <a href="http://aidr.data.qcri.org/aidr-data/resources/QSS-Usr-Agr-Print-Version.docx.pdf" target=_blank>Terms of Service</a>, which basically state that:<br>'
+        	html: 'By creating a collection you agree to our <a href="http://aidr.qcri.org/r/tos" target=_blank>Terms of Service</a>, which basically state that:<br>'
         		 	+ '<ul>'
         			+ '<li><span class="blueInfo"></span>   You are using AIDR for humanitarian and crisis response purposes.</span></li>'
         		 	+ '<li><span class="blueInfo"></span>   You understand your collections can be stopped and removed at any time.'
