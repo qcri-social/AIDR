@@ -615,7 +615,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 			if(objects[13] == null) objects[13] = new BigDecimal(0);
 			collectionSummaryInfo.setMachineTagCount(((BigDecimal) objects[13]).longValue());
 			collectionSummaryInfo.setCurator((String) objects[14]);
-			collectionSummaryInfo.setCrisis_type((String) objects[15]);
+			collectionSummaryInfo.setCrisisType((String) objects[15]);
 			Long humanTagCount = humanTagCountMap.get(collectionId) != null ? humanTagCountMap.get(collectionId) : 0; 
 			collectionSummaryInfo.setHumanTaggedCount(humanTagCount);
 			
