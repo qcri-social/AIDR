@@ -1,7 +1,10 @@
 package qa.qcri.aidr.trainer.api.Jedis;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 
+import qa.qcri.aidr.trainer.api.util.TrainerConfigurationProperty;
+import qa.qcri.aidr.trainer.api.util.TrainerConfigurator;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -14,7 +17,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * To change this template use File | Settings | File Templates.
  */
 public class JedisDataStore {
-    String REDIS_HOST="localhost";
+	private static TrainerConfigurator configProperties = TrainerConfigurator.getInstance();
     static JedisPool jedisPool;
     
     private static Logger logger = Logger.getLogger(JedisDataStore.class);
@@ -22,9 +25,9 @@ public class JedisDataStore {
     /* REDIS */
     public static Jedis getJedisConnection() throws Exception {
         try {
+        	configProperties.getProperty(TrainerConfigurationProperty.REDIS_HOST);
             if (jedisPool == null) {
-
-                jedisPool = new JedisPool(new JedisPoolConfig(), "localhost",6379);
+                jedisPool = new JedisPool(new JedisPoolConfig(), configProperties.getProperty(TrainerConfigurationProperty.REDIS_HOST), Integer.valueOf(configProperties.getProperty(TrainerConfigurationProperty.REDIS_PORT)));
 
             }
             return jedisPool.getResource();

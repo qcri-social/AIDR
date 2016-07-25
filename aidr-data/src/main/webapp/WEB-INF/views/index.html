@@ -68,11 +68,13 @@
 	  			<div id="myDiv">
 					<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
 					<div class="list-group" >
-						<div class="list-group-item active" >
-							{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}
-							<span class="pull-right badge" style="margin-top: 8px" ng-if="letter.crisisType">
-								{{letter.crisisType}}
-							</span>
+						<div class="list-group-item active" style="text-align: center">
+							<div>{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}</div>
+							<div ng-if="letter.crisisType">
+								<span class="badge" style="margin-top: 8px; background-color: white; color: #337ab7" >
+									{{letter.crisisType| limitTo: 50}}{{letter.crisisType.length > 50 ? '...' : ''}}
+								</span>
+							</div>
 						</div>
 						<div class="list-group-item1">
 							<b>Feeds</b> 

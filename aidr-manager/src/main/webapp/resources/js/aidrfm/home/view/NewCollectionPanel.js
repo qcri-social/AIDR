@@ -392,7 +392,7 @@ this.tabs =  Ext.create('Ext.tab.Panel', {
     ]
 });
         /*
-        *  "Browse public collections" is currently http://aidr-prod.qcri.org/AIDRFetchManager/public.jsp
+        *  "Browse public collections" is currently http://aidr-web.qcri.org/AIDRFetchManager/public.jsp
         * */
         this.browseCollectionLink = "";
 
