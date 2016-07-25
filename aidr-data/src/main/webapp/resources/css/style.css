@@ -442,10 +442,9 @@ form.form-search:before {
 	padding-left: 0px;
 }
 
-.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover
-	{
-			height:55px;
-		font-size:20px;
+.list-group-item.active,.list-group-item.active:focus,.list-group-item.active:hover {
+	height: 75px;
+	font-size: 20px;
 	z-index: 2;
 	color: #fff;
 	background-color: #43B5B1 !important;
