@@ -13,6 +13,8 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -34,8 +36,11 @@ import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
+import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 @Controller
 @RequestMapping("protected/collection")
@@ -778,5 +783,35 @@ public class CollectionController extends BaseController{
 			logger.error("Error while getting twitter userIds", e);
 			return getUIWrapper(false, "Exception in twitter user data lookup.");
 		}
+	}
+	
+	@RequestMapping(value = "/searchFacebookProfiles", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> searchFacebookProfiles(@RequestParam(value = "keyword") String keyword,
+			@RequestParam(value = "code", required = false) String code,
+			@RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
+			@RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset
+			
+			) throws Exception {
+		
+		UserAccount userEntity = getAuthenticatedUser();
+		if (userEntity == null || !userEntity.getProvider().equals(SocialSignInProvider.FACEBOOK)) {
+			if(StringUtils.isNotEmpty(code)){
+				Collection collection = collectionService.findByCode(code);
+				userEntity = collection.getOwner();
+			}else{
+				return getUIWrapper(false, "Please login with facebook");
+			}
+		}
+		if(userEntity != null){
+			JSONArray fbProfiles = collectionService.searchFacebookProfiles(keyword, offset, limit,userEntity);
+			if(fbProfiles!=null){
+				return getUIWrapper(fbProfiles, true);
+			}
+			else{
+				return getUIWrapper(null, false);
+			}
+		}
+		return getUIWrapper(null, false);
 	}
 }
