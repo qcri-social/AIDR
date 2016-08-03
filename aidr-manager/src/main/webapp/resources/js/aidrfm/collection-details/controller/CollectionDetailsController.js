@@ -307,38 +307,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         datailsController = this;
         var me = this;
 
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/crisis-exists.action',
-            method: 'GET',
-            params: {
-                code: COLLECTION_CODE
-            },
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var resp = Ext.decode(response.responseText);
-                var cmp = me.DetailsComponent;
-                if (resp.success) {
-                    if (resp.data) {
-                        console.log('crisis exists', true);
-						if(TYPE != 'Facebook'){
-							cmp.gotoTaggerButton.show();	
-						}
-                        cmp.enableTaggerButton.hide();
-                        //cmp.downloadExportTaggerDisabledPanel.hide();
-                        //cmp.downloadExportTaggerEnabledPanel.show();
-                    }
-                } else {
-                    console.log('crisis exists', false);
-                    cmp.gotoTaggerButton.hide();
-                    cmp.enableTaggerButton.hide();
-                    //cmp.downloadExportTaggerDisabledPanel.hide();
-                    //cmp.downloadExportTaggerEnabledPanel.hide();
-                }
-            }
-        });
-
         var id = COLLECTION_ID;
         this.DetailsComponent.currentCollectionId = COLLECTION_ID;
 
@@ -439,11 +407,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>');
                 }else if(collectionType === 'Facebook'){
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
-					Ext.getCmp('enableTagger').hide();
-					Ext.getCmp('goToTagger').hide();
 					Ext.getCmp('fetchFromPanel').hide();
-					//this.DetailsComponent.gotoTaggerButton.hide();
-					//this.DetailsComponent.enableTaggerButton.hide();
                 }
 
                Ext.getCmp('downloadLabel').setText('Downloaded ' + COLLECTION_TYPES[collectionType]['plural'] + ' <br/> (since last re-start):',false);
@@ -566,15 +530,11 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setTotalCountOfDocuments(r.totalCount);
         this.setLastDowloadedDoc(r.lastDocument);
         if(r.hasTaggerOutput) {
-			if(TYPE != 'Facebook'){
-				this.DetailsComponent.gotoTaggerButton.show();
-			}
+			this.DetailsComponent.gotoTaggerButton.show();
         	this.DetailsComponent.enableTaggerButton.hide();
     	} else {
     		this.DetailsComponent.gotoTaggerButton.hide();
-			if(TYPE != 'Facebook'){
-				this.DetailsComponent.enableTaggerButton.show();
-			}
+			this.DetailsComponent.enableTaggerButton.show();
     	}
         
     },
@@ -739,7 +699,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         if (raw == 'RUNNING_WARNING' || raw == 'RUNNING' || raw == 'INITIALIZING' || raw == 'WARNING'){
             console.log('Set status ', raw);
             this.DetailsComponent.startButton.hide();
-//            this.DetailsComponent.enableTaggerButton.show(); TODO: Fix for https://www.pivotaltracker.com/s/projects/969960/stories/74910442
             this.DetailsComponent.enableTaggerButton.enable();
             this.DetailsComponent.stopButton.show();
             this.DetailsComponent.trashButton.show();

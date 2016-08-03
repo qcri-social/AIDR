@@ -145,10 +145,6 @@ public class ScreenController extends BaseController{
         Collection collection = collectionService.findByCode(code);
         logger.info("returned from findByCode");
         
-        if(collection.getProvider() == CollectionType.Facebook) {
-        	return new ModelAndView("redirect:/protected/access-error");
-        }
-        
         String signInProviderName = getAuthenticatedProviderName();
         Long crisisId = 0L;
         String crisisName = "";
@@ -184,11 +180,6 @@ public class ScreenController extends BaseController{
             return new ModelAndView("redirect:/protected/access-error");
         }
         
-        Collection collection = collectionService.findByCode(code);
-        if(collection.getProvider() == CollectionType.Facebook) {
-        	return new ModelAndView("redirect:/protected/access-error");
-        }
-
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
 
         Integer crisisId = 0;
