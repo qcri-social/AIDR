@@ -9,7 +9,7 @@ package qa.qcri.aidr.trainer.api.store;
  */
 public class URLReference {
 
-    public static String PUBLIC_LINK ="http://aidr-prod.qcri.org/AIDRTrainerAPI/crisisContent.html?code=";
+    public static String PUBLIC_LINK ="http://aidr-web.qcri.org/AIDRTrainerAPI/crisisContent.html?code=";
     public static String PUBLIC_PYBOSSA_URL = "http://clickers.micromappers.org";
 
     public static String PYBOSAA_APP = "/project/";
