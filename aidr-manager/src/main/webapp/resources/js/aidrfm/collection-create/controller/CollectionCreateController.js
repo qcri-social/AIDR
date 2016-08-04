@@ -6,6 +6,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
     ],
 
     init: function () {
+
         this.control({
 
             'collection-create': {
@@ -36,7 +37,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     'Queries with or without hashtags:<br>' +
                     '- If you don\'t include \'#\', you also match hashtags ("bridge" matches "#bridge")<br>' +
                     '- If you do include \'#\', you only match hashtags ("#bridge" does not match "bridge")<br>';
-                    
+
                 	if(SIGNED_IN_PROVIDER === 'facebook'){
                 		infoText = 'This field represents comma separated keywords to filter the Facebook page/group/event.<br>' +
                         'General rules:<br>' +
@@ -47,7 +48,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         '- If you include two or more words on a query, all of them must be present in the page/group/event ("Brooklyn bridge" does not match a page/group/event that does not contain "Brooklyn" or does not contain "bridge")<br>' +
                         '- The words does not need to be consecutive or in that order ("Brooklyn bridge" will match "the bridge to Brooklyn")<br>';
                 	}
-                	
+
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
                         html: infoText,
@@ -100,7 +101,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     });
                 }
             },
-			
+
 			"#fetchFromInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -111,7 +112,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     });
                 }
             },
-            
+
             "#collectionLangInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -135,6 +136,17 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             },
 
             "#crisisTypesInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection type specifies a type of the crisis.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
+            "#keywordsComboInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
@@ -182,6 +194,12 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+            "#addProfile": {
+                click: function (btn, e, eOpts) {
+                    CollectionCreateController.addProfiles();
+                }
+            },
+
             "#CollectionType":{
 				render: function(field, newValue, oldValue){
 					if(SIGNED_IN_PROVIDER == 'facebook'){
@@ -194,7 +212,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                      if(newValue === 'SMS'){
                          Ext.getCmp('keywordsPanel').hide();
                          Ext.getCmp('langPanel').hide();
-                         Ext.getCmp('geoPanel').hide(); 
+                         Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('geoRPanel').hide();
                          Ext.getCmp('followPanel').hide();
                          Ext.getCmp('durationDescription').hide();
@@ -236,8 +254,10 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
     saveCollection: function () {
 
+      var fb_profiles = this.CollectionCreateComponent.profiles;
+
     	var purpose='Using collection for humanitarian and crisis response purpose only.';
-    	
+
     	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
 			if (buttonId === 'yes') {
 				checkRunningStatus();
@@ -268,15 +288,15 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 		       	});
 		    }
         });
-    	
-    	
+
+
     	function checkRunningStatus(){
         if (AIDRFMFunctions.mandatoryFieldsEntered()) {
 
             var form = Ext.getCmp('collectionForm').getForm();
 
             Ext.getBody().mask('Loading...');
-            
+
             //Check if some collection already is running for current user
             Ext.Ajax.request({
                 url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
@@ -319,7 +339,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 },
                 failure: function () {
                     Ext.getBody().unmask();
-                   
+
                 }
             });
 
@@ -331,12 +351,22 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             function createCollection(shouldRun) {
 
                 Ext.getBody().mask('Saving collection ...');
-                var fi =0, ff = 0;
+                var fi =0, ff = 0, follow;
+
                 if(form.findField('collectionType').getValue() ==='Facebook'){
                 	fi = form.findField('fetchInterval').getValue();
-					ff = form.findField('fetchFrom').getValue();
+					        ff = form.findField('fetchFrom').getValue();
+
+                  var profilesIds = Object.keys(fb_profiles);
+                  var followString = "";
+                  for (var i in profilesIds) {
+                    followString+= followString ? "," + profilesIds[i] : profilesIds[i] ;
+                  }
+                  follow = followString;
+                } else {
+                  follow = Ext.String.trim( form.findField('follow').getValue() );
                 }
-                
+
                 Ext.Ajax.request({
                     url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
                     method: 'POST',
@@ -344,12 +374,12 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         name: Ext.String.trim( form.findField('name').getValue() ),
                         code: Ext.String.trim( form.findField('code').getValue() ),
                         track: Ext.String.trim( form.findField('track').getValue() ),
-                        follow: Ext.String.trim( form.findField('follow').getValue() ),
+                        follow: follow,
                         geo: Ext.String.trim( form.findField('geo').getValue() ),
                         geoR: Ext.String.trim(  form.findField('geoR').getValue().geoR1 ),
                         langFilters: form.findField('langFilters').getValue(),
                         fetchInterval: fi,
-						fetchFrom: ff,
+						            fetchFrom: ff,
                         durationHours: form.findField('durationHours').getValue(),
                         crisisType: form.findField('crisisType').getValue(),
                         provider: form.findField('collectionType').getValue(),
@@ -447,7 +477,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         '&quot;Earthquake in Concepcion, Chile in 2014&quot;',
                         '&quot;Consequences of earthquake in Concepcion, Chile in 2014&quot;'
                     ]);
-                    
+
                     name.markInvalid("Collection Name already exist. Please select another name");
                 } else {
                     if (me.checkCount == 0) {
@@ -460,7 +490,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
     agreeTOS: function () {
     	var me = this;
-    	
+
     	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
                 if (buttonId === 'yes') {
                 }
@@ -483,7 +513,50 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             });
     },
-    
+
+    addProfiles: function() {
+      var profiles = this.CollectionCreateComponent.profiles;
+      if(this.CollectionCreateComponent.profilesCombo.valueCollection.items) {
+        this.CollectionCreateComponent.profilesCombo.valueCollection.items.forEach(function (item, index) {
+          profiles[item.id] = item.data;
+        });
+        this.CollectionCreateComponent.profilesCombo.setValue(null);
+      }
+      CollectionCreateController.renderProfiles(this.CollectionCreateComponent.profiles);
+    },
+
+    renderProfiles: function(profiles) {
+      var temp_html = '<div>';
+      for(id in profiles) {
+        var item = profiles[id];
+        var name = AIDRFMFunctions.applyEllipsis(item.name, 10);
+        var likes;
+        if(item.fans) {
+          likes = item.fans.toLocaleString();
+        }
+        temp_html+= '<div class="profile-div"><div style="float: left"><img src="'+ item.imageUrl +'"/></div>';
+        if(item.type == 'PAGE') {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ likes +' Likes</div>';
+        } else {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ item.type +'</div>';
+        }
+        temp_html+= '<div style="float: right;padding: -5px;margin: -5px;color: #3c7ac6"><i class="fa fa-external-link link" onclick="CollectionCreateController.openProfile(\''+ item.link +'\')"></i> <i class="fa fa-times-circle-o link" onclick="CollectionCreateController.removeProfile('+ item.id +')"></i></div>';
+        //temp_html+= '<span class="tooltiptext">'+ item.name +'</span></div>';
+        temp_html+= '</div>';
+      }
+      temp_html+= '</div>';
+      Ext.getCmp('subscribeResult').update(temp_html);
+    },
+
+    removeProfile: function(id) {
+      delete this.CollectionCreateComponent.profiles[id];
+      CollectionCreateController.renderProfiles(this.CollectionCreateComponent.profiles);
+    },
+
+    openProfile: function(link) {
+      window.open(link, '_blank');
+    },
+
     initNameAndCodeValidation: function() {
     	this.checkCount = 2;
     	this.isExist();

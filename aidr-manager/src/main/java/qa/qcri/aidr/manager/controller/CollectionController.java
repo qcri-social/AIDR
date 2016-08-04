@@ -14,7 +14,6 @@ import javax.ws.rs.QueryParam;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -36,10 +35,8 @@ import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
-import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
-import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 @Controller
@@ -787,10 +784,10 @@ public class CollectionController extends BaseController{
 	
 	@RequestMapping(value = "/searchFacebookProfiles", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> searchFacebookProfiles(@RequestParam(value = "keyword") String keyword,
+	public Map<String, Object> searchFacebookProfiles(@RequestParam(value = "query") String query,
 			@RequestParam(value = "code", required = false) String code,
 			@RequestParam(value = "limit", required = false, defaultValue = "100") Integer limit,
-			@RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset
+			@RequestParam(value = "start", required = false, defaultValue = "0") Integer start
 			
 			) throws Exception {
 		
@@ -804,7 +801,7 @@ public class CollectionController extends BaseController{
 			}
 		}
 		if(userEntity != null){
-			JSONArray fbProfiles = collectionService.searchFacebookProfiles(keyword, offset, limit,userEntity);
+			JSONArray fbProfiles = collectionService.searchFacebookProfiles(query, start, limit,userEntity);
 			if(fbProfiles!=null){
 				return getUIWrapper(fbProfiles, true);
 			}
