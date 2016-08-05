@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import qa.qcri.aidr.collector.beans.FacebookCollectionTask;
 import qa.qcri.aidr.collector.beans.FacebookEntityType;
@@ -125,15 +126,12 @@ public class FacebookFeedTracker implements Closeable {
 			
 			//Add subscribed profilesIds to list
 			if(StringUtils.isNotBlank(task.getToFollow())){
-				String[] profileIds = task.getToFollow().split(",");
-				FacebookProfile facebookProfile = new FacebookProfile();
-				
-				for (String profileId : profileIds) {
-					if(StringUtils.isNotBlank(profileId)){
-						facebookProfile = new FacebookProfile();
-						facebookProfile.setId(profileId.trim());
-						fbProfiles.add(facebookProfile);
-					}
+				try {
+					ObjectMapper mapper = new ObjectMapper();
+					List<FacebookProfile> subscribedProfiles = mapper.readValue(task.getToFollow(), mapper.getTypeFactory().constructCollectionType(List.class, FacebookProfile.class));
+					fbProfiles.addAll(subscribedProfiles);
+				} catch (IOException e) {
+					logger.error("Exception while parsing facebook subscribed page json",e);
 				}
 			}
 
