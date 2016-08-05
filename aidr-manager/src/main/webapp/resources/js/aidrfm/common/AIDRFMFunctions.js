@@ -279,6 +279,10 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         word = word.substring(0, length) + "...";
       }
       return word;
+    },
+
+    openProfile: function(link) {
+      window.open(link, '_blank');
     }
 
 });

@@ -15,7 +15,7 @@ Ext.ns('App');
 App.Demo = {
     init:function()
     {
-        
+
     },
 
     openWindow:function(url)
@@ -78,10 +78,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.refreshButton = Ext.create('Ext.Button', {
             height: 32,
             width: 32,
-            
+
             margin: '13 0 0 0',
             tooltip: 'Refresh',
-            
+
             cls:'btn btn-blueish4',
             id: 'refreshBtn'
         });
@@ -90,13 +90,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             width: '100%',
             html: '<div class="horizontalLine"></div>'
         });
-        
+
         this.horizontalLineBottomMargin = Ext.create('Ext.container.Container', {
             width: '100%',
             margin: '0 0 30 0',
             html: '<div class="horizontalLine"></div>'
         });
-        
+
         this.collectionHistoryDoNotChangeMessage = Ext.create('Ext.panel.Panel', {
             html: '<div style="padding-top:160px; padding-bottom:10px;"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
             hidden: true
@@ -144,7 +144,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 this.geoL
             ]
         });
-        
+
         this.fetchIntervalContainer = Ext.create('Ext.container.Container', {
             hidden: true,
             defaultType: 'label',
@@ -157,7 +157,39 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 this.fetchIntervalL
             ]
         });
-		
+
+        this.fbFollowContainerL = Ext.create('Ext.container.Container', {
+            id: 'fbFollowContainer',
+            html: '',
+            labelWidth: 240,
+            fieldLabel: 'Short name',
+            autoScroll: true,
+            height: 82,
+            cls: 'subscribe-result-size',
+            //margin: '20 0 0 216',
+            padding: 0,
+            flex: 1
+        });
+
+        this.fbFollowContainer = Ext.create('Ext.container.Container', {
+            hidden: true,
+            xtype: 'container',
+            defaultType: 'label',
+            layout: 'hbox',
+            hidden: true,
+            items: [
+                {
+                    width: 220,
+                    text: 'Subscriptions:'
+                },
+                this.fbFollowContainerL
+            ]
+        });
+
+        this.openProfile =  function(link) {
+          window.open(link, '_blank');
+        },
+
 		this.fetchFromContainer = Ext.create('Ext.container.Container', {
             hidden: true,
             defaultType: 'label',
@@ -271,7 +303,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             emptyText: 'e.g., 43.43, 22.44, 89.32, 56.43 (max 25)'
         });
-        
+
         this.geoR = Ext.create('Ext.form.Panel', {
             id:'geoRPanel',
             hidden:true,
@@ -350,7 +382,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             value: 48,
             queryMode: 'local'
         });
-        
+
         this.fetchIntervalStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data : [
@@ -362,7 +394,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 { "val": 168, "label": '7 days' }
             ]
         });
-		
+
 		this.fetchFromStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data : [
@@ -373,7 +405,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 { "val": 4320, "label": '6 months' }
             ]
         });
-        
+
         this.fetchInterval = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Fetch Interval',
             flex: 1,
@@ -390,7 +422,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             value: 6,
             queryMode: 'local'
         });
-		
+
 		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Fetch From Last',
             flex: 1,
@@ -431,7 +463,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             store: this.collectionTypeComboStore,
             value: 'Twitter'
         });*/
-        
+
         this.collectionTypeL = Ext.create('Ext.form.Label', {
 			flex: 1
 		});
@@ -505,7 +537,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'collectionTrash',
             margin: '25 0 0 0',
             hidden: true,
-            //flex: 1  
+            //flex: 1
         });
 
         this.untrashButton = Ext.create('Ext.Button', {
@@ -523,7 +555,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             padding: '15 0 0 0',
             cls: 'header-h2',
             hidden: true
-            	
+
         });
 
         this.saveButton = Ext.create('Ext.Button', {
@@ -585,7 +617,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.collectionHistoryPanelView.show();
                         me.horizontalLineBottomMargin.show();
                         me.collectionHistoryGrid.show();
-                        //Adding dock to display total record count 
+                        //Adding dock to display total record count
                         me.down('#collectionLogStoreCount').setText("Total no. of records :  " + s.getCount());
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
@@ -623,19 +655,19 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.collectionHistoryPanelTpl = new Ext.XTemplate(
             '<div class="collections-list">',
-       
+
             '<tpl if="values.length == 0">' +
             //'<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
             '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
-            
+
             '<tpl for=".">',
             '<div></div>',
-            
+
             '<div class="collection-item">',
 
             '<div class="img">',
-            
+
             '<tpl if="TYPE == \'Twitter\'">'+
             '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">' +
         	'<tpl elseif="TYPE == \'Facebook\'">'+
@@ -643,7 +675,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<tpl else>'+
             '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
             '</tpl>'+
-            
+
             /*'<tpl if="[this.getType()] == 0">' +
             '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">',
             '</tpl>',
@@ -660,12 +692,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div>End date:</div>',
             '{[this.showGeoLabel(values.geo)]}',
             '{[this.showFollowLabel(values.follow)]}',
-            
+
             '<tpl if="[this.getType()] == 0">' +
             '<div>Language(s):</div>',
             '<div>Keyword(s):</div>',
             '</tpl>',
-           
+
             '</div>',
 
             '<div class="leftColumn">',
@@ -674,7 +706,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div>{[this.getDateTimeField(values.endDate)]}</div>',
             '{[this.showValue(values.geo)]}',
             '{[this.showValue(values.follow)]}',
-            
+
             '<tpl if="[this.getType()] == 0">' +
             '<div>{[this.getLanguageField(values.langFilters)]}</div>',
             '<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
@@ -744,9 +776,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 }
             }
         });
-        
+
         this.collectionHistoryPanelView = Ext.create('Ext.container.Container', {
-        	
+
         	items: [{
         	        	xtype: 'dataview',
         	        	store: 'collectionHistoryPanelStore',
@@ -1228,7 +1260,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             id:'keywords',
                             defaultType: 'label',
                             layout: 'hbox',
-                            
+
                             items: [
                                 {
                                     width: 220,
@@ -1239,7 +1271,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         },
                         this.geoContainer,
                         this.fetchIntervalContainer,
-						this.fetchFromContainer,
+						            this.fetchFromContainer,
                         this.followContainer,
                         {
                             xtype: 'container',
@@ -1256,7 +1288,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 this.languageFiltersL
                             ]
                         },
-
+                        this.fbFollowContainer,
                         {
                             xtype: 'container',
                             defaultType: 'label',
@@ -1339,7 +1371,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'generateJsonTweetIdsLink'
         });
 
-		this.userStore = Ext.create('Ext.data.JsonStore', { 
+		this.userStore = Ext.create('Ext.data.JsonStore', {
 			fields: ['id', 'userName'],
                 pageSize: 10,
                 proxy: {
@@ -1350,17 +1382,17 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         type: 'json'
                     }
                 }
-		
+
 		});
-		
+
 		this.usersTpl = new Ext.XTemplate(
 			'<tpl for=".">' +
 				'<div style="height:30px;padding-top: 5px" class="x-boundlist-item">'+
 				'{[AIDRFMFunctions.getUserNameWithProviderIcon(values.userName, true)]}'+
-				'</div>' +              
+				'</div>' +
 			'</tpl>'
 		);
-		
+
         this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
             minChars: 0,
             width: 300,
@@ -1372,12 +1404,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             displayField: 'userName',
             valueField: 'id',
 		    store: this.userStore,
-            
+
 			tpl: this.usersTpl
-							
+
         });
-		
-		
+
+
         this.addManagerInfo = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
@@ -1523,7 +1555,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 }
             }]
         });
-        
+
         this.collectionHistoryGrid = Ext.create('Ext.grid.Panel', {
             flex: 1,
             store: 'collectionLogStore',
@@ -1576,7 +1608,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	                	var selectedRec = records[0].data;
 	                    var model = [];
 	                    model.push(selectedRec);
-		                    
+
 	                	 //Highlighting the point on chart
 		                var collectionSeries = collectionHistoryChart.series.items[0];
 		                //collectionSeries.unHighlightItem();
@@ -1599,9 +1631,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 viewready : function(grid){
                 	setTimeout(function() {
                 		grid.getSelectionModel().select(0);
-                    }, 1000); 
-                    	   
-                         
+                    }, 1000);
+
+
                          //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
                     //});
                 },
@@ -1623,7 +1655,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 return r ? languageFull : "<span class='na-text'>Not specified</span>";
             }
         });
-        
+
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
             width: '100%',
