@@ -357,12 +357,18 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 	fi = form.findField('fetchInterval').getValue();
 					        ff = form.findField('fetchFrom').getValue();
 
-                  var profilesIds = Object.keys(fb_profiles);
+                  /*var profilesIds = Object.keys(fb_profiles);
                   var followString = "";
                   for (var i in profilesIds) {
                     followString+= followString ? "," + profilesIds[i] : profilesIds[i] ;
                   }
-                  follow = followString;
+                  follow = followString;*/
+                  follow = [];
+                  for(id in fb_profiles) {
+                    var item = fb_profiles[id];
+                    follow.push(item);
+                  }
+                  follow = JSON.stringify(follow);
                 } else {
                   follow = Ext.String.trim( form.findField('follow').getValue() );
                 }
