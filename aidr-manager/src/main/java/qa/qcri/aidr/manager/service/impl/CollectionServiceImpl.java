@@ -19,7 +19,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -170,8 +169,10 @@ public class CollectionServiceImpl implements CollectionService {
 				collection.setGeoR(null);
 				collection.setFollow(null);
 			}
+			if(collection.getProvider() == CollectionType.Twitter){
+				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
+			}
 			
-			collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
 			collectionRepository.update(collection);
 			// first make an entry in log if collection is running
 			if (CollectionStatus.RUNNING_WARNING.equals(collection.getStatus()) || CollectionStatus.RUNNING.equals(collection.getStatus())) {
@@ -341,8 +342,11 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setAccessTokenSecret(userconnection.getSecret());
 		dto.setCollectionName(dbCollection.getName());
 		dto.setCollectionCode(dbCollection.getCode());
-
-		dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getOwner().getUserName()));
+		if(dbCollection.getProvider() == CollectionType.Facebook){
+			dto.setToFollow(dbCollection.getFollow());
+		}else{
+			dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getOwner().getUserName()));
+		}
 		dto.setToTrack(dbCollection.getTrack());
 		dto.setGeoLocation(dbCollection.getGeo());
 		dto.setGeoR(dbCollection.getGeoR());

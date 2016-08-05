@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;

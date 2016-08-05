@@ -37,6 +37,7 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.SocialSignInProvider;
 
 @Controller
@@ -695,7 +696,11 @@ public class CollectionController extends BaseController{
 		
 		try {
 		if(user != null) {
-			dto.setFollow(collectionService.getFollowTwitterScreenNames(collection.getFollow(), user.getUserName()));
+			if(collection.getProvider() == CollectionType.Facebook){
+				dto.setFollow(collection.getFollow());
+			}else{
+				dto.setFollow(collectionService.getFollowTwitterScreenNames(collection.getFollow(), user.getUserName()));
+			} 
 		}	
 		} catch(RuntimeException e) {
 			logger.error("Error", e);
