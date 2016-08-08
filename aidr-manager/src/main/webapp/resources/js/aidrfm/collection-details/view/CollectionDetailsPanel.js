@@ -800,6 +800,89 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             emptyMsg:'No collection history records to display'
         });
 
+        Ext.define("Post", {
+            extend: 'Ext.data.Model',
+            proxy: {
+                //type: 'jsonp',
+                url :  BASE_URL + '/protected/collection/searchFacebookProfiles',
+                reader: {
+                    type: 'json',
+                    root: 'data'
+                    //totalProperty: 'totalCount'
+                }
+            },
+            fields: [
+                {name: 'id', mapping: 'id'},
+                {name: 'name', mapping: 'name'},
+                {name: 'imageUrl', mapping: 'imageUrl'},
+                {name: 'fans', mapping: 'fans'},
+                {name: 'link', mapping: 'link'},
+                {name: 'type', mapping: 'type'}
+            ]
+        });
+
+        ds = Ext.create('Ext.data.Store', {
+            pageSize: 30,
+            model: 'Post'
+        });
+
+        this.profiles = [];
+
+        this.addProfileBtn = Ext.create('Ext.Button', {
+            text: 'Add Selected',
+            margin: '0 0 0 10',
+            cls: 'btn btn-blueBig',
+            id: 'addProfile'
+        });
+
+
+
+        this.profilesCombo = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Subscriptions',
+            flex:1,
+            labelWidth: 130,
+            id: 'CollectionType1',
+            suspendLayout:true,
+            name: 'collectionType1',
+            emptyText: 'Please search Pages/Groups/Events',
+            valueField: 'name',
+            displayField: 'name',
+            multiSelect: true,
+            pageSize: true,
+            store: ds,
+            minChars: 3,
+            listConfig: {
+                loadingText: 'Searching...',
+                emptyText: 'No matching posts found.',
+                getInnerTpl: function() {
+                    var temp_html = '<div class="dropdown-profile-div"><div style="float: left"><img src="{imageUrl}"/></div>';
+                    temp_html+= '<tpl if="type == \'PAGE\'">';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 18)]}</b><br/>{[values.fans.toLocaleString()]} Likes</div>';
+                    temp_html+= '<tpl else>';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 18)]}</b><br/>{type}</div>';
+                    temp_html+= '</tpl>';
+                    temp_html+= '</div>';
+                    return temp_html;
+                }
+            }
+        });
+
+
+
+        this.subscribeResult = Ext.create('Ext.container.Container', {
+            id: 'subscribeResult',
+            hidden:true,
+            html: '',
+            labelWidth: 130,
+            autoScroll: true,
+            height: 0,
+            cls: 'subscribe-result-size',
+            margin: '20 0 0 130',
+            padding: 0,
+            flex: 1
+        });
+
+
         this.crisisTypesStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisTypesStore',
@@ -915,6 +998,26 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            hidden:true,
+                            id: 'subscriptionPanel',
+                            items: [
+                                this.profilesCombo,
+                                this.addProfileBtn,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'fbProfilesInfo'
+                                }
+                            ]
+                        },
+                        this.subscribeResult,
                         {
                             xtype: 'container',
                             layout: 'hbox',

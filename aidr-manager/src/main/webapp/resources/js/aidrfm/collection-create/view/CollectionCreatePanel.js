@@ -477,6 +477,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             html: '',
             labelWidth: 240,
             autoScroll: true,
+            hidden: true,
             cls: 'subscribe-result-size',
             margin: '20 0 0 240',
             padding: 0,
@@ -521,15 +522,27 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             }
         }
 
-        var wrapFieldWithBtn = function(field, btn, fieldMargin) {
+        var wrapFieldWithBtn = function(field, infoId, btn, fieldMargin, wrapId) {
             return {
                 xtype: 'container',
                 layout: 'hbox',
+                id:wrapId,
+                hidden: true,
                 margin:fieldMargin,
 				        suspendLayout:true,
                 items: [
                     field,
-                    btn
+                    btn,
+                    {
+                        border: false,
+                        xtype:'component',
+                        bodyStyle: 'background:none',
+                        autoEl:'span',
+                        html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                        height: 22,
+                        width: 22,
+                        id: infoId
+                    }
                 ]
             }
         }
@@ -555,7 +568,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
                 wrapFieldWithInfo(this.keywordsE, 'collectionkeywordsInfo', undefined, '20 0 0 0', 'keywordsPanel'),
                 //wrapFieldWithInfo(this.profilesCombo, 'keywordsComboInfo', undefined, '20 0 0 0'),
-                wrapFieldWithBtn(this.profilesCombo, this.addProfileBtn , '20 0 0 0'),
+                wrapFieldWithBtn(this.profilesCombo, 'subscriptionComboInfo' , this.addProfileBtn , '20 0 0 0', 'subscriptionPanel'),
                 this.subscribeResult,
                 wrapFieldWithInfo(this.crisisTypesCombo, 'crisisTypesInfo', undefined, '20 0 0 0'),
 
@@ -582,7 +595,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
                         wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '12 0', undefined, 'followPanel'),
                         wrapFieldWithInfo(this.fetchInterval, 'fetchIntervalInfo', undefined, '20 0 5 0', 'fetchIntervalPanel'),
-						wrapFieldWithInfo(this.fetchFrom, 'fetchFromInfo', undefined, '20 0 5 0', 'fetchFromPanel'),
+						            wrapFieldWithInfo(this.fetchFrom, 'fetchFromInfo', undefined, '20 0 5 0', 'fetchFromPanel'),
                         wrapFieldWithInfo(this.duration, 'collectionDurationInfo', undefined, '20 0 5 0'),
                         this.durationDescription
                     ]
