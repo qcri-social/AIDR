@@ -1129,7 +1129,7 @@ public class CollectionServiceImpl implements CollectionService {
     	try{
     		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
     		WebTarget webResource = client.target(fetchMainUrl + "/" +SocialSignInProvider.FACEBOOK + "/searchProfiles"
-    				+ "?offset=" + offset + "&limit=" + limit + "&keyword=" + keyword);
+    				+ "?offset=" + offset + "&limit=" + limit + "&keyword=" + URLEncoder.encode(keyword, "UTF-8"));
 
     		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
