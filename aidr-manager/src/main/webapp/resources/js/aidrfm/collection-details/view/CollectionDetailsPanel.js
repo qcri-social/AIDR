@@ -716,10 +716,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     return r ? r : "<span class='na-text'>Not specified</span>";
                 },
                 getType: function(){
-                    if(TYPE == 'Twitter'){
+                    if(TYPE == 'SMS'){
                         return 0;
                     }
-                    else if (TYPE == 'SMS'){
+                    else if (TYPE == 'Twitter'){
                         return 1;
                     }
 					else if (TYPE == 'Facebook'){

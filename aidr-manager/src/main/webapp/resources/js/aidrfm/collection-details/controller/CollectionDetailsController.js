@@ -224,9 +224,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             '#collectionUpdate': {
                 click: function (btn, e, eOpts) {
-                    if (AIDRFMFunctions.mandatoryFieldsEntered()) {
-                        datailsController.beforeUpdateCollection();
-                    }
+                    datailsController.beforeUpdateCollection();
                 }
             },
 
@@ -1068,18 +1066,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         if(TYPE === 'Facebook'){
         	var fi = form.findField('fetchInterval').getValue();
-			    var ff = form.findField('fetchFrom').getValue();
-
-          follow = [];
-          var fb_profiles = this.DetailsComponent.profiles;
-          for(id in fb_profiles) {
-            var item = fb_profiles[id];
-            follow.push(item);
-          }
-          follow = JSON.stringify(follow);
-        } else {
-          follow = Ext.String.trim( form.findField('follow').getValue() );
-        }
+		    var ff = form.findField('fetchFrom').getValue();
+        } 
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/update',
@@ -1089,7 +1077,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 name: Ext.String.trim( form.findField('name').getValue() ),
                 code: Ext.String.trim( form.findField('code').getValue() ),
                 track: Ext.String.trim( form.findField('track').getValue() ),
-                follow: follow,
+                follow: Ext.String.trim( form.findField('follow').getValue() ),
                 geo: Ext.String.trim(  form.findField('geo').getValue() ),
                 geoR: Ext.String.trim(  form.findField('geoR').getValue().geoR1 ),
                 status: status,
@@ -1229,11 +1217,23 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     },
 
     beforeUpdateCollection: function() {
-        var status = this.DetailsComponent.currentCollection.status;
-        if (status == 'RUNNING_WARNING' || status == 'RUNNING') {
-            this.updateCollection(true);
-        } else {
-            this.updateCollection(false);
+        if(TYPE === 'Facebook'){
+        	follow = [];
+            var fb_profiles = this.DetailsComponent.profiles;
+            for(id in fb_profiles) {
+              var item = fb_profiles[id];
+              follow.push(item);
+            }
+            follow = JSON.stringify(follow);
+            Ext.getCmp('collectionForm').getForm().findField('follow').setValue(follow);
+        }
+        if(AIDRFMFunctions.mandatoryFieldsEntered()){
+        	var status = this.DetailsComponent.currentCollection.status;
+            if (status == 'RUNNING_WARNING' || status == 'RUNNING') {
+                this.updateCollection(true);
+            } else {
+                this.updateCollection(false);
+            }
         }
     },
 
