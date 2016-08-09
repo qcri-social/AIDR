@@ -37,7 +37,9 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        	this.mainComponent = component;
 	        	this.mainComponent.constraintsString = '{"constraints":[]}';
 	        	taggerCollectionDetailsController = this;
-
+	        	if(TYPE == 'Facebook'){
+					this.mainComponent.downloadPanel.hide();
+				}
 	        	this.loadModelData();
 	        },
 
