@@ -656,79 +656,75 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.collectionHistoryPanelTpl = new Ext.XTemplate(
             '<div class="collections-list">',
 
-            '<tpl if="values.length == 0">' +
-            //'<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
-            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
-            '</tpl>',
-
-            '<tpl for=".">',
-            '<div></div>',
-
-            '<div class="collection-item">',
-
-            '<div class="img">',
-
-            '<tpl if="TYPE == \'Twitter\'">'+
-            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">' +
-        	'<tpl elseif="TYPE == \'Facebook\'">'+
-            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/facebook_icon.png" width="70">' +
-            '<tpl else>'+
-            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
-            '</tpl>'+
-
-            /*'<tpl if="[this.getType()] == 0">' +
-            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">',
-            '</tpl>',
-            '<tpl if="[this.getType()] == 1">' +
-            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">',
-            '</tpl>',*/
-            '</div>',
-
-            '<div class="content">',
-
-            '<div class="rightColumn">',
-            '<div>Collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
-            '<div>Start date:</div>',
-            '<div>End date:</div>',
-            '{[this.showGeoLabel(values.geo)]}',
-            '{[this.showFollowLabel(values.follow)]}',
-
-            '<tpl if="[this.getType()] == 0">' +
-            '<div>Language(s):</div>',
-            '<div>Keyword(s):</div>',
-            '</tpl>',
-
-            '</div>',
-
-            '<div class="leftColumn">',
-            '<div>{[this.getDocNumber(values.count)]}</div>',
-            '<div>{[this.getDateTimeField(values.startDate)]}</div>',
-            '<div>{[this.getDateTimeField(values.endDate)]}</div>',
-            '{[this.showValue(values.geo)]}',
-            '{[this.showValue(values.follow)]}',
-
-            '<tpl if="[this.getType()] == 0">' +
-            '<div>{[this.getLanguageField(values.langFilters)]}</div>',
-            '<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
-            '</tpl>',
-            '</div>',
-
-            '</div>',
-            '</div>',
-
-            '</tpl>',
+            	'<tpl if="values.length == 0">' +
+		            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
+	            '</tpl>',
+		
+	            '<tpl for=".">',
+		            '<div></div>',
+		
+		            '<div class="collection-item">',
+		            	'<div class="img">',
+		            		'<tpl if="TYPE == \'Twitter\'">'+
+		            			'<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">' +
+        					'<tpl elseif="TYPE == \'Facebook\'">'+
+        						'<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/facebook_icon.png" width="70">' +
+    						'<tpl else>'+
+    							'<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+							'</tpl>'+
+						'</div>',
+						
+						'<div class="content">',
+							'<div class="rightColumn">',
+								'<div>Collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
+								'<div>Start date:</div>',
+								'<div>End date:</div>',
+								'{[this.showGeoLabel(values.geo)]}',
+								//'{[this.showFollowLabel(values.follow)]}',
+			
+								'<tpl if="[this.getType()] != 0">' +
+									'<div>Language(s):</div>',
+									'<div>Keyword(s):</div>',
+								'</tpl>',
+							'</div>',
+		
+							'<div class="leftColumn">',
+								'<div>{[this.getDocNumber(values.count)]}</div>',
+								'<div>{[this.getDateTimeField(values.startDate)]}</div>',
+								'<div>{[this.getDateTimeField(values.endDate)]}</div>',
+								'{[this.showValue(values.geo)]}',
+								//'{[this.showValue(values.follow)]}',
+			
+								'<tpl if="[this.getType()] != 0">' +
+									'<div>{[this.getLanguageField(values.langFilters)]}</div>',
+									'<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
+								'</tpl>',
+							'</div>',
+							
+							'<div class="rightColumn" style = "margin: 0 0 0 84px">',
+								'{[this.showFollowLabel(values.follow)]}',
+							'</div>',
+							'<div class="leftColumn">',
+								'{[this.showFollowValue(values.follow)]}',
+							'</div>',
+						'</div>',
+					'</div>',
+	            '</tpl>',
             '</div>',
             {
                 getField: function (r) {
                     return r ? r : "<span class='na-text'>Not specified</span>";
                 },
                 getType: function(){
-                    if(TYPE == 'SMS'){
-                        return 1;
-                    }
-                    else{
+                    if(TYPE == 'Twitter'){
                         return 0;
                     }
+                    else if (TYPE == 'SMS'){
+                        return 1;
+                    }
+					else if (TYPE == 'Facebook'){
+						return 2;
+					}
                 },
                 getLanguageField: function (r) {
                     var languageFull = "";
@@ -759,9 +755,43 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 showValue: function (r) {
                     return r ? '<div>' + r + '</div>' : '';
                 },
+				showFollowValue: function (r) {
+					if(this.getType() == 2){
+						return r ? '<div>' + this.renderProfiles(r) + '</div>' : '';
+					}else{
+						return r ? '<div>' + r + '</div>' : '';
+					}
+                },
                 showFollowLabel: function (r) {
-                    return r ? '<div>Follow specific users:</div>' : '';
-                }
+					if(this.getType() == 0){
+						return r ? '<div>Follow specific users:</div>' : '';
+					}
+					else{
+						return r && r != '[]' ? '<div>Subscribed Profiles:</div>' : '';
+					}
+                },
+				renderProfiles: function(profiles) {
+					  profiles = eval(profiles);
+					  var temp_html = '<div>';
+					  for(id in profiles) {
+						var item = profiles[id];
+						var name = AIDRFMFunctions.applyEllipsis(item.name, 10);
+						var likes;
+						if(item.fans) {
+						  likes = item.fans.toLocaleString();
+						}
+						temp_html+= '<div class="profile-div"><div style="float: left"><img src="'+ item.imageUrl +'"/></div>';
+						if(item.type == 'PAGE') {
+							temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ likes +' Likes</div>';
+						} else {
+							temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ item.type +'</div>';
+						}
+						temp_html+= '<div style="float: right;padding: -5px;margin: -5px;color: #3c7ac6"><i class="fa fa-external-link link" onclick="AIDRFMFunctions.openProfile(\''+ item.link +'\')"></i></div>';
+						temp_html+= '</div>';
+					  }
+					  temp_html+= '</div>';
+					  return temp_html;
+				}
             }
         );
 

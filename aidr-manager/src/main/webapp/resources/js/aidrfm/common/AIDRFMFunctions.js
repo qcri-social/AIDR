@@ -145,6 +145,10 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             AIDRFMFunctions.setAlert('Error', 'One of Keywords, Geo or Follow field is mandatory');
             isValid = false;
         }
+        if (form.findField('collectionType').getValue() === 'Facebook' && !(form.findField('track').getValue() || (form.findField('follow').getValue() && form.findField('follow').getValue() != '[]') )) {
+            AIDRFMFunctions.setAlert('Error', 'One of Keywords or Subscriptions field is mandatory');
+            isValid = false;
+        }
         if (form.findField('track').getValue()) {
             var value = form.findField('track').getValue(),
                 keywords = value.split(","),
