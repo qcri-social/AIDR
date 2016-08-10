@@ -659,10 +659,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             	'<tpl if="values.length == 0">' +
 		            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
 	            '</tpl>',
-		
+
 	            '<tpl for=".">',
 		            '<div></div>',
-		
+
 		            '<div class="collection-item">',
 		            	'<div class="img">',
 		            		'<tpl if="TYPE == \'Twitter\'">'+
@@ -673,7 +673,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
     							'<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
 							'</tpl>'+
 						'</div>',
-						
+
 						'<div class="content">',
 							'<div class="rightColumn">',
 								'<div>Collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
@@ -681,26 +681,26 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 								'<div>End date:</div>',
 								'{[this.showGeoLabel(values.geo)]}',
 								//'{[this.showFollowLabel(values.follow)]}',
-			
+
 								'<tpl if="[this.getType()] != 0">' +
 									'<div>Language(s):</div>',
 									'<div>Keyword(s):</div>',
 								'</tpl>',
 							'</div>',
-		
+
 							'<div class="leftColumn">',
 								'<div>{[this.getDocNumber(values.count)]}</div>',
 								'<div>{[this.getDateTimeField(values.startDate)]}</div>',
 								'<div>{[this.getDateTimeField(values.endDate)]}</div>',
 								'{[this.showValue(values.geo)]}',
 								//'{[this.showValue(values.follow)]}',
-			
+
 								'<tpl if="[this.getType()] != 0">' +
 									'<div>{[this.getLanguageField(values.langFilters)]}</div>',
 									'<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
 								'</tpl>',
 							'</div>',
-							
+
 							'<div class="rightColumn" style = "margin: 0 0 0 84px">',
 								'{[this.showFollowLabel(values.follow)]}',
 							'</div>',
@@ -885,11 +885,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 loadingText: 'Searching...',
                 emptyText: 'No matching posts found.',
                 getInnerTpl: function() {
-                    var temp_html = '<div class="dropdown-profile-div"><div style="float: left"><img src="{imageUrl}"/></div>';
+                    var temp_html = '<div class="edit-dropdown-profile-div"><div style="float: left"><img src="{imageUrl}"/></div>';
                     temp_html+= '<tpl if="type == \'PAGE\'">';
-                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 18)]}</b><br/>{[values.fans.toLocaleString()]} Likes</div>';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 50)]}</b><br/>{[values.fans.toLocaleString()]} Likes</div>';
                     temp_html+= '<tpl else>';
-                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 18)]}</b><br/>{type}</div>';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 50)]}</b><br/>{type}</div>';
                     temp_html+= '</tpl>';
                     temp_html+= '</div>';
                     return temp_html;
@@ -1043,7 +1043,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
                                     height: 22,
                                     width: 22,
-                                    id: 'fbProfilesInfo'
+                                    id: 'subscriptionComboInfo'
                                 }
                             ]
                         },

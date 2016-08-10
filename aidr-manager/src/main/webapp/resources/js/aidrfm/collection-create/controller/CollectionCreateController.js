@@ -58,6 +58,22 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+            "#subscriptionComboInfo": {
+                render: function (infoPanel, eOpts) {
+                	var infoText = 'This field represents the subscription list for the Facebook page/group/event.<br>' +
+                    'Minimum 3 characters will search the page/group/event in Facebook' +
+                    'User can subscribe to the page/group/event from the search results.<br>' +
+                    'Subscription list must not be greater than 30.';
+
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: infoText,
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#collectionGeoInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -304,11 +320,11 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 	            follow = JSON.stringify(follow);
 	            form.findField('follow').setValue(follow);
     		}
-    		
+
 	        if (AIDRFMFunctions.mandatoryFieldsEntered()) {
-	
+
 	            Ext.getBody().mask('Loading...');
-	
+
 	            //Check if some collection already is running for current user
 	            Ext.Ajax.request({
 	                url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
@@ -351,25 +367,25 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 	                },
 	                failure: function () {
 	                    Ext.getBody().unmask();
-	
+
 	                }
 	            });
-	
+
 	            /**
 	             * Creates collection
 	             * @param shouldRun - decides whether run collection after creating. If true then created collection will be
 	             * started after creating.
 	             */
 	            function createCollection(shouldRun) {
-	
+
 	                Ext.getBody().mask('Saving collection ...');
 	                var fi =0, ff = 0, follow;
-	
+
 	                if(form.findField('collectionType').getValue() ==='Facebook'){
 	                	fi = form.findField('fetchInterval').getValue();
 						        ff = form.findField('fetchFrom').getValue();
 	                }
-	
+
 	                Ext.Ajax.request({
 	                    url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
 	                    method: 'POST',
@@ -397,7 +413,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 	                        if (response.success) {
 	                            AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
 	                            Ext.getBody().mask('Redirecting ...');
-	
+
 	                            //wait for 3 sec to let user read information box
 	                            var isFirstRun = true;
 	                            Ext.TaskManager.start({
@@ -412,7 +428,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 	                    	} else {
 	                        	AIDRFMFunctions.setAlert("Error", ["Error in creating collection.", "Please try again later."]);
 	                        }
-	
+
 	                    },
 	                    failure: function(response) {
 	                    	Ext.getBody().unmask();
@@ -519,13 +535,21 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
     addProfiles: function() {
       var profiles = this.CollectionCreateComponent.profiles;
+      var isFull = false;
       if(this.CollectionCreateComponent.profilesCombo.valueCollection.items) {
         this.CollectionCreateComponent.profilesCombo.valueCollection.items.forEach(function (item, index) {
-          profiles[item.id] = item.data;
+          if(Object.keys(profiles).length > 30) {
+              isFull = true;
+          } else {
+            profiles[item.id] = item.data;
+          }
         });
         this.CollectionCreateComponent.profilesCombo.setValue(null);
       }
       CollectionCreateController.renderProfiles(this.CollectionCreateComponent.profiles);
+      if(isFull){
+        AIDRFMFunctions.setAlert("Error", "Subscriptions size must not be greater than 30.");
+      }
     },
 
     renderProfiles: function(profiles) {

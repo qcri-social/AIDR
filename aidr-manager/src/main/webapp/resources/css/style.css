@@ -1552,6 +1552,13 @@ End of the tab panel styles
 	margin: 5px;
 }
 
+.edit-dropdown-profile-div {
+	height: 58px;
+	width: 570px;
+	border-bottom: solid 1px #e3e1e1;
+	padding-top: 2px;
+}
+
 .dropdown-profile-div {
 	height: 58px;
 	width: 302px;

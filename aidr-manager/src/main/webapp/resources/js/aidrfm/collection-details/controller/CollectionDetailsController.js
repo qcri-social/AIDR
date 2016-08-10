@@ -145,6 +145,22 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
 
+            "#subscriptionComboInfo": {
+                render: function (infoPanel, eOpts) {
+                	var infoText = 'This field represents the subscription list for the Facebook page/group/event.<br>' +
+                    'Minimum 3 characters will search the page/group/event in Facebook' +
+                    'User can subscribe to the page/group/event from the search results.<br>' +
+                    'Subscription list must not be greater than 30.';
+
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: infoText,
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#collectionTypeInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -473,13 +489,21 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
     addProfiles: function() {
       var profiles = this.DetailsComponent.profiles;
+      var isFull = false;
       if(this.DetailsComponent.profilesCombo.valueCollection.items) {
         this.DetailsComponent.profilesCombo.valueCollection.items.forEach(function (item, index) {
-          profiles[item.id] = item.data;
+          if(Object.keys(profiles).length > 30) {
+              isFull = true;
+          } else {
+            profiles[item.id] = item.data;
+          }
         });
         this.DetailsComponent.profilesCombo.setValue(null);
       }
       datailsController.renderProfiles(this.DetailsComponent.profiles);
+      if(isFull){
+        AIDRFMFunctions.setAlert("Error", "Subscriptions size must not be greater than 30.");
+      }
     },
 
     renderProfiles: function(profiles) {
@@ -502,6 +526,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         temp_html+= '</div>';
       }
       temp_html+= '</div>';
+      if(Object.keys(profiles).length == 0) {
+          Ext.getCmp('subscribeResult').setHeight(0);
+      }
       if(Object.keys(profiles).length > 0) {
           Ext.getCmp('subscribeResult').setHeight(82);
       }
@@ -1067,7 +1094,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         if(TYPE === 'Facebook'){
         	var fi = form.findField('fetchInterval').getValue();
 		    var ff = form.findField('fetchFrom').getValue();
-        } 
+        }
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/update',
