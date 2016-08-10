@@ -1,6 +1,6 @@
 # Welcome to the AIDR repository
 
-AIDR—Artificial Intelligence for Disaster Response—is a free and open-source platform to filter and classify social media messages related to natural disasters and humanitarian crises. AIDR uses human and machine intelligence to collect and automatically tag up to thousands of messages per minute. 
+AIDR—Artificial Intelligence for Digital Response—is a free and open-source platform to filter and classify social media messages related to natural disasters and humanitarian crises. AIDR uses human and machine intelligence to collect and automatically tag up to thousands of messages per minute. 
 
 If you want to see AIDR in operation, go to: http://aidr.qcri.org/
 
