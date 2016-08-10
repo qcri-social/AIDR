@@ -1,19 +1,8 @@
 ## Schema A 
-Used by: AIDR-Tagger, AIDR-Task-Manager, and AIDR-Tagger-API.
+aidr_predict 
 
-![](http://i.imgur.com/WEn6pcl.png)
+![](http://imgh.us/aidr_predict_schema.svg)
 
-[High quality version (PNG)](http://i.imgur.com/WEn6pcl.png)
+[High quality version (SVG)](http://imgh.us/aidr_predict_schema.svg)
 
-## Schema B
-Used by: AIDR-Manager
-
-(to be defined)
-
-
-## Schema C
-
-Used by: AIDR-Analytics
-
-* tag_data table: [table description](https://drive.google.com/open?id=0Bxl4ZF-ufVrpVWdBekVBcmZINTg&authuser=0)
 
