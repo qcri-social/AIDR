@@ -1,0 +1,1 @@
+Moved to http://booki.flossmanuals.net/aidr/_draft/_v/1.0/
