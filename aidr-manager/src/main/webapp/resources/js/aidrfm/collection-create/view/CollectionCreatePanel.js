@@ -16,7 +16,7 @@ Ext.require([
     App.Demo = {
         init:function()
         {
-            
+
         },
 
         openWindow:function(url)
@@ -153,7 +153,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 emptyText: 'e.g., 43.43, 22.44, 89.32, 56.43 (max 25)'
             }]
         });
-        
+
         this.geoR = Ext.create('Ext.form.Panel', {
             border: false,
             id:'geoRPanel',
@@ -166,7 +166,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             	columns: 1,
             	vertical: true,
             	items: [
-            	        
+
                     { margin: '0 0 0 -5', boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null', checked: true},
                     { margin: '0 0 0 -5', boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
                     { margin: '0 0 0 -5', boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'}
@@ -234,7 +234,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 //            default duration is 2 days (48 hours)
             value: 48
         });
-        
+
         this.fetchIntervalStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data : [
@@ -246,8 +246,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 { "val": 168, "label": '7 days' }
             ]
         });
-        
-		this.fetchFromStore = Ext.create('Ext.data.Store', {
+
+		    this.fetchFromStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data : [
                 { "val": 168, "label": '7 days' },
@@ -257,7 +257,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 { "val": 4320, "label": '6 months' }
             ]
         });
-		
+
         this.fetchInterval = Ext.create('Ext.form.ComboBox', {
         	  fieldLabel: 'Fetch Interval',
               width:698,
@@ -272,7 +272,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 //              default duration is 2 hours
               value: 2
         });
-		
+
 		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
         	  fieldLabel: 'Fetch From Last',
               width:698,
@@ -304,7 +304,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             displayField: 'name',
             valueField: 'code',
             multiSelect: true,
-			suspendLayout:true,
+			      suspendLayout:true,
             editable: false,
             fieldLabel: 'Language of tweets',
             flex:1,
@@ -326,7 +326,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             html:'<div></div>',
             padding: '2 0 2 245'
         });
-        
+
         var collection_type = [{ "val": 'SMS', "label": 'SMS' }];
 		if (SIGNED_IN_PROVIDER == "twitter") {
 			collection_type.push({ "val": 'Twitter', "label": 'Twitter' });
@@ -343,7 +343,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             flex:1,
             labelWidth: 240,
             id: 'CollectionType',
-			suspendLayout:true,
+			      suspendLayout:true,
             name: 'collectionType',
             editable: false,
             text: 'Edit',
@@ -358,7 +358,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             cls: 'header-h2',
             margin:'25 0 10 0'
         });
-        
+
         this.notetextL = Ext.create('Ext.form.Label', {
         	flex: 1,
         	html: 'By creating a collection you agree to our <a href="http://aidr.qcri.org/r/tos" target=_blank>Terms of Service</a>, which basically state that:<br>'
@@ -371,7 +371,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         		 	+ '<br> If you have questions, please contact us.',
             margin:'20 0 0 0'
         });
-        
+
         this.saveButton = Ext.create('Ext.Button', {
             text: 'Create and Start',
             margin: '0 0 0 -100',
@@ -402,13 +402,95 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             autoLoad: true
         });
 
+
+        Ext.define("Post", {
+            extend: 'Ext.data.Model',
+            proxy: {
+                //type: 'jsonp',
+                url :  BASE_URL + '/protected/collection/searchFacebookProfiles',
+                reader: {
+                    type: 'json',
+                    root: 'data'
+                    //totalProperty: 'totalCount'
+                }
+            },
+            fields: [
+                {name: 'id', mapping: 'id'},
+                {name: 'name', mapping: 'name'},
+                {name: 'imageUrl', mapping: 'imageUrl'},
+                {name: 'fans', mapping: 'fans'},
+                {name: 'link', mapping: 'link'},
+                {name: 'type', mapping: 'type'}
+            ]
+        });
+
+        ds = Ext.create('Ext.data.Store', {
+            pageSize: 30,
+            model: 'Post'
+        });
+
+        this.profiles = [];
+
+        this.addProfileBtn = Ext.create('Ext.Button', {
+            text: 'Add Selected',
+            margin: '0 0 0 10',
+            cls: 'btn btn-blueSmall',
+            id: 'addProfile'
+        });
+
+
+
+        this.profilesCombo = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Subscriptions',
+            flex:1,
+            labelWidth: 240,
+            id: 'CollectionType1',
+            suspendLayout:true,
+            name: 'collectionType1',
+            emptyText: 'Please search Pages/Groups/Events',
+            valueField: 'name',
+            displayField: 'name',
+            multiSelect: true,
+            pageSize: true,
+            store: ds,
+            minChars: 3,
+            listConfig: {
+                loadingText: 'Searching...',
+                emptyText: 'No matching posts found.',
+                getInnerTpl: function() {
+                    var temp_html = '<div class="dropdown-profile-div"><div style="float: left"><img src="{imageUrl}"/></div>';
+                    temp_html+= '<tpl if="type == \'PAGE\'">';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 18)]}</b><br/>{[values.fans.toLocaleString()]} Likes</div>';
+                    temp_html+= '<tpl else>';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 18)]}</b><br/>{type}</div>';
+                    temp_html+= '</tpl>';
+                    temp_html+= '</div>';
+                    return temp_html;
+                }
+            }
+        });
+
+
+
+        this.subscribeResult = Ext.create('Ext.container.Container', {
+            id: 'subscribeResult',
+            html: '',
+            labelWidth: 240,
+            autoScroll: true,
+            hidden: true,
+            cls: 'subscribe-result-size',
+            margin: '20 0 0 240',
+            padding: 0,
+            flex: 1
+        });
+
         this.crisisTypesCombo = Ext.create('Ext.form.ComboBox', {
             store: this.crisisTypesStore,
             queryMode: 'local',
             displayField: 'name',
             valueField: 'crisisTypeID',
             fieldLabel: 'Crisis Type',
-			suspendLayout:true,
+			      suspendLayout:true,
             flex: 1,
             name: 'crisisType',
             editable: false,
@@ -422,7 +504,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 id:wrapId,
                 layout: 'hbox',
                 margin:fieldMargin,
-				suspendLayout:true,
+				        suspendLayout:true,
                 items: [
                     field,
                     {
@@ -435,6 +517,31 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         width: 22,
                         id: infoId,
                         margin:iconMargin
+                    }
+                ]
+            }
+        }
+
+        var wrapFieldWithBtn = function(field, infoId, btn, fieldMargin, wrapId) {
+            return {
+                xtype: 'container',
+                layout: 'hbox',
+                id:wrapId,
+                hidden: true,
+                margin:fieldMargin,
+				        suspendLayout:true,
+                items: [
+                    field,
+                    btn,
+                    {
+                        border: false,
+                        xtype:'component',
+                        bodyStyle: 'background:none',
+                        autoEl:'span',
+                        html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                        height: 22,
+                        width: 22,
+                        id: infoId
                     }
                 ]
             }
@@ -460,7 +567,9 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 this.langNote,
 
                 wrapFieldWithInfo(this.keywordsE, 'collectionkeywordsInfo', undefined, '20 0 0 0', 'keywordsPanel'),
-
+                //wrapFieldWithInfo(this.profilesCombo, 'keywordsComboInfo', undefined, '20 0 0 0'),
+                wrapFieldWithBtn(this.profilesCombo, 'subscriptionComboInfo' , this.addProfileBtn , '20 0 0 0', 'subscriptionPanel'),
+                this.subscribeResult,
                 wrapFieldWithInfo(this.crisisTypesCombo, 'crisisTypesInfo', undefined, '20 0 0 0'),
 
                 //Advanced configuration
@@ -486,7 +595,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
                         wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '12 0', undefined, 'followPanel'),
                         wrapFieldWithInfo(this.fetchInterval, 'fetchIntervalInfo', undefined, '20 0 5 0', 'fetchIntervalPanel'),
-						wrapFieldWithInfo(this.fetchFrom, 'fetchFromInfo', undefined, '20 0 5 0', 'fetchFromPanel'),
+						            wrapFieldWithInfo(this.fetchFrom, 'fetchFromInfo', undefined, '20 0 5 0', 'fetchFromPanel'),
                         wrapFieldWithInfo(this.duration, 'collectionDurationInfo', undefined, '20 0 5 0'),
                         this.durationDescription
                     ]

@@ -6,18 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TwitterCollectionTask extends CollectionTask {
 
-    private String toFollow;
     private String geoLocation;
     private String geoR;
     private String languageFilter;
-
-	public String getToFollow() {
-		return toFollow;
-	}
-
-	public void setToFollow(String toFollow) {
-		this.toFollow = toFollow;
-	}
 
 	public String getGeoLocation() {
 		return geoLocation;
@@ -42,15 +33,6 @@ public class TwitterCollectionTask extends CollectionTask {
 	public void setLanguageFilter(String languageFilter) {
 		this.languageFilter = languageFilter;
 	}
-
-	public boolean isToFollowAvailable() {
-        if (StringUtils.isNotEmpty(toFollow)) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
 
     public boolean isGeoLocationAvailable() {
         if (StringUtils.isNotEmpty(geoLocation)) {

@@ -22,6 +22,7 @@ public class CollectionTask {
     protected String accessTokenSecret;
     protected Long collectionCount;
     protected String provider;
+    protected String toFollow;
     
     public CollectionTask() {}		
     
@@ -229,6 +230,15 @@ public class CollectionTask {
 		this.provider = provider;
 	}
 
+	public boolean isToFollowAvailable() {
+        if (StringUtils.isNotBlank(toFollow)) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     @Override
 	public CollectionTask clone() {
 
@@ -241,11 +251,26 @@ public class CollectionTask {
         newTask.setStatusCode(statusCode);
         newTask.setStatusMessage(statusMessage);
         newTask.setToTrack(toTrack);
+        newTask.setToFollow(toFollow);
         newTask.setCollectionCount(collectionCount);
         newTask.setPersist(persist);
         newTask.setSourceOutage(sourceOutage);
         newTask.setSaveMediaEnabled(saveMediaEnabled);
         return newTask;
     }
+
+	/**
+	 * @return the toFollow
+	 */
+	public String getToFollow() {
+		return toFollow;
+	}
+
+	/**
+	 * @param toFollow the toFollow to set
+	 */
+	public void setToFollow(String toFollow) {
+		this.toFollow = toFollow;
+	}
 
 }
