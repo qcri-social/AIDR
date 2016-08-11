@@ -834,7 +834,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             extend: 'Ext.data.Model',
             proxy: {
                 //type: 'jsonp',
-                url :  BASE_URL + '/protected/collection/searchFacebookProfiles',
+            	url :  BASE_URL + '/protected/collection/searchFacebookProfiles?code='+ COLLECTION_CODE,
                 reader: {
                     type: 'json',
                     root: 'data'
