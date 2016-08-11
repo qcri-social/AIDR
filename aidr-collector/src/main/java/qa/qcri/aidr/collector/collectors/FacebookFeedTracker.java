@@ -195,7 +195,7 @@ public class FacebookFeedTracker implements Closeable {
 									aidrJson.put("doctype", "facebook");
 									aidrJson.put("crisis_code", task.getCollectionCode());
 									aidrJson.put("crisis_name", task.getCollectionName());
-									//aidrJson.put("parent_type", parent.name().toLowerCase());
+									aidrJson.put("parent_type", fbProfile.getType().name().toLowerCase());
 
 									JSONObject docJson = new JSONObject(gson.toJson(post));
 									docJson.put("aidr", aidrJson);
@@ -209,7 +209,7 @@ public class FacebookFeedTracker implements Closeable {
 
 									publisher.publish(channelName, docJson.toString());
 								} catch (JSONException e) {
-									logger.warn("Post error for parent id : " + fbProfile.getId() /*+ " and type : " + parent*/);
+									logger.warn("Post error for parent id : " + fbProfile.getId() + " and type : " + fbProfile.getType().name());
 								}
 							}
 
