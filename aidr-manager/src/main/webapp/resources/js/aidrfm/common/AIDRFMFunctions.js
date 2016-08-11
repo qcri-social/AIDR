@@ -39,7 +39,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         msgCt.alignTo(document, 't-t');
         Ext.DomHelper.append(msgCt, {html: this.buildMessageBox(status.toLowerCase(), message)}, true).slideIn('t').ghost("t", {delay: delay, remove: true});
     },
-    
+
     reportIssue : function(resp){
     	var mailType="Issue";
     	var link=window.location.href;
@@ -47,7 +47,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
     	 Ext.Ajax.request({
     		 url: BASE_URL + '/protected/tagger/sendEmailService.action',
     		 params: {
-    		                 url: link, 
+    		                 url: link,
     		                 mailType: mailType,
     		                 description: description
     		             },
@@ -57,7 +57,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
              success: function (response) {
             	 //alert("success"+response.responseText);
             	// alert(window.location.href);
-                 
+
              },
              failure: function (response) {
             	// alert("failure"+response.responseText);
@@ -145,6 +145,10 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             AIDRFMFunctions.setAlert('Error', 'One of Keywords, Geo or Follow field is mandatory');
             isValid = false;
         }
+        if (form.findField('collectionType').getValue() === 'Facebook' && !(form.findField('track').getValue() || (form.findField('follow').getValue() && form.findField('follow').getValue() != '[]') )) {
+            AIDRFMFunctions.setAlert('Error', 'One of Keywords or Subscriptions field is mandatory');
+            isValid = false;
+        }
         if (form.findField('track').getValue()) {
             var value = form.findField('track').getValue(),
                 keywords = value.split(","),
@@ -170,7 +174,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         if (form.findField('geo').getValue() === '') {
             if(form.findField('geoR').getValue().geoR1 !== 'null') {
                AIDRFMFunctions.setAlert('Error', 'You have to add Geographical regions for this option');
-               isValid = false; 
+               isValid = false;
             }
         }
         else {
@@ -192,7 +196,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         else
             return results[1];
     },
-    
+
     getSplittedUserName: function (fullUserName) {
 		var userName = fullUserName;
 		var provider = fullUserName.substring(0, fullUserName.indexOf("-"));
@@ -201,7 +205,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
 		}
 		return userName;
 	},
-	
+
 	getProviderFromUserName: function (fullUserName) {
 		var provider = fullUserName.substring(0, fullUserName.indexOf("-"));
 		if(provider != "twitter" && provider != "facebook" && provider !="google"){
@@ -209,7 +213,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
 		}
 		return provider;
 	},
-	
+
 	getUserNameWithProviderIcon: function (fullUserName, alignLeft) {
 		if(alignLeft){
 			return  '<img src="'+BASE_URL+'/resources/img/icons/coloured/'+this.getProviderFromUserName(fullUserName)+'-circular-icon.png" height="20px" align="left">&nbsp;&nbsp;'+this.getSplittedUserName(fullUserName);
@@ -218,11 +222,11 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
 			return  '<img src="'+BASE_URL+'/resources/img/icons/coloured/'+this.getProviderFromUserName(fullUserName)+'-circular-icon.png" height="20px">&nbsp;&nbsp;'+this.getSplittedUserName(fullUserName);
 		}
 	},
-	
+
     getStatusWithStyle: function(raw, collectionType) {
         var statusText = '';
         var status = collectionType === 'Twitter' || collectionType === 'Facebook' ? 'Running' : 'Collecting Live SMS';
-        
+
         if (raw == 'RUNNING') {
             statusText = "<h class='AidrInfo'> " + status + "</h>";
         } else if (raw == 'INITIALIZING') {
@@ -256,7 +260,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         }
         return '<span class="' + style + '">' + r.toFixed(2) + '</span>';
     },
-    
+
     getAucNumberAsPercentageWithColors: function(r) {
         var style;
         if (r){
@@ -272,8 +276,18 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             style = 'redInfo';
         }
         return '<span class="' + style + '">' + (r * 100).toFixed(0) + '%</span>';
+    },
+
+    applyEllipsis: function(word, length){
+      if(word.length > length + 3) {
+        word = word.substring(0, length) + "...";
+      }
+      return word;
+    },
+
+    openProfile: function(link) {
+      window.open(link, '_blank');
     }
-    
 
 });
 

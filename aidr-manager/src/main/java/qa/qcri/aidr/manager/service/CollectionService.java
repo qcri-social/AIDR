@@ -3,6 +3,8 @@ package qa.qcri.aidr.manager.service;
 import java.util.Date;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+
 import qa.qcri.aidr.common.values.UsageType;
 import qa.qcri.aidr.manager.dto.CollectionBriefInfo;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
@@ -107,5 +109,7 @@ public interface CollectionService {
 
 	List<Collection> getUnexpectedlyStoppedCollections(Date today);
 
-	int getRunningCollectionsCountFromCollector(); 
+	int getRunningCollectionsCountFromCollector();
+
+	JSONArray searchFacebookProfiles(String keyword, Integer offset, Integer limit, UserAccount userEntity); 
 }

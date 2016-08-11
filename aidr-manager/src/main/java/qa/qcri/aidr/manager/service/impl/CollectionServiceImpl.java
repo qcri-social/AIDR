@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ import qa.qcri.aidr.manager.service.WordDictionaryService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.SMS;
+import qa.qcri.aidr.manager.util.SocialSignInProvider;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -167,8 +169,10 @@ public class CollectionServiceImpl implements CollectionService {
 				collection.setGeoR(null);
 				collection.setFollow(null);
 			}
+			if(collection.getProvider() == CollectionType.Twitter){
+				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
+			}
 			
-			collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
 			collectionRepository.update(collection);
 			// first make an entry in log if collection is running
 			if (CollectionStatus.RUNNING_WARNING.equals(collection.getStatus()) || CollectionStatus.RUNNING.equals(collection.getStatus())) {
@@ -338,8 +342,11 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setAccessTokenSecret(userconnection.getSecret());
 		dto.setCollectionName(dbCollection.getName());
 		dto.setCollectionCode(dbCollection.getCode());
-
-		dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getOwner().getUserName()));
+		if(dbCollection.getProvider() == CollectionType.Facebook){
+			dto.setToFollow(dbCollection.getFollow());
+		}else{
+			dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getOwner().getUserName()));
+		}
 		dto.setToTrack(dbCollection.getTrack());
 		dto.setGeoLocation(dbCollection.getGeo());
 		dto.setGeoR(dbCollection.getGeoR());
@@ -1113,6 +1120,34 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     public List<Collection> getUnexpectedlyStoppedCollections(Date today) {
     	return collectionRepository.getUnexpectedlyStoppedCollections(today);
+    }
+    
+    @Override
+    public JSONArray searchFacebookProfiles(String keyword, Integer offset, Integer limit, UserAccount userEntity){
+    	UserConnection userConnection = userConnectionService.fetchByCombinedUserName(userEntity.getUserName());
+    	userConnection.getAccessToken();
+    	try{
+    		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+    		WebTarget webResource = client.target(fetchMainUrl + "/" +SocialSignInProvider.FACEBOOK + "/searchProfiles"
+    				+ "?offset=" + offset + "&limit=" + limit + "&keyword=" + URLEncoder.encode(keyword, "UTF-8"));
+
+    		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+
+    		Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).post(
+					Entity.json(userConnection.getAccessToken()),
+					Response.class);
+    				
+    		String jsonString = clientResponse.readEntity(String.class);
+    		JSONParser parser = new JSONParser();
+    		JSONObject jsonResponse = (JSONObject) parser.parse(jsonString);
+    		JSONArray response = objectMapper.readValue(jsonResponse.get("entity").toString(), JSONArray.class);
+    		return response;
+    	}catch(Exception e){
+    		logger.error("Exception while searching facebok profiles",e);
+    	}
+    	return null;
+    	
     }
 
 }

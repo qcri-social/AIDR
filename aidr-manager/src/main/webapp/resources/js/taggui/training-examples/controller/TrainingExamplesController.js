@@ -89,7 +89,11 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                             me.mainComponent.createDate = Ext.Date.format(new Date(), "c");
                             if (r.data){
                                 var tweetData = Ext.JSON.decode(r.data);
-                                me.mainComponent.documentTextLabel.setText(tweetData.text.linkify(), false);
+                                if(tweetData.aidr.doctype == 'facebook') {
+                                	me.mainComponent.documentTextLabel.setText(tweetData.message.linkify(), false);
+                                } else {
+                                	me.mainComponent.documentTextLabel.setText(tweetData.text.linkify(), false);
+                                }
                             }
                             if (r.attributeInfo){
                                 Ext.each(r.attributeInfo, function (attr) {

@@ -15,7 +15,7 @@ Ext.ns('App');
 App.Demo = {
     init:function()
     {
-        
+
     },
 
     openWindow:function(url)
@@ -78,10 +78,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.refreshButton = Ext.create('Ext.Button', {
             height: 32,
             width: 32,
-            
+
             margin: '13 0 0 0',
             tooltip: 'Refresh',
-            
+
             cls:'btn btn-blueish4',
             id: 'refreshBtn'
         });
@@ -90,13 +90,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             width: '100%',
             html: '<div class="horizontalLine"></div>'
         });
-        
+
         this.horizontalLineBottomMargin = Ext.create('Ext.container.Container', {
             width: '100%',
             margin: '0 0 30 0',
             html: '<div class="horizontalLine"></div>'
         });
-        
+
         this.collectionHistoryDoNotChangeMessage = Ext.create('Ext.panel.Panel', {
             html: '<div style="padding-top:160px; padding-bottom:10px;"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
             hidden: true
@@ -144,7 +144,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 this.geoL
             ]
         });
-        
+
         this.fetchIntervalContainer = Ext.create('Ext.container.Container', {
             hidden: true,
             defaultType: 'label',
@@ -157,7 +157,39 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 this.fetchIntervalL
             ]
         });
-		
+
+        this.fbFollowContainerL = Ext.create('Ext.container.Container', {
+            id: 'fbFollowContainer',
+            html: '',
+            labelWidth: 240,
+            fieldLabel: 'Short name',
+            autoScroll: true,
+            height: 82,
+            cls: 'subscribe-result-size',
+            //margin: '20 0 0 216',
+            padding: 0,
+            flex: 1
+        });
+
+        this.fbFollowContainer = Ext.create('Ext.container.Container', {
+            hidden: true,
+            xtype: 'container',
+            defaultType: 'label',
+            layout: 'hbox',
+            hidden: true,
+            items: [
+                {
+                    width: 220,
+                    text: 'Subscriptions:'
+                },
+                this.fbFollowContainerL
+            ]
+        });
+
+        this.openProfile =  function(link) {
+          window.open(link, '_blank');
+        },
+
 		this.fetchFromContainer = Ext.create('Ext.container.Container', {
             hidden: true,
             defaultType: 'label',
@@ -271,7 +303,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             emptyText: 'e.g., 43.43, 22.44, 89.32, 56.43 (max 25)'
         });
-        
+
         this.geoR = Ext.create('Ext.form.Panel', {
             id:'geoRPanel',
             hidden:true,
@@ -350,7 +382,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             value: 48,
             queryMode: 'local'
         });
-        
+
         this.fetchIntervalStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data : [
@@ -362,7 +394,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 { "val": 168, "label": '7 days' }
             ]
         });
-		
+
 		this.fetchFromStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data : [
@@ -373,7 +405,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 { "val": 4320, "label": '6 months' }
             ]
         });
-        
+
         this.fetchInterval = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Fetch Interval',
             flex: 1,
@@ -390,7 +422,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             value: 6,
             queryMode: 'local'
         });
-		
+
 		this.fetchFrom = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Fetch From Last',
             flex: 1,
@@ -431,7 +463,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             store: this.collectionTypeComboStore,
             value: 'Twitter'
         });*/
-        
+
         this.collectionTypeL = Ext.create('Ext.form.Label', {
 			flex: 1
 		});
@@ -505,7 +537,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'collectionTrash',
             margin: '25 0 0 0',
             hidden: true,
-            //flex: 1  
+            //flex: 1
         });
 
         this.untrashButton = Ext.create('Ext.Button', {
@@ -523,7 +555,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             padding: '15 0 0 0',
             cls: 'header-h2',
             hidden: true
-            	
+
         });
 
         this.saveButton = Ext.create('Ext.Button', {
@@ -585,7 +617,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.collectionHistoryPanelView.show();
                         me.horizontalLineBottomMargin.show();
                         me.collectionHistoryGrid.show();
-                        //Adding dock to display total record count 
+                        //Adding dock to display total record count
                         me.down('#collectionLogStoreCount').setText("Total no. of records :  " + s.getCount());
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
@@ -623,68 +655,61 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.collectionHistoryPanelTpl = new Ext.XTemplate(
             '<div class="collections-list">',
-       
-            '<tpl if="values.length == 0">' +
-            //'<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
-            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
-            '</tpl>',
-            
-            '<tpl for=".">',
-            '<div></div>',
-            
-            '<div class="collection-item">',
 
-            '<div class="img">',
-            
-            '<tpl if="TYPE == \'Twitter\'">'+
-            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">' +
-        	'<tpl elseif="TYPE == \'Facebook\'">'+
-            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/facebook_icon.png" width="70">' +
-            '<tpl else>'+
-            '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
-            '</tpl>'+
-            
-            /*'<tpl if="[this.getType()] == 0">' +
-            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">',
-            '</tpl>',
-            '<tpl if="[this.getType()] == 1">' +
-            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">',
-            '</tpl>',*/
-            '</div>',
+            	'<tpl if="values.length == 0">' +
+		            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
+	            '</tpl>',
 
-            '<div class="content">',
+	            '<tpl for=".">',
+		            '<div></div>',
 
-            '<div class="rightColumn">',
-            '<div>Collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
-            '<div>Start date:</div>',
-            '<div>End date:</div>',
-            '{[this.showGeoLabel(values.geo)]}',
-            '{[this.showFollowLabel(values.follow)]}',
-            
-            '<tpl if="[this.getType()] == 0">' +
-            '<div>Language(s):</div>',
-            '<div>Keyword(s):</div>',
-            '</tpl>',
-           
-            '</div>',
+		            '<div class="collection-item">',
+		            	'<div class="img">',
+		            		'<tpl if="TYPE == \'Twitter\'">'+
+		            			'<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon.png" width="70">' +
+        					'<tpl elseif="TYPE == \'Facebook\'">'+
+        						'<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/facebook_icon.png" width="70">' +
+    						'<tpl else>'+
+    							'<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+							'</tpl>'+
+						'</div>',
 
-            '<div class="leftColumn">',
-            '<div>{[this.getDocNumber(values.count)]}</div>',
-            '<div>{[this.getDateTimeField(values.startDate)]}</div>',
-            '<div>{[this.getDateTimeField(values.endDate)]}</div>',
-            '{[this.showValue(values.geo)]}',
-            '{[this.showValue(values.follow)]}',
-            
-            '<tpl if="[this.getType()] == 0">' +
-            '<div>{[this.getLanguageField(values.langFilters)]}</div>',
-            '<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
-            '</tpl>',
-            '</div>',
+						'<div class="content">',
+							'<div class="rightColumn">',
+								'<div>Collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
+								'<div>Start date:</div>',
+								'<div>End date:</div>',
+								'{[this.showGeoLabel(values.geo)]}',
+								//'{[this.showFollowLabel(values.follow)]}',
 
-            '</div>',
-            '</div>',
+								'<tpl if="[this.getType()] != 0">' +
+									'<div>Language(s):</div>',
+									'<div>Keyword(s):</div>',
+								'</tpl>',
+							'</div>',
 
-            '</tpl>',
+							'<div class="leftColumn">',
+								'<div>{[this.getDocNumber(values.count)]}</div>',
+								'<div>{[this.getDateTimeField(values.startDate)]}</div>',
+								'<div>{[this.getDateTimeField(values.endDate)]}</div>',
+								'{[this.showValue(values.geo)]}',
+								//'{[this.showValue(values.follow)]}',
+
+								'<tpl if="[this.getType()] != 0">' +
+									'<div>{[this.getLanguageField(values.langFilters)]}</div>',
+									'<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
+								'</tpl>',
+							'</div>',
+
+							'<div class="rightColumn" style = "margin: 0 0 0 84px">',
+								'{[this.showFollowLabel(values.follow)]}',
+							'</div>',
+							'<div class="leftColumn">',
+								'{[this.showFollowValue(values.follow)]}',
+							'</div>',
+						'</div>',
+					'</div>',
+	            '</tpl>',
             '</div>',
             {
                 getField: function (r) {
@@ -692,11 +717,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 },
                 getType: function(){
                     if(TYPE == 'SMS'){
-                        return 1;
-                    }
-                    else{
                         return 0;
                     }
+                    else if (TYPE == 'Twitter'){
+                        return 1;
+                    }
+					else if (TYPE == 'Facebook'){
+						return 2;
+					}
                 },
                 getLanguageField: function (r) {
                     var languageFull = "";
@@ -727,9 +755,43 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 showValue: function (r) {
                     return r ? '<div>' + r + '</div>' : '';
                 },
+				showFollowValue: function (r) {
+					if(this.getType() == 2){
+						return r ? '<div>' + this.renderProfiles(r) + '</div>' : '';
+					}else{
+						return r ? '<div>' + r + '</div>' : '';
+					}
+                },
                 showFollowLabel: function (r) {
-                    return r ? '<div>Follow specific users:</div>' : '';
-                }
+					if(this.getType() == 0){
+						return r ? '<div>Follow specific users:</div>' : '';
+					}
+					else{
+						return r && r != '[]' ? '<div>Subscribed Profiles:</div>' : '';
+					}
+                },
+				renderProfiles: function(profiles) {
+					  profiles = eval(profiles);
+					  var temp_html = '<div>';
+					  for(id in profiles) {
+						var item = profiles[id];
+						var name = AIDRFMFunctions.applyEllipsis(item.name, 10);
+						var likes;
+						if(item.fans) {
+						  likes = item.fans.toLocaleString();
+						}
+						temp_html+= '<div class="profile-div"><div style="float: left"><img src="'+ item.imageUrl +'"/></div>';
+						if(item.type == 'PAGE') {
+							temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ likes +' Likes</div>';
+						} else {
+							temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ item.type +'</div>';
+						}
+						temp_html+= '<div style="float: right;padding: -5px;margin: -5px;color: #3c7ac6"><i class="fa fa-external-link link" onclick="AIDRFMFunctions.openProfile(\''+ item.link +'\')"></i></div>';
+						temp_html+= '</div>';
+					  }
+					  temp_html+= '</div>';
+					  return temp_html;
+				}
             }
         );
 
@@ -744,9 +806,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 }
             }
         });
-        
+
         this.collectionHistoryPanelView = Ext.create('Ext.container.Container', {
-        	
+
         	items: [{
         	        	xtype: 'dataview',
         	        	store: 'collectionHistoryPanelStore',
@@ -767,6 +829,89 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             displayMsg:'Collection history records {0} - {1} of {2}',
             emptyMsg:'No collection history records to display'
         });
+
+        Ext.define("Post", {
+            extend: 'Ext.data.Model',
+            proxy: {
+                //type: 'jsonp',
+            	url :  BASE_URL + '/protected/collection/searchFacebookProfiles?code='+ COLLECTION_CODE,
+                reader: {
+                    type: 'json',
+                    root: 'data'
+                    //totalProperty: 'totalCount'
+                }
+            },
+            fields: [
+                {name: 'id', mapping: 'id'},
+                {name: 'name', mapping: 'name'},
+                {name: 'imageUrl', mapping: 'imageUrl'},
+                {name: 'fans', mapping: 'fans'},
+                {name: 'link', mapping: 'link'},
+                {name: 'type', mapping: 'type'}
+            ]
+        });
+
+        ds = Ext.create('Ext.data.Store', {
+            pageSize: 30,
+            model: 'Post'
+        });
+
+        this.profiles = [];
+
+        this.addProfileBtn = Ext.create('Ext.Button', {
+            text: 'Add Selected',
+            margin: '0 0 0 10',
+            cls: 'btn btn-blueBig',
+            id: 'addProfile'
+        });
+
+
+
+        this.profilesCombo = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Subscriptions',
+            flex:1,
+            labelWidth: 130,
+            id: 'CollectionType1',
+            suspendLayout:true,
+            name: 'collectionType1',
+            emptyText: 'Please search Pages/Groups/Events',
+            valueField: 'name',
+            displayField: 'name',
+            multiSelect: true,
+            pageSize: true,
+            store: ds,
+            minChars: 3,
+            listConfig: {
+                loadingText: 'Searching...',
+                emptyText: 'No matching posts found.',
+                getInnerTpl: function() {
+                    var temp_html = '<div class="edit-dropdown-profile-div"><div style="float: left"><img src="{imageUrl}"/></div>';
+                    temp_html+= '<tpl if="type == \'PAGE\'">';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 50)]}</b><br/>{[values.fans.toLocaleString()]} Likes</div>';
+                    temp_html+= '<tpl else>';
+                        temp_html+= '<div style="float: left; padding: 8px"><b>{[AIDRFMFunctions.applyEllipsis(values.name, 50)]}</b><br/>{type}</div>';
+                    temp_html+= '</tpl>';
+                    temp_html+= '</div>';
+                    return temp_html;
+                }
+            }
+        });
+
+
+
+        this.subscribeResult = Ext.create('Ext.container.Container', {
+            id: 'subscribeResult',
+            hidden:true,
+            html: '',
+            labelWidth: 130,
+            autoScroll: true,
+            height: 0,
+            cls: 'subscribe-result-size',
+            margin: '20 0 0 130',
+            padding: 0,
+            flex: 1
+        });
+
 
         this.crisisTypesStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
@@ -883,6 +1028,26 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            hidden:true,
+                            id: 'subscriptionPanel',
+                            items: [
+                                this.profilesCombo,
+                                this.addProfileBtn,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'subscriptionComboInfo'
+                                }
+                            ]
+                        },
+                        this.subscribeResult,
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -1228,7 +1393,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             id:'keywords',
                             defaultType: 'label',
                             layout: 'hbox',
-                            
+
                             items: [
                                 {
                                     width: 220,
@@ -1239,7 +1404,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         },
                         this.geoContainer,
                         this.fetchIntervalContainer,
-						this.fetchFromContainer,
+						            this.fetchFromContainer,
                         this.followContainer,
                         {
                             xtype: 'container',
@@ -1256,7 +1421,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 this.languageFiltersL
                             ]
                         },
-
+                        this.fbFollowContainer,
                         {
                             xtype: 'container',
                             defaultType: 'label',
@@ -1339,7 +1504,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'generateJsonTweetIdsLink'
         });
 
-		this.userStore = Ext.create('Ext.data.JsonStore', { 
+		this.userStore = Ext.create('Ext.data.JsonStore', {
 			fields: ['id', 'userName'],
                 pageSize: 10,
                 proxy: {
@@ -1350,17 +1515,17 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         type: 'json'
                     }
                 }
-		
+
 		});
-		
+
 		this.usersTpl = new Ext.XTemplate(
 			'<tpl for=".">' +
 				'<div style="height:30px;padding-top: 5px" class="x-boundlist-item">'+
 				'{[AIDRFMFunctions.getUserNameWithProviderIcon(values.userName, true)]}'+
-				'</div>' +              
+				'</div>' +
 			'</tpl>'
 		);
-		
+
         this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
             minChars: 0,
             width: 300,
@@ -1372,12 +1537,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             displayField: 'userName',
             valueField: 'id',
 		    store: this.userStore,
-            
+
 			tpl: this.usersTpl
-							
+
         });
-		
-		
+
+
         this.addManagerInfo = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
@@ -1523,7 +1688,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 }
             }]
         });
-        
+
         this.collectionHistoryGrid = Ext.create('Ext.grid.Panel', {
             flex: 1,
             store: 'collectionLogStore',
@@ -1576,7 +1741,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	                	var selectedRec = records[0].data;
 	                    var model = [];
 	                    model.push(selectedRec);
-		                    
+
 	                	 //Highlighting the point on chart
 		                var collectionSeries = collectionHistoryChart.series.items[0];
 		                //collectionSeries.unHighlightItem();
@@ -1599,9 +1764,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 viewready : function(grid){
                 	setTimeout(function() {
                 		grid.getSelectionModel().select(0);
-                    }, 1000); 
-                    	   
-                         
+                    }, 1000);
+
+
                          //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
                     //});
                 },
@@ -1623,7 +1788,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 return r ? languageFull : "<span class='na-text'>Not specified</span>";
             }
         });
-        
+
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
             width: '100%',

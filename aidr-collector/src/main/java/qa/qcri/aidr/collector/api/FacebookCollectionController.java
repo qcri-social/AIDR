@@ -2,6 +2,7 @@ package qa.qcri.aidr.collector.api;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FacebookCollectionTask;
+import qa.qcri.aidr.collector.beans.FacebookProfile;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.collectors.FacebookFeedTracker;
 import qa.qcri.aidr.collector.service.CollectionService;
@@ -46,9 +48,9 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
         }
 
         //check if all query parameters are missing in the query
-        if (!task.isToTrackAvailable()) {
+        if (!task.isToTrackAvailable() && !task.isToFollowAvailable()) {
             response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
-            response.setMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
+            response.setMessage("Missing one or more fields (toTrack & toFollow). At least one field is required");
             return Response.ok(response).build();
         }
         String collectionCode = task.getCollectionCode();
@@ -131,6 +133,15 @@ public class FacebookCollectionController extends BaseController<FacebookCollect
         response.setMessage("Invalid key. No running collector found for the given id.");
         response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
         return Response.ok(response).build();
+    }
+    
+    @RequestMapping(value = "/searchProfiles", method={RequestMethod.POST})
+    public Response searchProfiles(@RequestBody String accessToken, @RequestParam String keyword, 
+    		@RequestParam Integer limit, @RequestParam Integer offset) {
+		FacebookFeedTracker tracker = new FacebookFeedTracker(accessToken);
+    	List<FacebookProfile> fbProfiles = tracker.searchProfiles(keyword, limit, offset);
+    	Response.ok(fbProfiles).build();
+    	return Response.ok(fbProfiles).build();
     }
     
     @RequestMapping("/rerun")

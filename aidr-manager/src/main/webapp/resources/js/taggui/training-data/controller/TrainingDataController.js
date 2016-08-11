@@ -37,7 +37,9 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        	this.mainComponent = component;
 	        	this.mainComponent.constraintsString = '{"constraints":[]}';
 	        	taggerCollectionDetailsController = this;
-
+	        	if(TYPE == 'Facebook'){
+					this.mainComponent.downloadPanel.hide();
+				}
 	        	this.loadModelData();
 	        },
 
@@ -87,23 +89,9 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        								totalExamples += r.trainingDocuments;
 	        							}
 	        						});
-	        						// var self = this;
-	        						//me.getRetrainingThreshold()\
-	        						/*
-	        						Author:Sushant
-
-	        						*/
-	        						// Passed All the values to the getRetrainingThreshold function, so that after it is called, all the variables remain present to be rendered
+	        						
 	        						var a=me.getRetrainingThreshold(totalMessages, count,status);
 	        						
-
-	        						
-
-   						
-
-
-
-	        						// me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
 	        					}
 	        				} else {
 	        					AIDRFMFunctions.setAlert("Error", resp.message);

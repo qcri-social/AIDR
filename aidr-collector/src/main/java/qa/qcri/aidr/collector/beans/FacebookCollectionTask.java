@@ -29,6 +29,17 @@ public class FacebookCollectionTask extends CollectionTask {
 		this.fetchFrom = fetchFrom;
 	}
 	
+	public FacebookCollectionTask() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public boolean isPullInProgress() {
+		return pullInProgress;
+	}
+	public void setPullInProgress(boolean pullInProgress) {
+		this.pullInProgress = pullInProgress;
+	}
+	
 	@Override
 	public FacebookCollectionTask clone() {
 
@@ -41,6 +52,7 @@ public class FacebookCollectionTask extends CollectionTask {
         newTask.setStatusCode(statusCode);
         newTask.setStatusMessage(statusMessage);
         newTask.setToTrack(toTrack);
+        newTask.setToFollow(toFollow);
         newTask.setCollectionCount(collectionCount);
         newTask.setPersist(persist);
         newTask.setSourceOutage(sourceOutage);
@@ -56,6 +68,7 @@ public class FacebookCollectionTask extends CollectionTask {
 		this.setAccessToken(properties.getProperty("accessToken"));
 		this.setAccessTokenSecret(properties.getProperty("accessTokenSecret"));
 		this.setToTrack(properties.getProperty("toTrack"));
+		this.setToFollow(properties.getProperty("toFollow"));
 		this.setCollectionCode(properties.getProperty("collectionCode"));
 		this.setCollectionName(properties.getProperty("collectionName"));
 		this.setLastExecutionTime(new Date(properties.getProperty("lastExecutionTime")));
@@ -66,26 +79,15 @@ public class FacebookCollectionTask extends CollectionTask {
 		}
 	}
     
-    public FacebookCollectionTask() {
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
+    @Override
 	public String toString() {
-		return "CollectionTask{" + "collectionCode=" + collectionCode
-				+ ", collectionName=" + collectionName + ", toTrack=" + toTrack
-				+ ", lastExecutionTime=" + lastExecutionTime + ", fetchInterval=" + fetchInterval
-				+ ", lastDocument=" + lastDocument + ", statusCode="
-				+ statusCode + ", statusMessage=" + statusMessage
-				+ ", persist=" + persist + ", accessToken="
-				+ accessToken + ", accessTokenSecret=" + accessTokenSecret
-				+ ", collectionCount=" + collectionCount + '}';
+		return "FacebookCollectionTask [lastExecutionTime=" + lastExecutionTime + ", fetchInterval=" + fetchInterval
+				+ ", pullInProgress=" + pullInProgress + ", fetchFrom=" + fetchFrom + ", collectionCode="
+				+ collectionCode + ", collectionName=" + collectionName + ", toTrack=" + toTrack + ", lastDocument="
+				+ lastDocument + ", statusCode=" + statusCode + ", statusMessage=" + statusMessage + ", persist="
+				+ persist + ", sourceOutage=" + sourceOutage + ", saveMediaEnabled=" + saveMediaEnabled
+				+ ", accessToken=" + accessToken + ", accessTokenSecret=" + accessTokenSecret + ", collectionCount="
+				+ collectionCount + ", provider=" + provider + ", toFollow=" + toFollow + "]";
 	}
-	public boolean isPullInProgress() {
-		return pullInProgress;
-	}
-	public void setPullInProgress(boolean pullInProgress) {
-		this.pullInProgress = pullInProgress;
-	}
-
+    
 }
