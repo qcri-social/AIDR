@@ -49,7 +49,7 @@ public class PersisterService {
     	} else {
     		url += "/AIDRPersister/webresources/taggerPersister/filter/genTweetIdsOnly";
     		url += "?collectionCode=" + code + "&exportLimit=" + count + "&userName=" + userName + "&removeRetweet=" + removeRetweet;
-    		downloadLink = sendGET(url);
+    		downloadLink = sendPost("", url);
     	}	
 		return downloadLink;
     }

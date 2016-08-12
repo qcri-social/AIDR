@@ -134,7 +134,7 @@ public class PersisterController {
 						Integer downloadedFeeds = (Integer)countObject;
 						userAccountActivity.setDownloadCount(downloadedFeeds + userAccountActivity.getDownloadCount());
 						userAcountActivityService.save(userAccountActivity);
-						return getUIWrapper(result.get("data"), true);
+						return getUIWrapper(result.get("url"), true);
 					} else {
 						return getUIWrapper(result.get("url"), true);
 					}
