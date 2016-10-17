@@ -163,4 +163,6 @@ public interface TaggerService {
 
 	public String importTrainingData(Long targetCollectionId,
 			String sourceCollectionCode, Long attributeId);
+	
+	public Long getImageCountForCollection(String collectionCode);
 }

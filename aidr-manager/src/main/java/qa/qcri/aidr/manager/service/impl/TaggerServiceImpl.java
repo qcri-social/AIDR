@@ -2330,4 +2330,35 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 		return jsonResponse;
 	}
+	
+	@Override
+	public Long getImageCountForCollection(String collectionCode) {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		
+		Long count = 0L;
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(crowdsourcingAPIMainUrl
+					+ "/" + collectionCode + "/image/count");
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(
+					DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+					false);
+			Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			count = objectMapper.readValue(
+					jsonResponse, Long.class);
+
+		} catch (Exception e) {
+			logger.error("Error while getting image count for collection = "
+							+ collectionCode, e);
+		}
+		
+		return count;
+	}
 }

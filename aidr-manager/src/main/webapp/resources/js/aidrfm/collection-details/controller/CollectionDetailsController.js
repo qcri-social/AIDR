@@ -642,6 +642,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
+        this.setTotalImageCount(r.totalImageCount);
         this.setLastDowloadedDoc(r.lastDocument);
         if(r.hasTaggerOutput) {
 			this.DetailsComponent.gotoTaggerButton.show();
@@ -650,7 +651,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     		this.DetailsComponent.gotoTaggerButton.hide();
 			this.DetailsComponent.enableTaggerButton.show();
     	}
-
     },
 
     updateTrashedDetailsPanel: function (r) {
@@ -731,6 +731,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.setCountOfDocuments(0);
         this.setTotalCountOfDocuments(0);
+        this.setTotalImageCount(0);
         this.setLastDowloadedDoc('');
     },
 
@@ -902,6 +903,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
     setTotalCountOfDocuments: function (raw) {
         this.DetailsComponent.totalDocCountL.setText(raw ? Ext.util.Format.number(raw,'0,000') : 0);
+    },
+    
+    setTotalImageCount: function (raw) {
+        this.DetailsComponent.totalDownImageL.setText(raw ? Ext.util.Format.number(raw,'0,000') : 0);
     },
 
     startCollection: function () {
@@ -1194,6 +1199,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                             me.setWillStoppedDate(data.status, data.startDate, data.durationHours);
                             me.setCountOfDocuments(data.count);
                             me.setTotalCountOfDocuments(data.totalCount);
+                            me.setTotalImageCount(data.totalImageCount);
                             me.setLastDowloadedDoc(data.lastDocument);
                             me.setManagers(data.managers);
                             Ext.resumeLayouts();

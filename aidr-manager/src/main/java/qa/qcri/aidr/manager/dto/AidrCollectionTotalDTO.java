@@ -71,6 +71,8 @@ public class AidrCollectionTotalDTO {
     
     private int fetchFrom;
     
+    private long totalImageCount;
+    
     public Long getId() {
         return id;
     }
@@ -304,5 +306,13 @@ public class AidrCollectionTotalDTO {
 
 	public void setFetchFrom(int fetchFrom) {
 		this.fetchFrom = fetchFrom;
+	}
+
+	public long getTotalImageCount() {
+		return totalImageCount;
+	}
+
+	public void setTotalImageCount(long totalImageCount) {
+		this.totalImageCount = totalImageCount;
 	}
 }
