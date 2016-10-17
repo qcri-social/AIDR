@@ -127,6 +127,11 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                      margin: 0
                                      });
 
+          this.hurricane_iframe = Ext.create('Ext.container.Container', {
+               html: '<iframe frameborder="0"  width="800px" height="500px"src="//data.humdata.org/widget/3W?geotype=filestore&data_link_url=https%3A%2F%2Fdata.humdata.org%2Fdataset%2F5fcd29f1-3589-4102-9351-ce96ea51e964&formatFieldName=&joinAttribute=NAME_ENGLI&colors=%2381d4fa&colors=%234fc3f7&colors=%2329b6f6&colors=%2303a9f4&colors=%23039be5&colors=%230288d1&colors=%230277bd&colors=%2301579b&whoFieldName=Who&whatFieldName=Category&geo=%2Fdataset%2Fassessment-4w-09-10-2016-hurricane-matthew-xlsx%2Fresource_download%2F97c8d1e3-e29b-4df2-8036-e5d4521f740a&title=Hurricane+Matthew+Who+is+Doing+What+Where&datatype=datastore&whereFieldName=Country&data=%2Fapi%2Faction%2Fdatastore_search%3Fresource_id%3Dc4394da8-6b4c-47c3-b092-72dd5bb239e4%26limit%3D10000000&endFieldName=&type=3W-dashboard&nameAttribute=NAME_ENGLI&startFieldName="></iframe>',
+               margin: 0
+           });
+
            this.crisisTypesStore = Ext.create('Ext.data.Store', {
                                               pageSize: 30,
                                               storeId: 'crisisTypesStore',
@@ -170,7 +175,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                pageSize: 30,
                                                //mask: AIDRFMFunctions.getMask(true),
                                                storeId: 'crisisModelsStore',
-                                               fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold'],
+                                               fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold','taggedImageCount'],
                                                proxy: {
                                                type: 'ajax',
                                                url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
@@ -218,6 +223,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                     '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
                                                     + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a></td></tr>',
 
+
+                                                    '<tr><td>Human-tagged Images:</td>',
+                                                    '<td>{[this.getNumber(values.taggedImageCount)]} &mdash; <a href="' + BASE_URL +  '/protected/'
+                                                    + CRISIS_CODE + '/tagged-image-data">Go to human-tagged images &raquo;</a></td></tr>',
 
                                                     '<tr><td>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</td>',
                                                     '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
@@ -806,10 +815,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                                   xtype: 'label',
                                                                   //margins: '50 0 0 40',
                                                                   html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/pybossaAppPage.png"></span>',
-                                                                  
+
                                                                   }]
                                                           }
-                                                          
+
                                                           ]
                                                   });
 
@@ -1039,7 +1048,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                         html: '<div class="horizontalLine"></div>'
                                                        },*/
 
-                                                      
+
                                                       this.crisisModelsView,
                                                       {
                                                       xtype: 'container',
@@ -1051,6 +1060,18 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                               flex: 1
                                                               },
                                                               this.aucHint
+                                                              ]
+                                                      },
+                                                      {
+                                                      xtype: 'container',
+                                                      layout: 'hbox',
+                                                      padding: '15 0 0 0',
+                                                      items: [
+                                                              {
+                                                              xtype: 'container',
+                                                              flex: 1
+                                                              },
+                                                              this.hurricane_iframe
                                                               ]
                                                       }
                                                       ]
@@ -1102,7 +1123,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                  this.gotoCollectorButton
                                  ]
                          },
-                         
+
 */                         this.tabPanel
                          ];
 

@@ -130,6 +130,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
         this.docCountL = Ext.create('Ext.form.Label', {flex: 1});
         this.totalDocCountL = Ext.create('Ext.form.Label', {flex: 1});
+        this.totalDownImageL = Ext.create('Ext.form.Label', {flex: 1});
         this.lastDocL = Ext.create('Ext.form.Label', {flex: 1, cls:'tweet'});
 
         this.geoContainer = Ext.create('Ext.container.Container', {
@@ -1327,6 +1328,19 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     text: 'Total collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
                                 },
                                 this.totalDocCountL
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            defaultType: 'label',
+                            layout: 'hbox',
+                            items: [
+                                {
+                                    id:'totalDownloadImageLabel',
+                                    width: 220,
+                                    text: 'Total downloaded images:'
+                                },
+                                this.totalDownImageL
                             ]
                         },
                         {

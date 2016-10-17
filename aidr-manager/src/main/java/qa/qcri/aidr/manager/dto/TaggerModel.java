@@ -10,6 +10,8 @@ public class TaggerModel {
     private String status;
 
     private long trainingExamples;
+    
+    private long taggedImageCount;
 
     private long classifiedDocuments;
 
@@ -53,7 +55,15 @@ public class TaggerModel {
         this.trainingExamples = trainingExamples;
     }
 
-    public long getClassifiedDocuments() {
+    public long getTaggedImageCount() {
+		return taggedImageCount;
+	}
+
+	public void setTaggedImageCount(long taggedImageCount) {
+		this.taggedImageCount = taggedImageCount;
+	}
+
+	public long getClassifiedDocuments() {
         return classifiedDocuments;
     }
 

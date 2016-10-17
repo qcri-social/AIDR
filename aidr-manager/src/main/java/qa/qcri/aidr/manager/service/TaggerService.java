@@ -5,6 +5,7 @@ import java.util.Map;
 
 import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.manager.dto.ImageTaskQueueDTO;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.manager.dto.TaggerAttribute;
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
@@ -163,4 +164,11 @@ public interface TaggerService {
 
 	public String importTrainingData(Long targetCollectionId,
 			String sourceCollectionCode, Long attributeId);
+	
+	public Long getImageCountForCollection(String collectionCode);
+
+	public Long getTaggedImageCount(Integer crisisId);
+
+	public List<ImageTaskQueueDTO> getTaggedImageDataByCrisisId(Integer crisisId, Integer start, Integer limit, String sortColumn,
+			String sortDirection) throws AidrException;
 }
