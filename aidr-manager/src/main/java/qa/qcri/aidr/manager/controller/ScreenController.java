@@ -345,6 +345,7 @@ public class ScreenController extends BaseController{
         model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
         model.addObject("signInProvider", signInProviderName);
+        model.addObject("imageTagCount",taggerService.getTaggedImageCount(crisisId));
         return model;
     }
 
@@ -489,6 +490,6 @@ public class ScreenController extends BaseController{
         model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
-    }
+    }    
 
 }

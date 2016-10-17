@@ -30,6 +30,7 @@ import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.common.wrapper.CollectionBriefInfo;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.manager.dto.CrisisRequest;
+import qa.qcri.aidr.manager.dto.ImageTaskQueueDTO;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.manager.dto.TaggerAttribute;
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
@@ -425,6 +426,49 @@ public class TaggerController extends BaseController {
 			total = response.get(0).getTotalRows();
 		}
 		logger.info("Returning for crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", human labeled count = " + total);
+		return getUIWrapper(total, true);
+	}
+	
+	@RequestMapping(value = "/getTaggedImageDataByCrisisId.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getTaggedImageDataByCrisisId(@RequestParam Integer start,
+			@RequestParam Integer limit,
+			@RequestParam Integer crisisId,
+			@RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+			@RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
+		if (crisisId == null ) {
+			logger.error("Error while Getting image data for Crisis - Crisis ID is empty");
+			return getUIWrapper(false);
+		}
+		start = (start != null) ? start : 0;
+		limit = (limit != null) ? limit : 20;
+		List<ImageTaskQueueDTO> response;
+		try {
+			response = taggerService.getTaggedImageDataByCrisisId(crisisId, start, limit, sortColumn, sortDirection);
+			//logger.info("For crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", Returned response: " + response);
+		} catch (AidrException e) {
+			logger.error("Error while Getting training data for CrisisID: "+crisisId, e);
+			return getUIWrapper(false, e.getMessage());
+		}
+		Long total = 0L;
+		if (response != null) {
+			total = response.get(0).getTotalRows();
+		}
+		logger.info("Returning for crisis ID " + crisisId + " total count = " + total + ", response data: " + response);
+		return getUIWrapper(response, true, total, null);
+	}
+	
+	@RequestMapping(value = "/getTaggedImageDataCountByCrisisId.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getTaggedImageDataCountByCrisisId(@RequestParam Integer crisisId) {
+		Integer start = 0;
+		Integer limit = 1;
+		Long total = taggerService.getTaggedImageCount(crisisId);
+
+		if(total == null)
+			return getUIWrapper(new Integer(0), false);
+
+		logger.info("Returning for crisis ID " + crisisId + ", tagged images count = " + total);
 		return getUIWrapper(total, true);
 	}
 
