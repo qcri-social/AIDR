@@ -219,6 +219,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                     + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a></td></tr>',
 
 
+                                                    '<tr><td>Human-tagged Images:</td>',
+                                                    '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
+                                                    + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Go to human-tagged images &raquo;</a></td></tr>',
+
                                                     '<tr><td>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</td>',
                                                     '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
 
@@ -806,10 +810,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                                   xtype: 'label',
                                                                   //margins: '50 0 0 40',
                                                                   html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/pybossaAppPage.png"></span>',
-                                                                  
+
                                                                   }]
                                                           }
-                                                          
+
                                                           ]
                                                   });
 
@@ -1039,7 +1043,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                         html: '<div class="horizontalLine"></div>'
                                                        },*/
 
-                                                      
+
                                                       this.crisisModelsView,
                                                       {
                                                       xtype: 'container',
@@ -1102,7 +1106,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                  this.gotoCollectorButton
                                  ]
                          },
-                         
+
 */                         this.tabPanel
                          ];
 
