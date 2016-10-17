@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -19,6 +20,7 @@ public class ImageTaskQueue implements Serializable {
     @GeneratedValue
 	private Long id;
 	
+	@ManyToOne
     @JoinColumn(name = "task_queue_id")
     private TaskQueue taskQueue;
 
