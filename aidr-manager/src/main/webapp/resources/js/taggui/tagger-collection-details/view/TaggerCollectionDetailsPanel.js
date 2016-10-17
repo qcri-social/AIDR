@@ -170,7 +170,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                pageSize: 30,
                                                //mask: AIDRFMFunctions.getMask(true),
                                                storeId: 'crisisModelsStore',
-                                               fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold'],
+                                               fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold','taggedImageCount'],
                                                proxy: {
                                                type: 'ajax',
                                                url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
@@ -220,8 +220,8 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
                                                     '<tr><td>Human-tagged Images:</td>',
-                                                    '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
-                                                    + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Go to human-tagged images &raquo;</a></td></tr>',
+                                                    '<td>{[this.getNumber(values.taggedImageCount)]} &mdash; <a href="' + BASE_URL +  '/protected/'
+                                                    + CRISIS_CODE + '/tagged-image-data">Go to human-tagged images &raquo;</a></td></tr>',
 
                                                     '<tr><td>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</td>',
                                                     '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',

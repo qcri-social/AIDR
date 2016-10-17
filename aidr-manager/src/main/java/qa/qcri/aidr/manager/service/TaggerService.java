@@ -165,4 +165,9 @@ public interface TaggerService {
 			String sourceCollectionCode, Long attributeId);
 	
 	public Long getImageCountForCollection(String collectionCode);
+
+	public Long getTaggedImageCount(Integer crisisId);
+
+	public List<TrainingDataDTO> getTaggedImageDataByCrisisId(Integer crisisId, Integer start, Integer limit, String sortColumn,
+			String sortDirection) throws AidrException;
 }
