@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import qa.qcri.aidr.trainer.api.entity.ImageTaskQueue;
+import qa.qcri.aidr.trainer.api.dto.ImageTaskQueueDTO;
 import qa.qcri.aidr.trainer.api.service.ImageTaskQueueService;
 
 @RequestMapping("/taggedImage")
@@ -29,12 +29,13 @@ public class ImageTaskQueueController {
     }
 
     @RequestMapping("/get")
-    public List<ImageTaskQueue> getImageTasks(@QueryParam("crisisID") long crisisID,
+    public List<ImageTaskQueueDTO> getImageTasks(@QueryParam("crisisID") long crisisID,
 			@DefaultValue("0") @QueryParam("fromRecord") int fromRecord,
 			@DefaultValue("100") @QueryParam("limit") int limit,
 			@DefaultValue("") @QueryParam("sortColumn") String sortColumn,
 			@DefaultValue("") @QueryParam("sortDirection") String sortDirection){
-        return imageTaskQueueService.getImageTaskQueueByCrisis(crisisID);
+        return imageTaskQueueService.getImageTaskQueueByCrisis(crisisID, fromRecord, limit, 
+	    		sortColumn, sortDirection);
 
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.trainer.api.dao.ImageTaskQueueDao;
+import qa.qcri.aidr.trainer.api.dto.ImageTaskQueueDTO;
 import qa.qcri.aidr.trainer.api.entity.ImageTaskQueue;
 import qa.qcri.aidr.trainer.api.service.ImageTaskQueueService;
 
@@ -44,5 +45,14 @@ public class ImageTaskQueueServiceImpl implements ImageTaskQueueService {
 	public Long getCountImageTaskByCrisis(Long crisisID) {
 		return imageTaskQueueDao.findImageTaskQueueCountByCrisis(crisisID);
 	}
+	
+	@Override
+    public List<ImageTaskQueueDTO> getImageTaskQueueByCrisis(Long crisisID, int fromRecord, int limit, 
+    		String sortColumn, String sortDirection) {
+		return imageTaskQueueDao.findImageTaskQueueSetByCrisis(crisisID, fromRecord, limit, 
+	    		sortColumn, sortDirection);
+		
+	}
+
 
 }

@@ -1,64 +1,41 @@
-package qa.qcri.aidr.trainer.api.entity;
+package qa.qcri.aidr.manager.dto;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@Entity
-@Table(name = "image_task_queue")
-public class ImageTaskQueue implements Serializable {
+@XmlRootElement
+public class ImageTaskQueueDTO implements Serializable {
 
-	private static final long serialVersionUID = 8313504282875796991L;
+	private static final long serialVersionUID = -1204749826125824840L;
 
-	@Id
-    @GeneratedValue
-	private Long id;
-	
-    @JoinColumn(name = "task_queue_id")
-    private TaskQueue taskQueue;
+	private Long taskQueueId;
 
-    @Column (name = "pybossa_task_id", nullable = false)
     private Long pybossaTaskId;
     
-    @Column(name="image_url")
 	private String imageUrl;
     
-    @Column(name="image_text")
     private String imageText;
     
-    @Column(name="category")
     private String category;
     
-    @Column(name="lat")
     private String latitude;
     
-    @Column(name="lon")
     private String longitude;
     
-    @Column(name="location")
     private String location;
+    
+    private Long totalRows;
 
-    public ImageTaskQueue(){}
-
-	public Long getId() {
-		return id;
+	public ImageTaskQueueDTO() {
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public Long getTaskQueueId() {
+		return taskQueueId;
 	}
 
-	public TaskQueue getTaskQueue() {
-		return taskQueue;
-	}
-
-	public void setTaskQueue(TaskQueue taskQueue) {
-		this.taskQueue = taskQueue;
+	public void setTaskQueueId(Long taskQueueId) {
+		this.taskQueueId = taskQueueId;
 	}
 
 	public Long getPybossaTaskId() {
@@ -115,6 +92,14 @@ public class ImageTaskQueue implements Serializable {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Long getTotalRows() {
+		return totalRows;
+	}
+
+	public void setTotalRows(Long totalRows) {
+		this.totalRows = totalRows;
 	}
 
 }

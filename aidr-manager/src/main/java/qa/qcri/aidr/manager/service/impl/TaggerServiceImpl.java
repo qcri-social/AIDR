@@ -33,8 +33,10 @@ import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.manager.dto.ImageTaskQueueDTO;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.manager.dto.PingResponse;
+import qa.qcri.aidr.manager.dto.TaggedImageDataRequest;
 import qa.qcri.aidr.manager.dto.TaggerAllCrisesResponse;
 import qa.qcri.aidr.manager.dto.TaggerAllCrisesTypesResponse;
 import qa.qcri.aidr.manager.dto.TaggerAttribute;
@@ -2337,7 +2339,7 @@ public class TaggerServiceImpl implements TaggerService {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
 		
-		Long count = 0L;
+		Long count = null;
 		try {
 			// Rest call to Tagger
 			WebTarget webResource = client.target(crowdsourcingAPIMainUrl
@@ -2395,7 +2397,7 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public List<TrainingDataDTO> getTaggedImageDataByCrisisId(Integer crisisId, Integer start, Integer limit, String sortColumn,
+	public List<ImageTaskQueueDTO> getTaggedImageDataByCrisisId(Integer crisisId, Integer start, Integer limit, String sortColumn,
 			String sortDirection)  throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
@@ -2419,15 +2421,15 @@ public class TaggerServiceImpl implements TaggerService {
 			// String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TrainingDataRequest trainingDataRequest = objectMapper.readValue(
-					jsonResponse, TrainingDataRequest.class);
+			TaggedImageDataRequest trainingDataRequest = objectMapper.readValue(
+					jsonResponse, TaggedImageDataRequest.class);
 			if (trainingDataRequest != null
-					&& trainingDataRequest.getTrainingData() != null) {
+					&& trainingDataRequest.getTaggedImageData()!= null) {
 				logger.info("Tagger returned "
-						+ trainingDataRequest.getTrainingData().size()
+						+ trainingDataRequest.getTaggedImageData().size()
 						+ " training data records for crisis with ID: "
 						+ crisisId);
-				return trainingDataRequest.getTrainingData();
+				return trainingDataRequest.getTaggedImageData();
 			} else {
 				return null;
 			}
