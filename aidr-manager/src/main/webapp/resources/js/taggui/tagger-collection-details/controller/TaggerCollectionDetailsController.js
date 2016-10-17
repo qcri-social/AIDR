@@ -11,7 +11,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
             'tagger-collection-details-view': {
                 beforerender: this.beforeRenderView
-                
+
             },
 
             "#crisisDelete": {
@@ -43,7 +43,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     this.generateTweetIdsLinkButtonHandler(btn);
                 }
             } ,
-            
+
             "#generateJSONLink": {
                 click: function (btn, e, eOpts) {
                     this.generateJSONLinkButtonHandler(btn);
@@ -444,7 +444,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
              }
          });
     },
-    
+
     disableMicroMappers: function(btn) {
     	 var me = this;
 
@@ -494,7 +494,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 			me.mainComponent.microMappersUI.show();
   	 	}
     },
-      
+
     addNewClassifier: function() {
         document.location.href = BASE_URL + "/protected/" + CRISIS_CODE + '/predict-new-attribute';
     },
@@ -749,6 +749,10 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     loadUITemplateDisplayDefaultComponent: function(templateType){
         var me = this;
         var sText = '';
+
+        if(CRISIS_CODE != '161004090455_hurricane_matthew') {
+            me.mainComponent.hurricane_iframe.hide();
+        }
 
         if(templateType == 1){
             Ext.Ajax.request({
@@ -1086,7 +1090,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     generateCSVLink: function() {
         var me = this;
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
-        
+
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
         Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
@@ -1132,7 +1136,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     generateTweetIdsLink: function() {
         var me = this;
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
-        
+
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
         Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
@@ -1154,7 +1158,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;<a href="' + resp.data + '">Download all tweets (tweet-ids only)</a></div>', false);
                         if (resp.message) {
                      	   AIDRFMFunctions.setAlert("Error", resp.message);
-                        } 
+                        }
                     } else {
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;Download all tweets (tweet-ids only) - Not yet available for this crisis.</div>', false);
                     }
@@ -1162,7 +1166,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                     AIDRFMFunctions.reportIssue(response);
-                 
+
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1213,7 +1217,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                     AIDRFMFunctions.reportIssue(response);
-             
+
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1234,7 +1238,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         var me = this;
         btn.setDisabled(true);
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
-        
+
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
         Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
@@ -1256,8 +1260,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     if (resp.data && resp.data != '') {
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
                         if (resp.message) {
-                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
-                        } 
+                     	   AIDRFMFunctions.setAlert("Error", resp.message);
+                        }
                     } else {
                         me.mainComponent.tweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
@@ -1282,11 +1286,11 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             }
         });
     },
-    
+
     generateJSONLink: function() {
         var me = this;
         me.mainComponent.JSONLink.setText('<div class="loading-block"></div>', false);
-        
+
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
         Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
@@ -1332,7 +1336,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     generateJsonTweetIdsLink: function() {
         var me = this;
         me.mainComponent.JsonTweetsIdsLink.setText('<div class="loading-block"></div>', false);
-        
+
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
         Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
@@ -1353,8 +1357,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     if (resp.data && resp.data != '') {
                         me.mainComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;<a href="' + resp.data + '">Download all tweets (tweet-ids only)</a></div>', false);
                         if (resp.message) {
-                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
-                        } 
+                     	   AIDRFMFunctions.setAlert("Error", resp.message);
+                        }
                     } else {
                         me.mainComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;Download all tweets (tweet-ids only) - Not yet available for this crisis.</div>', false);
                     }
@@ -1432,7 +1436,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         var me = this;
         btn.setDisabled(true);
         me.mainComponent.JsonTweetsIdsLink.setText('<div class="loading-block"></div>', false);
-        
+
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
         Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
@@ -1454,8 +1458,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     if (resp.data && resp.data != '') {
                         me.mainComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
                         if (resp.message) {
-                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
-                        } 
+                     	   AIDRFMFunctions.setAlert("Error", resp.message);
+                        }
                     } else {
                         me.mainComponent.JsonTweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
