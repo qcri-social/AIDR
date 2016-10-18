@@ -27,22 +27,22 @@ public class ImageTaskQueue implements Serializable {
     @Column (name = "pybossa_task_id", nullable = false)
     private Long pybossaTaskId;
     
-    @Column(name="image_url")
+    @Column(name="image_url", columnDefinition="text")
 	private String imageUrl;
     
-    @Column(name="image_text")
+    @Column(name="image_text", columnDefinition="text")
     private String imageText;
     
-    @Column(name="category")
+    @Column(name="category", length = 100)
     private String category;
     
-    @Column(name="lat")
+    @Column(name="lat", length = 150)
     private String latitude;
     
-    @Column(name="lon")
+    @Column(name="lon", length = 150)
     private String longitude;
     
-    @Column(name="location")
+    @Column(name="location", length = 250)
     private String location;
 
     public ImageTaskQueue(){}

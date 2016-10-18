@@ -31,7 +31,8 @@ Ext.define('TAGGUI.image-training-data.view.TrainingDataPanel', {
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 30 0',
-            html: '<b>Status: </b>Waiting for more human-tagged images<br>',
+            //html: '<b>Status: </b>Waiting for more human-tagged images<br>',
+            html: '<b>Status: </b>Running<br>',
             flex: 1
         });
 /*
@@ -55,7 +56,7 @@ No use for this label as all the information is rendered in a single taggerDescr
         this.trainingDataStore = Ext.create('Ext.data.Store', {
             pageSize: 20,
             storeId: 'trainingDataStore',
-            
+
             fields: ['imageUrl', 'imageText', 'category', 'latitude', 'longitude', 'location'],
             remoteSort: true,
             proxy: {
@@ -73,7 +74,7 @@ No use for this label as all the information is rendered in a single taggerDescr
             listeners: {
                 beforeload: function (s) {
                     s.getProxy().setExtraParams({
-                        crisisId: CRISIS_ID
+                        crisisId: 1700
                     })
                 }
             }
@@ -100,7 +101,7 @@ No use for this label as all the information is rendered in a single taggerDescr
                 {
                     xtype: 'gridcolumn', dataIndex: 'imageUrl', text: 'Thumbnail', width: 150,
                     renderer: function (value, meta, record) {
-                        return '<img width=150 height=150 src="' + value + '" />';
+                        return '<a href="'+ value +'" target="_blank"><img width=128 height=150 src="' + value + '" /></a>';
                     }
                 },
                 {
@@ -266,8 +267,8 @@ No use for this label as all the information is rendered in a single taggerDescr
 						this.trainingDataPaging,
                 ]
             },
-            
-            
+
+
             this.downloadPanel
         ];
 

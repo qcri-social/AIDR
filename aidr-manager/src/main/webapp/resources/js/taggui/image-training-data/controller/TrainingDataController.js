@@ -16,7 +16,7 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 
 	        		"#addNewTrainingData": {
 	        			click: function (btn, e, eOpts) {
-	        				document.location.href = BASE_URL + "/MMAPI";
+									window.open("http://clickers.micromappers.org/project/MM_IMG_Matthew/");
 	        			}
 	        		},
 	        		'button[action=deleteTrainingExample]': {
@@ -32,7 +32,7 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        },
 
 	        beforeRenderView: function (component, eOpts) {
-	        	  
+
 	        	AIDRFMFunctions.initMessageContainer();
 	        	this.mainComponent = component;
 	        	this.mainComponent.constraintsString = '{"constraints":[]}';
@@ -50,7 +50,7 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        loadModelData: function() {
 	        	var me = this,
 	        	status = '',
-	        	detailsForModel = '';	        	
+	        	detailsForModel = '';
 
 	        	if (MODEL_ID) {
 	        		status = AIDRFMFunctions.getStatusWithStyle("RUNNING", TYPE);
@@ -88,9 +88,9 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        								totalExamples += r.trainingDocuments;
 	        							}
 	        						});
-	        						
+
 	        						var a=me.getRetrainingThreshold(totalMessages, count,status);
-	        						
+
 	        					}
 	        				} else {
 	        					AIDRFMFunctions.setAlert("Error", resp.message);
@@ -113,7 +113,7 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 
 	        getRetrainingThreshold: function(trainingExamplesCount, countTrainingExample,status){
 	        	var me = this;
-	     
+
 
 	        	Ext.Ajax.request({
 	        		url: BASE_URL + '/protected/tagger/getTrainingDataCountByModelIdAndCrisisId.action',
@@ -125,7 +125,7 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        		headers: {
 	        			'Accept': 'application/json'
 	        		},
-	        	
+
 	        		success: function (response) {
 	        			var resp = Ext.decode(response.responseText);
 	        			if (resp.success && resp.data) {
@@ -134,7 +134,7 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        	        	var retrainingThresholdCount = 0;
 	        	        	var statusMessage='';
 	        	        	var y = totalHumanLabeledCount % sampleCountThreshold; //TRAINING_EXAMPLE % sampleCountThreshold;
-	        	        	
+
 	        	        	if(y < 0){
 	        	        		y = y * sampleCountThreshold;
 	        	        	}
@@ -147,25 +147,25 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        	        	}
 	        	        	else{*/
 
-/* 
+/*
 Author:Sushant
 Removed the taggerDescription2line and disabled it as there is no use of two labels.
 */
 	        	        		statusMessage = retrainingThresholdCount + ' more needed to re-train';
 	        	        		me.mainComponent.taggerDescription.setText(' Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +status+', '+ statusMessage+'<br> ' +
 	        								'Human-tagged: ' + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + totalHumanLabeledCount.format() +'<br>'+'Machine-tagged: '+'&nbsp;&nbsp;&nbsp;&nbsp;'+trainingExamplesCount.format() /*+ detailsForModel*/, false);
-                                 
-	        	        	
+
+
 	        			} else {
 	        				AIDRFMFunctions.setAlert("Info", "No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " present for this classifier.");
 	        			}
 	        		}
-	        	
+
 	        	});
 
-                            
+
 	        },
-	        
+
 
 	        deleteTrainingExample: function(button){
 	        	if (!button.exampleId){
@@ -240,7 +240,7 @@ Removed the taggerDescription2line and disabled it as there is no use of two lab
                                 		me.mainComponent.downloadLink.setText('', false);
                                 		AIDRFMFunctions.setAlert("Info", "No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " available to download");
                                 	}
-                                    
+
                                 } else {
                                     me.mainComponent.downloadLink.setText('', false);
                                     AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
