@@ -19,7 +19,7 @@
       CRISIS_NAME = "${crisisName}";
       MODEL_ID = 0;
       MODEL_FAMILY_ID = 0;
-      MODEL_NAME = "ad";
+      MODEL_NAME = "";
       ATTRIBUTE_ID = 0;
       TRAINING_EXAMPLE = 0
       MODEL_AUC = 0

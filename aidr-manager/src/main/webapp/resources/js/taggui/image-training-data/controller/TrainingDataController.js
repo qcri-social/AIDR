@@ -13,12 +13,12 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        		'training-data-view': {
 	        			beforerender: this.beforeRenderView
 	        		},
-
+/*
 	        		"#addNewTrainingData": {
 	        			click: function (btn, e, eOpts) {
 	        				this.addNewTrainingData();
 	        			}
-	        		},
+	        		},*/
 	        		'button[action=deleteTrainingExample]': {
 	        			click: this.deleteTrainingExample
 	        		},
@@ -43,10 +43,10 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        	this.loadModelData();
 	        },
 
-	        addNewTrainingData: function() {
+	        /*addNewTrainingData: function() {
 	        	document.location.href = BASE_URL + "/protected/" + CRISIS_CODE + '/image-training-examples';
 	        },
-
+*/
 	        loadModelData: function() {
 	        	var me = this,
 	        	status = '',
@@ -104,7 +104,7 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        				'<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
 	        				'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;</span>' +
 	        				'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">Classifier</a><span>&nbsp;>&nbsp;' +
-	        				MODEL_NAME + '&nbsp;>&nbsp;Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '</span></div>', false);
+	        				'Human-tagged images </span></div>', false);
 
 	        	}
 

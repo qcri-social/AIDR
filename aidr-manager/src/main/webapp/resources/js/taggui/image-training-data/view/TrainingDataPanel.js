@@ -93,13 +93,13 @@ No use for this label as all the information is rendered in a single taggerDescr
                 {
                     xtype: 'gridcolumn', dataIndex: 'imageText', text: 'Text', flex: 1,
                     renderer: function (value, meta, record) {
-                        return me.getTwitterText(value);
+                        return me.getField(value);
                     }
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'imageUrl', text: 'Thumbnail', width: 150,
                     renderer: function (value, meta, record) {
-                        return me.getField(value);
+                        return '<img src="' + value + '" />';
                     }
                 },
                 {
