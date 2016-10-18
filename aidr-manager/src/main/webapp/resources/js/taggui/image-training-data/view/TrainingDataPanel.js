@@ -74,7 +74,7 @@ No use for this label as all the information is rendered in a single taggerDescr
             listeners: {
                 beforeload: function (s) {
                     s.getProxy().setExtraParams({
-                        crisisId: 1700
+                        crisisId: CRISIS_ID
                     })
                 }
             }
