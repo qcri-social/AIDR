@@ -720,7 +720,7 @@ public class CollectionController extends BaseController{
 		dto.setHasTaggerOutput(collection.isClassifierEnabled());
 		dto.setManagers(managers);
 		dto.setPurpose(collection.getPurpose());
-		dto.setTotalImageCount(taggerService.getImageCountForCollection(collection.getCode()));
+		dto.setTotalImageCount(0);//taggerService.getImageCountForCollection(collection.getCode()));
 		return dto;
 	}
 
