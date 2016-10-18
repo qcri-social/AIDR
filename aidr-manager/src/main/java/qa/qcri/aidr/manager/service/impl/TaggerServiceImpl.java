@@ -2411,26 +2411,27 @@ public class TaggerServiceImpl implements TaggerService {
 					+ sortDirection);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-			objectMapper.configure(
-					DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
-					false);
+			// ClientResponse clientResponse =
+			// webResource.type(MediaType.APPLICATION_JSON)
+			// .accept(MediaType.APPLICATION_JSON)
+			// .get(ClientResponse.class);
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).get();
 
+			// String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TaggedImageDataRequest trainingDataRequest = objectMapper.readValue(
+			ImageTaskQueueDTO[] taggedImageData = objectMapper.readValue(jsonResponse.toString(), ImageTaskQueueDTO[].class);
+/*			TaggedImageDataRequest trainingDataRequest = objectMapper.readValue(
 					jsonResponse, TaggedImageDataRequest.class);
 			if (trainingDataRequest != null
 					&& trainingDataRequest.getTaggedImageData()!= null) {
 				logger.info("Tagger returned "
 						+ trainingDataRequest.getTaggedImageData().size()
 						+ " training data records for crisis with ID: "
-						+ crisisId);
-				return trainingDataRequest.getTaggedImageData();
-			} else {
-				return null;
-			}
+						+ crisisId);8/
+*/				return Arrays.asList(taggedImageData);
+			
 		} catch (Exception e) {
 			logger.error(crisisId + " Error while Getting training data for Crisis and Model", e);
 			throw new AidrException(
