@@ -448,8 +448,7 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/{code}/image-training-data")
     public ModelAndView imageTrainingData(@PathVariable("code") String code) throws Exception {
-        UserAccount user = getAuthenticatedUser();
-        if (!userService.isUserAdmin(user)){
+        if (!isHasPermissionForCollection(code)){
             return new ModelAndView("redirect:/protected/access-error");
         }
         

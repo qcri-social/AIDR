@@ -13,12 +13,12 @@ Ext.define('TAGGUI.image-training-data.controller.TrainingDataController', {
 	        		'training-data-view': {
 	        			beforerender: this.beforeRenderView
 	        		},
-/*
+
 	        		"#addNewTrainingData": {
 	        			click: function (btn, e, eOpts) {
-	        				this.addNewTrainingData();
+	        				document.location.href = BASE_URL + "/MMAPI";
 	        			}
-	        		},*/
+	        		},
 	        		'button[action=deleteTrainingExample]': {
 	        			click: this.deleteTrainingExample
 	        		},

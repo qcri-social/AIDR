@@ -31,7 +31,7 @@ Ext.define('TAGGUI.image-training-data.view.TrainingDataPanel', {
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 30 0',
-            html: 'Status: &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>Waiting for human-tagged images<br> </b>',
+            html: '<b>Status: </b>Waiting for more human-tagged images<br>',
             flex: 1
         });
 /*
@@ -73,7 +73,7 @@ No use for this label as all the information is rendered in a single taggerDescr
             listeners: {
                 beforeload: function (s) {
                     s.getProxy().setExtraParams({
-                        crisisId: 1700
+                        crisisId: CRISIS_ID
                     })
                 }
             }
@@ -85,7 +85,7 @@ No use for this label as all the information is rendered in a single taggerDescr
             cls: 'aidr-grid',
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'category', text: 'Category', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'category', text: 'Category', width: 100,
                     renderer: function (value, meta, record) {
                         return me.getField(value);
                     }
@@ -93,29 +93,30 @@ No use for this label as all the information is rendered in a single taggerDescr
                 {
                     xtype: 'gridcolumn', dataIndex: 'imageText', text: 'Text', flex: 1,
                     renderer: function (value, meta, record) {
+			meta.style = "white-space: normal";
                         return me.getField(value);
                     }
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'imageUrl', text: 'Thumbnail', width: 150,
                     renderer: function (value, meta, record) {
-                        return '<img src="' + value + '" />';
+                        return '<img width=150 height=150 src="' + value + '" />';
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'latitude', text: 'Latitude', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'latitude', text: 'Latitude', width: 100,
                     renderer: function (value, meta, record) {
                         return me.getField(value);
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'longitude', text: 'Longitude', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'longitude', text: 'Longitude', width: 100,
                     renderer: function (value, meta, record) {
                         return me.getField(value);
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'location', text: 'Location', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'location', text: 'Location', width: 100,
                     renderer: function (value, meta, record) {
                         return me.getField(value);
                     }
