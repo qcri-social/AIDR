@@ -1,4 +1,4 @@
-Ext.define('TAGGUI.training-examples.view.LabelPanel', {
+Ext.define('TAGGUI.image-training-examples.view.LabelPanel', {
     extend: 'Ext.container.Container',
     alias: 'widget.label-panel-view',
 

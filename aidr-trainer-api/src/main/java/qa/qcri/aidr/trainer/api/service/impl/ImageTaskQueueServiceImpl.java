@@ -49,8 +49,9 @@ public class ImageTaskQueueServiceImpl implements ImageTaskQueueService {
 	@Override
     public List<ImageTaskQueueDTO> getImageTaskQueueByCrisis(Long crisisID, int fromRecord, int limit, 
     		String sortColumn, String sortDirection) {
-		return imageTaskQueueDao.findImageTaskQueueSetByCrisis(crisisID, fromRecord, limit, 
+		List<ImageTaskQueueDTO> list = imageTaskQueueDao.findImageTaskQueueSetByCrisis(crisisID, fromRecord, limit, 
 	    		sortColumn, sortDirection);
+		return list;
 		
 	}
 

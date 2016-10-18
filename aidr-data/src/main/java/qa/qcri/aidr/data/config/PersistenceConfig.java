@@ -73,7 +73,7 @@ public class PersistenceConfig {
 		final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setDatabase(Database.MYSQL);
 		vendorAdapter.setDatabasePlatform(dialect);
-		vendorAdapter.setShowSql(true);
+		vendorAdapter.setShowSql(false);
 		vendorAdapter.setGenerateDdl(true);
 		return vendorAdapter;
 	}

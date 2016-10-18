@@ -1330,7 +1330,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 this.totalDocCountL
                             ]
                         },
-                        {
+                        /*{
                             xtype: 'container',
                             defaultType: 'label',
                             layout: 'hbox',
@@ -1342,7 +1342,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 },
                                 this.totalDownImageL
                             ]
-                        },
+                        },*/
                         {
                             xtype: 'container',
                             defaultType: 'label',
