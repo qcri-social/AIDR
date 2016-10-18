@@ -2411,14 +2411,12 @@ public class TaggerServiceImpl implements TaggerService {
 					+ sortDirection);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-			// ClientResponse clientResponse =
-			// webResource.type(MediaType.APPLICATION_JSON)
-			// .accept(MediaType.APPLICATION_JSON)
-			// .get(ClientResponse.class);
+			objectMapper.configure(
+					DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+					false);
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).get();
 
-			// String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggedImageDataRequest trainingDataRequest = objectMapper.readValue(

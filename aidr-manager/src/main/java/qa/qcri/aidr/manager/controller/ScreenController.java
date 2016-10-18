@@ -393,6 +393,39 @@ public class ScreenController extends BaseController{
         return model;
     }
 
+    @RequestMapping("protected/{code}/image-training-examples")
+    public ModelAndView imageTrainingExamples(@PathVariable(value="code") String code) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
+        TaggerCrisis crisis = taggerService.getCrisesByCode(code);
+
+        Integer crisisId = 0;
+        String crisisName = "";
+        String modelName = "";
+        if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
+            crisisId = crisis.getCrisisID();
+            crisisName = crisis.getName();
+        }
+
+
+        Collection collection = collectionService.findByCode(code);
+        String signInProviderName = getAuthenticatedProviderName();
+        
+        ModelAndView model = new ModelAndView("tagger/image-training-examples");
+        model.addObject("code", code);
+        model.addObject("crisisId", crisisId);
+        model.addObject("crisisName", crisisName);
+        model.addObject("modelName", modelName);
+        model.addObject("modelId", 0);
+        model.addObject("modelFamilyId", 0);
+        
+        model.addObject("collectionType", collection.getProvider());
+        model.addObject("collectionTypes", CollectionType.JSON());
+        model.addObject("signInProvider", signInProviderName);
+        return model;
+    }
     @RequestMapping("protected/administration/admin-console")
     public ModelAndView adminConsole(Map<String, String> model) throws Exception {
         UserAccount user = getAuthenticatedUser();
@@ -411,6 +444,28 @@ public class ScreenController extends BaseController{
         }
 
         return new ModelAndView("administration/health");
+    }
+
+    @RequestMapping("protected/{code}/image-training-data")
+    public ModelAndView imageTrainingData(@PathVariable("code") String code) throws Exception {
+        UserAccount user = getAuthenticatedUser();
+        if (!userService.isUserAdmin(user)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+        
+        Collection collection = collectionService.findByCode(code);
+        String signInProviderName = getAuthenticatedProviderName();
+        
+        ModelAndView model = new ModelAndView("tagger/image-training-data");
+        model.addObject("crisisId", collection.getId());
+        model.addObject("crisisName", collection.getName());
+        model.addObject("code", code);
+        model.addObject("collectionType", collection.getProvider());
+        model.addObject("collectionTypes", CollectionType.JSON());
+        model.addObject("signInProvider", signInProviderName);
+        
+
+        return model;
     }
 
     @RequestMapping("protected/{code}/interactive-view-download")

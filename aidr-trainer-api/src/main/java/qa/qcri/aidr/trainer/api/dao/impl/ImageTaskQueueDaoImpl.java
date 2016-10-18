@@ -112,7 +112,7 @@ public class ImageTaskQueueDaoImpl extends AbstractDaoImpl<ImageTaskQueue, Strin
 				+ " JOIN task_queue b ON a.task_queue_id = b.id \n"
 				+ " JOIN client_app c ON b.client_app_id = c.id \n"
 				+ " where c.crisis_id = :crisisID and a.category IS NOT NULL "  + orderSQLPart
-				+ " LIMIT :fromRecord, :limit";
+				+ " offset :fromRecord limit :limit";
 		try {
 			Query query = getCurrentSession().createSQLQuery(sql);
 			query.setParameter("crisisID", crisisID);
@@ -134,7 +134,7 @@ public class ImageTaskQueueDaoImpl extends AbstractDaoImpl<ImageTaskQueue, Strin
 			System.out.println("exception in imageTaskQueue:" + e);
 		}
 
-		return null;
+		return imageTasks;
 	}
 
 }

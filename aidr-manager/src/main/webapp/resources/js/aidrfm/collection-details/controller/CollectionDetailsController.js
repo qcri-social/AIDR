@@ -1246,7 +1246,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     },
 
     goToTagger: function() {
-        document.location.href = BASE_URL + '/protected/' + COLLECTION_CODE +'/tagger-collection-details';
+        document.location.href = BASE_URL + '/protected/' + COLLECTION_CODE +'/image-training-data';
     },
 
     beforeUpdateCollection: function() {
