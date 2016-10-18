@@ -226,7 +226,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
                                                     '<tr><td>Human-tagged Images:</td>',
                                                     '<td>{[this.getNumber(values.taggedImageCount)]} &mdash; <a href="' + BASE_URL +  '/protected/'
-                                                    + CRISIS_CODE + '/tagged-image-data">Go to human-tagged images &raquo;</a></td></tr>',
+                                                    + CRISIS_CODE + '/image-training-data">Go to human-tagged images &raquo;</a></td></tr>',
 
                                                     '<tr><td>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</td>',
                                                     '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
