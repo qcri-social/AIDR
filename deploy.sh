@@ -86,7 +86,7 @@ bin/asadmin deploy --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-ou
 bin/asadmin deploy --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
 
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
-bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidrFetchManager.war
+bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/AIDRFetchManager.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 echo "Starting Application AIDRTagger."
@@ -105,7 +105,7 @@ bin/asadmin redeploy --keepstate=true --contextroot=AIDRTaggerAPI --name=AIDRTag
 bin/asadmin redeploy --keepstate=true --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
-bin/asadmin redeploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidrFetchManager.war
+bin/asadmin redeploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/AIDRFetchManager.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 echo "Stopping Application AIDRTagger."
