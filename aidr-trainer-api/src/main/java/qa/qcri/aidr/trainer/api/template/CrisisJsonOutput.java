@@ -36,7 +36,7 @@ public class CrisisJsonOutput {
         List<ModelFamilyDTO> modelFamilySet = crisis.getModelFamiliesDTO();
         Set<NominalAttributeJsonModel> nominalAttributeJsonModelSetTemp = new HashSet <NominalAttributeJsonModel>();
         for(ModelFamilyDTO obj : modelFamilySet){
-            if(obj.isIsActive()){
+            //if(obj.isIsActive()){
                 NominalAttributeJsonModel nominalAttributeJsonModel = new NominalAttributeJsonModel();
 
                 NominalAttributeDTO nominalAttribute= obj.getNominalAttributeDTO();
@@ -61,7 +61,7 @@ public class CrisisJsonOutput {
                 }
                 nominalAttributeJsonModel.setNominalLabelJsonModelSet(nominalLabelJsonModelSetTemp);
                 nominalAttributeJsonModelSetTemp.add(nominalAttributeJsonModel);
-            }
+            //}
         }
         crisisJsonModel.setNominalAttributeJsonModelSet(nominalAttributeJsonModelSetTemp);
 
