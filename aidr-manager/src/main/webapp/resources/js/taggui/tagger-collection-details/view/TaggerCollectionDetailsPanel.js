@@ -1050,18 +1050,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
                                                       this.crisisModelsView,
-                                                      {
-                                                      xtype: 'container',
-                                                      layout: 'hbox',
-                                                      padding: '15 0 0 0',
-                                                      items: [
-                                                              {
-                                                              xtype: 'container',
-                                                              flex: 1
-                                                              }
-                                                              
-                                                              ]
-                                                      },
+
                                                       {
                                                       xtype: 'container',
                                                       layout: 'vbox',
@@ -1072,10 +1061,23 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                               xtype: 'container',
                                                               flex: 1
                                                               },
-                                                              this.hurricane_iframe,
-                                                              this.aucHint
+                                                              this.hurricane_iframe
+                                                              //this.aucHint
+                                                              ]
+                                                      },
+                                                      {
+                                                      xtype: 'container',
+                                                      layout: 'hbox',
+                                                      padding: '15 0 0 0',
+                                                      items: [
+                                                              {
+                                                              xtype: 'container',
+                                                              flex: 1
+                                                            },this.aucHint
+
                                                               ]
                                                       }
+
                                                       ]
                                               },
                                               {
