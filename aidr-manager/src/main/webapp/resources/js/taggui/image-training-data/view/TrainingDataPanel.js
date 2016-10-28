@@ -249,8 +249,8 @@ No use for this label as all the information is rendered in a single taggerDescr
                         xtype: 'container',
                         layout: 'hbox',
                         items: [
-                            this.taggerDescription,
-                            this.addTrainingData
+                            this.taggerDescription
+                            //this.addTrainingData
                         ]
                     }
                 ]
