@@ -26,8 +26,6 @@ GLASSFISH_HOME=D:/Project/glassfish4
 AIDR_HOME=D:/Project/AIDR
 AIDR_GLASSFISH_DOMAIN=domain1
 MY_SQL_USERNAME=root
-AIDR_ANALYSIS_CONNECTION_POOL=AIDR_ANALYSIS_CONNECTION_POOL
-AIDR_ANALYSIS_JNDI=JNDI/aidr_analysis
 AIDR_PREDICT_CONNECTION_POOL=AIDR_PREDICT_CONNECTION_POOL
 AIDR_PREDICT_JNDI=JNDI/aidr_predict
 AIDR_DB_MANAGER_JNDI=JNDI/aidr_db_manager
@@ -40,8 +38,6 @@ if [ "$MODE" == "undeploy" ] || [ "$MODE" == "undeploy-deploy" ]
 then
 #Removing JDBC Resources.
 echo "Removing JDBC Resources..."
-bin/asadmin delete-jdbc-resource "$AIDR_ANALYSIS_JNDI"
-bin/asadmin delete-jdbc-connection-pool "$AIDR_ANALYSIS_CONNECTION_POOL"
 bin/asadmin delete-jdbc-resource "$AIDR_PREDICT_JNDI"
 bin/asadmin delete-jdbc-resource "$AIDR_DB_MANAGER_JNDI"
 bin/asadmin delete-jdbc-connection-pool "$AIDR_PREDICT_CONNECTION_POOL"
@@ -53,7 +49,6 @@ bin/asadmin undeploy AIDRPersister
 bin/asadmin undeploy AIDRCollector
 bin/asadmin undeploy AIDRTaggerAPI
 bin/asadmin undeploy AIDROutput
-
 bin/asadmin undeploy AIDRTrainerAPI
 bin/asadmin undeploy AIDRFetchManager
 
@@ -78,8 +73,6 @@ echo "Starting AIDR Applications."
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 # Creating JDBC Resources
-bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=root:password=root:url="jdbc\\:mysql\\://localhost\\:3306/aidr_analysis" "$AIDR_ANALYSIS_CONNECTION_POOL"
-bin/asadmin create-jdbc-resource --connectionpoolid="$AIDR_ANALYSIS_CONNECTION_POOL" "$AIDR_ANALYSIS_JNDI"
 bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=root:password=root:url="jdbc\\:mysql\\://localhost\\:3306/aidr_predict" $AIDR_PREDICT_CONNECTION_POOL
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_PREDICT_JNDI
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_DB_MANAGER_JNDI
@@ -93,7 +86,7 @@ bin/asadmin deploy --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-ou
 bin/asadmin deploy --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
 
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
-bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidr-manager.war
+bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidrFetchManager.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 echo "Starting Application AIDRTagger."
@@ -112,7 +105,7 @@ bin/asadmin redeploy --keepstate=true --contextroot=AIDRTaggerAPI --name=AIDRTag
 bin/asadmin redeploy --keepstate=true --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
-bin/asadmin redeploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidr-manager.war
+bin/asadmin redeploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidrFetchManager.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 echo "Stopping Application AIDRTagger."
