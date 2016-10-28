@@ -1202,6 +1202,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			NominalAttributeDTO attributeDTO = new NominalAttributeDTO();
 			attributeDTO.setNominalAttributeId(nominalAttributeId);
 			modelFamilyDTO.setNominalAttributeDTO(attributeDTO);
+			modelFamilyDTO.setIsActive(true);
 			boolean success = modelFamilyResourceFacade.addCrisisAttribute(modelFamilyDTO);
 			
 			if(success) {
