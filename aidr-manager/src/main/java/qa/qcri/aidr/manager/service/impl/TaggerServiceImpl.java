@@ -33,8 +33,10 @@ import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.manager.dto.ImageTaskQueueDTO;
 import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.manager.dto.PingResponse;
+import qa.qcri.aidr.manager.dto.TaggedImageDataRequest;
 import qa.qcri.aidr.manager.dto.TaggerAllCrisesResponse;
 import qa.qcri.aidr.manager.dto.TaggerAllCrisesTypesResponse;
 import qa.qcri.aidr.manager.dto.TaggerAttribute;
@@ -578,6 +580,7 @@ public class TaggerServiceImpl implements TaggerService {
 					tm.setTrainingExamples(temp.getTrainingExamples());
 					tm.setClassifiedDocuments(temp.getClassifiedDocuments());
 					tm.setModelFamilyID(temp.getModelFamilyID());
+					tm.setTaggedImageCount(getTaggedImageCount(crisisID));
 
 					// System.out.println("reset : " +
 					// tm.getRetrainingThreshold());
@@ -2329,5 +2332,111 @@ public class TaggerServiceImpl implements TaggerService {
 					"Error in contacting AIDRTrainerAPI: " + clientResponse, e);
 		}
 		return jsonResponse;
+	}
+	
+	@Override
+	public Long getImageCountForCollection(String collectionCode) {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		
+		Long count = null;
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(crowdsourcingAPIMainUrl
+					+ "/" + collectionCode + "/image/count");
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(
+					DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+					false);
+			Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			count = objectMapper.readValue(
+					jsonResponse, Long.class);
+
+		} catch (Exception e) {
+			logger.error("Error while getting image count for collection = "
+							+ collectionCode, e);
+		}
+		
+		return count;
+	}
+	
+	@Override
+	public Long getTaggedImageCount(Integer crisisID) {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		
+		Long count = 0L;
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(crowdsourcingAPIMainUrl
+					+ "/taggedImage/getCount/" + crisisID);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(
+					DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+					false);
+			Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			count = objectMapper.readValue(
+					jsonResponse, Long.class);
+
+		} catch (Exception e) {
+			logger.error("Error while getting image count for collection = "
+							+ crisisID, e);
+		}
+		
+		return count;
+	}
+
+	@Override
+	public List<ImageTaskQueueDTO> getTaggedImageDataByCrisisId(Integer crisisId, Integer start, Integer limit, String sortColumn,
+			String sortDirection)  throws AidrException {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		logger.info("Received request for fetching training data for crisisID = "
+				+ crisisId);
+		try {
+			WebTarget webResource = client.target(crowdsourcingAPIMainUrl
+					+ "/taggedImage/get?crisisID=" + new Long(crisisId)
+					+ "&fromRecord=" + start + "&limit=" + limit
+					+ "&sortColumn=" + sortColumn + "&sortDirection="
+					+ sortDirection);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			// ClientResponse clientResponse =
+			// webResource.type(MediaType.APPLICATION_JSON)
+			// .accept(MediaType.APPLICATION_JSON)
+			// .get(ClientResponse.class);
+			Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).get();
+
+			// String jsonResponse = clientResponse.getEntity(String.class);
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			ImageTaskQueueDTO[] taggedImageData = objectMapper.readValue(jsonResponse.toString(), ImageTaskQueueDTO[].class);
+/*			TaggedImageDataRequest trainingDataRequest = objectMapper.readValue(
+					jsonResponse, TaggedImageDataRequest.class);
+			if (trainingDataRequest != null
+					&& trainingDataRequest.getTaggedImageData()!= null) {
+				logger.info("Tagger returned "
+						+ trainingDataRequest.getTaggedImageData().size()
+						+ " training data records for crisis with ID: "
+						+ crisisId);8/
+*/				return Arrays.asList(taggedImageData);
+			
+		} catch (Exception e) {
+			logger.error(crisisId + " Error while Getting training data for Crisis and Model", e);
+			throw new AidrException(
+					"Error while Getting training data for Crisis and Model.",
+					e);
+		}
 	}
 }

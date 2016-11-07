@@ -47,7 +47,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     'Queries with or without hashtags:<br>' +
                     '- If you don\'t include \'#\', you also match hashtags ("bridge" matches "#bridge")<br>' +
                     '- If you do include \'#\', you only match hashtags ("#bridge" does not match "bridge")<br>';
-                    
+
                 	if(TYPE === 'Facebook'){
                 		infoText = 'This field represents comma separated keywords to filter the Facebook page/group/event.<br>' +
                         'General rules:<br>' +
@@ -58,7 +58,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         '- If you include two or more words on a query, all of them must be present in the page/group/event ("Brooklyn bridge" does not match a page/group/event that does not contain "Brooklyn" or does not contain "bridge")<br>' +
                         '- The words does not need to be consecutive or in that order ("Brooklyn bridge" will match "the bridge to Brooklyn")<br>';
                 	}
-                	
+
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
                         html: infoText,
@@ -100,10 +100,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     });
                 }
             },
-            
+
             "#fetchIntervalInfo": {
                 render: function (infoPanel, eOpts) {
-                    var tip = Ext.create('Ext.tip.ToolTip', { 
+                    var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
                         html: "Collection fetch interval specifies the duration after which collection will fetch new data.",
                         target: infoPanel.el,
@@ -111,7 +111,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     });
                 }
             },
-			
+
 			"#fetchFromInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -139,6 +139,22 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
                         html: "Collection type specifies a type of the crisis.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
+            "#subscriptionComboInfo": {
+                render: function (infoPanel, eOpts) {
+                	var infoText = 'This field represents the subscription list for the Facebook page/group/event.<br>' +
+                    'Minimum 3 characters will search the page/group/event in Facebook' +
+                    'User can subscribe to the page/group/event from the search results.<br>' +
+                    'Subscription list must not be greater than 30.';
+
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: infoText,
                         target: infoPanel.el,
                         dismissDelay: 0
                     });
@@ -208,7 +224,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     datailsController.stopCollection();
                 }
             },
-            
+
             "#collectionTrash": {
                 click: function (btn, e, eOpts) {
                     datailsController.trashCollectionHandler();
@@ -218,15 +234,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             "#collectionUntrash": {
                 click: function (btn, e, eOpts) {
                     datailsController.untrashCollection();
-                    
+
                 }
             },
 
             '#collectionUpdate': {
                 click: function (btn, e, eOpts) {
-                    if (AIDRFMFunctions.mandatoryFieldsEntered()) {
-                        datailsController.beforeUpdateCollection();
-                    }
+                    datailsController.beforeUpdateCollection();
                 }
             },
 
@@ -267,7 +281,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     this.generateTweetIdsLink(btn);
                 }
             },
-            
+
             "#generateJSONLink": {
                 click: function (btn, e, eOpts) {
                     this.generateJSONLink(btn);
@@ -279,7 +293,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     this.generateJsonTweetIdsLink(btn);
                 }
             },
-            
+
             "#addManager": {
                 click: function (btn, e, eOpts) {
                     this.addManager(btn);
@@ -296,6 +310,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 click: function (btn, e, eOpts) {
                     this.goToTagger(btn);
                 }
+            },
+
+            "#addProfile": {
+                click: function (btn, e, eOpts) {
+                    datailsController.addProfiles();
+                }
             }
         });
     },
@@ -306,38 +326,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.DetailsComponent = component;
         datailsController = this;
         var me = this;
-
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/crisis-exists.action',
-            method: 'GET',
-            params: {
-                code: COLLECTION_CODE
-            },
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var resp = Ext.decode(response.responseText);
-                var cmp = me.DetailsComponent;
-                if (resp.success) {
-                    if (resp.data) {
-                        console.log('crisis exists', true);
-						if(TYPE != 'Facebook'){
-							cmp.gotoTaggerButton.show();	
-						}
-                        cmp.enableTaggerButton.hide();
-                        //cmp.downloadExportTaggerDisabledPanel.hide();
-                        //cmp.downloadExportTaggerEnabledPanel.show();
-                    }
-                } else {
-                    console.log('crisis exists', false);
-                    cmp.gotoTaggerButton.hide();
-                    cmp.enableTaggerButton.hide();
-                    //cmp.downloadExportTaggerDisabledPanel.hide();
-                    //cmp.downloadExportTaggerEnabledPanel.hide();
-                }
-            }
-        });
 
         var id = COLLECTION_ID;
         this.DetailsComponent.currentCollectionId = COLLECTION_ID;
@@ -414,36 +402,34 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 me.DetailsComponent.updateLayout();
 
                 Ext.getBody().unmask();
-                
+
                 var collectionType = jsonData.collectionType;
-                
+
                 if(collectionType === 'SMS'){
                     Ext.getCmp('keywordsPanel').hide();
                     Ext.getCmp('keywords').hide();
                     Ext.getCmp('configurationsL').hide();
                     Ext.getCmp('durationDescription').hide();
                     Ext.getCmp('fetchIntervalPanel').hide();
-					Ext.getCmp('fetchFromPanel').hide();
+					          Ext.getCmp('fetchFromPanel').hide();
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
                     Ext.getCmp('endpointLabel').show();
                 } else if(collectionType === 'Twitter'){
-                	Ext.getCmp('Language').show();
-                	Ext.getCmp('langPanel').show();
+                	  Ext.getCmp('Language').show();
+                	  Ext.getCmp('langPanel').show();
                     Ext.getCmp('geoPanel').show();
                     Ext.getCmp('AdvancedConfiguration').show();
                     Ext.getCmp('geoRPanel').show();
                     Ext.getCmp('followPanel').show();
                     Ext.getCmp('geoDescription').show();
                     Ext.getCmp('fetchIntervalPanel').hide();
-					Ext.getCmp('fetchFromPanel').hide();
+					          Ext.getCmp('fetchFromPanel').hide();
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/twitter_icon.png"/>');
                 }else if(collectionType === 'Facebook'){
                     Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/facebook_icon.png"/>');
-					Ext.getCmp('enableTagger').hide();
-					Ext.getCmp('goToTagger').hide();
-					Ext.getCmp('fetchFromPanel').hide();
-					//this.DetailsComponent.gotoTaggerButton.hide();
-					//this.DetailsComponent.enableTaggerButton.hide();
+					          Ext.getCmp('fetchFromPanel').hide();
+                    Ext.getCmp('subscriptionPanel').show();
+                    Ext.getCmp('subscribeResult').show();
                 }
 
                Ext.getCmp('downloadLabel').setText('Downloaded ' + COLLECTION_TYPES[collectionType]['plural'] + ' <br/> (since last re-start):',false);
@@ -470,14 +456,101 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         });
         result = result.substring(0, result.length - 2);
        // this.DetailsComponent.managersL.setText(result);
-		
+
 		this.DetailsComponent.managersL.setHtml(result);
+    },
+
+    renderProfilesDetail: function(profiles) {
+      profiles = eval(profiles);
+      var temp_html = '<div>';
+      for(id in profiles) {
+        var item = profiles[id];
+        var name = AIDRFMFunctions.applyEllipsis(item.name, 10);
+        var likes;
+        if(item.fans) {
+          likes = item.fans.toLocaleString();
+        }
+        temp_html+= '<div class="profile-div"><div style="float: left"><img src="'+ item.imageUrl +'"/></div>';
+        if(item.type == 'PAGE') {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ likes +' Likes</div>';
+        } else {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ item.type +'</div>';
+        }
+        temp_html+= '<div style="float: right;padding: -5px;margin: -5px;color: #3c7ac6"><i class="fa fa-external-link link" onclick="AIDRFMFunctions.openProfile(\''+ item.link +'\')"></i></div>';
+        //temp_html+= '<span class="tooltiptext">'+ item.name +'</span></div>';
+        temp_html+= '</div>';
+      }
+      temp_html+= '</div>';
+      if(profiles.length > 3) {
+          Ext.getCmp('fbFollowContainer').setHeight(164);
+      }
+      Ext.getCmp('fbFollowContainer').update(temp_html);
+    },
+
+    addProfiles: function() {
+      var profiles = this.DetailsComponent.profiles;
+      var isFull = false;
+      if(this.DetailsComponent.profilesCombo.valueCollection.items) {
+        this.DetailsComponent.profilesCombo.valueCollection.items.forEach(function (item, index) {
+          if(Object.keys(profiles).length > 30) {
+              isFull = true;
+          } else {
+            profiles[item.id] = item.data;
+          }
+        });
+        this.DetailsComponent.profilesCombo.setValue(null);
+      }
+      datailsController.renderProfiles(this.DetailsComponent.profiles);
+      if(isFull){
+        AIDRFMFunctions.setAlert("Error", "Subscriptions size must not be greater than 30.");
+      }
+    },
+
+    renderProfiles: function(profiles) {
+      var temp_html = '<div>';
+      for(id in profiles) {
+        var item = profiles[id];
+        var name = AIDRFMFunctions.applyEllipsis(item.name, 10);
+        var likes;
+        if(item.fans) {
+          likes = item.fans.toLocaleString();
+        }
+        temp_html+= '<div class="profile-div"><div style="float: left"><img src="'+ item.imageUrl +'"/></div>';
+        if(item.type == 'PAGE') {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ likes +' Likes</div>';
+        } else {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ item.type +'</div>';
+        }
+        temp_html+= '<div style="float: right;padding: -5px;margin: -5px;color: #3c7ac6"><i class="fa fa-external-link link" onclick="datailsController.openProfile(\''+ item.link +'\')"></i> <i class="fa fa-times-circle-o link" onclick="datailsController.removeProfile('+ item.id +')"></i></div>';
+        //temp_html+= '<span class="tooltiptext">'+ item.name +'</span></div>';
+        temp_html+= '</div>';
+      }
+      temp_html+= '</div>';
+      if(Object.keys(profiles).length == 0) {
+          Ext.getCmp('subscribeResult').setHeight(0);
+      }
+      if(Object.keys(profiles).length > 0) {
+          Ext.getCmp('subscribeResult').setHeight(82);
+      }
+      if(Object.keys(profiles).length > 3) {
+          Ext.getCmp('subscribeResult').setHeight(164);
+      }
+      Ext.getCmp('subscribeResult').update(temp_html);
+    },
+
+    removeProfile: function(id) {
+      delete this.DetailsComponent.profiles[id];
+      datailsController.renderProfiles(this.DetailsComponent.profiles);
+    },
+
+    openProfile: function(link) {
+      window.open(link, '_blank');
     },
 
     updateDetailsPanel: function (r) {
         var p = this.DetailsComponent;
         p.currentCollection = r;
-        
+
         p.breadcrumbs.setHtml('<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;'+r.name+'</span></div>');
         p.collectionTitle.setText('<b>' + r.name + '</b>', false);
 
@@ -490,7 +563,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         COLLECTION_CODE = r.code;
         p.codeL.setText(r.code);
         p.keywordsL.setText(r.track ? r.track : this.na, false);
-        
+
         if(r.collectionType === 'Facebook'){
         	if(r.fetchInterval > 0){
         		var storeIndex = p.fetchIntervalStore.findExact("val", r.fetchInterval);
@@ -524,7 +597,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 				//p.fetchFromContainer.show();
         	}
         }
-        
+
         if (r.geo){
             p.geoL.setText(r.geo, false);
             if (r.geoR === 'approximate') {
@@ -540,9 +613,14 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             p.geoContainer.hide();
         }
 
-        if (r.follow){
+        if (r.follow && r.follow != '[]'){
+          if(r.collectionType === 'Facebook') {
+            this.renderProfilesDetail(r.follow);
+            p.fbFollowContainer.show();
+          } else {
             p.followL.setText(r.follow, false);
             p.followContainer.show();
+          }
         } else {
             p.followL.setText(this.ns, false);
             p.followContainer.hide();
@@ -564,21 +642,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
+        //this.setTotalImageCount(r.totalImageCount);
         this.setLastDowloadedDoc(r.lastDocument);
         if(r.hasTaggerOutput) {
-			if(TYPE != 'Facebook'){
-				this.DetailsComponent.gotoTaggerButton.show();
-			}
+			this.DetailsComponent.gotoTaggerButton.show();
         	this.DetailsComponent.enableTaggerButton.hide();
     	} else {
     		this.DetailsComponent.gotoTaggerButton.hide();
-			if(TYPE != 'Facebook'){
-				this.DetailsComponent.enableTaggerButton.show();
-			}
+			this.DetailsComponent.enableTaggerButton.show();
     	}
-        
     },
-    
+
     updateTrashedDetailsPanel: function (r) {
         var p = this.DetailsComponent;
         p.currentCollection = r;
@@ -624,7 +698,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 else{
                 	fi = p.fetchIntervalStore.getAt(storeIndex).data.label;
                 }
-        	
+
         	p.fetchIntervalL.setText(fi, false);
             p.fetchIntervalContainer.show();
         	}
@@ -636,10 +710,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 				//p.fetchFromContainer.show();
         	}
         }
-        
+
         p.followL.setText(this.ns, false);
         p.followContainer.hide();
-        
+
         var languageFull = r.langFilters;
         if(languageFull != ''){
             for(var i=0; i < LANG.length; i++){
@@ -657,6 +731,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.setCountOfDocuments(0);
         this.setTotalCountOfDocuments(0);
+        //this.setTotalImageCount(0);
         this.setLastDowloadedDoc('');
     },
 
@@ -684,7 +759,21 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         } else {
             p.geoR.items.items[0].items.items[0].setValue(true);
         }
-        p.followE.setValue(r.follow ? r.follow : '');
+
+        if(r.collectionType === 'Facebook') {
+            if (r.follow && r.follow != '[]'){
+              var profiles = {};
+              var items = eval(r.follow);
+              items.forEach(function (item, index) {
+                profiles[item.id] = item;
+              });
+              this.DetailsComponent.profiles = profiles;
+              this.renderProfiles(this.DetailsComponent.profiles);
+            }
+        } else {
+            p.followE.setValue(r.follow ? r.follow : '');
+        }
+
 //        default duration is 2 days (48 hours)
         var duration = r.durationHours ? r.durationHours : 48;
 
@@ -695,7 +784,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 "label": duration / 24 + ' days'
             });
         }
-        
+
 		storeIndex = p.fetchIntervalStore.findExact("val", r.fetchInterval);
         if (storeIndex == -1){
         	var fi = "";
@@ -712,7 +801,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                });
         	}
         }
-        
+
         p.fetchInterval.setValue(r.fetchInterval);
 		p.fetchFrom.setValue(r.fetchFrom);
         p.duration.setValue(duration);
@@ -722,7 +811,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         }
         var collectionForm = Ext.getCmp('collectionForm').getForm();
 		collectionForm.findField('collectionType').setValue(r.collectionType);
-		
+
 		p.collectionTypeL.setText(r.collectionType);
         if(r.collectionType === 'SMS'){
            Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
@@ -739,7 +828,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         if (raw == 'RUNNING_WARNING' || raw == 'RUNNING' || raw == 'INITIALIZING' || raw == 'WARNING'){
             console.log('Set status ', raw);
             this.DetailsComponent.startButton.hide();
-//            this.DetailsComponent.enableTaggerButton.show(); TODO: Fix for https://www.pivotaltracker.com/s/projects/969960/stories/74910442
             this.DetailsComponent.enableTaggerButton.enable();
             this.DetailsComponent.stopButton.show();
             this.DetailsComponent.trashButton.show();
@@ -760,13 +848,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             this.DetailsComponent.stopButton.hide();
             this.DetailsComponent.trashButton.show();
             this.DetailsComponent.untrashButton.hide();
-        } 
-        
+        }
+
         if(raw == 'WARNING')
         	this.DetailsComponent.statusMsgL.setText("Disconnected from Twitter a moment ago, trying to re-connect", false);
         else
         	this.DetailsComponent.statusMsgL.setText("", false);
-        
+
         this.DetailsComponent.statusL.setText(statusText, false);
     },
 
@@ -775,7 +863,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.DetailsComponent.lastStartedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
-    
+
     setEndDate: function (raw, status) {
         var me = this;
         if (status == "RUNNING" || status == "RUNNING_WARNING" || status == "INITIALIZING" || status == 'WARNING') {
@@ -816,9 +904,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setTotalCountOfDocuments: function (raw) {
         this.DetailsComponent.totalDocCountL.setText(raw ? Ext.util.Format.number(raw,'0,000') : 0);
     },
+    
+    setTotalImageCount: function (raw) {
+        this.DetailsComponent.totalDownImageL.setText(raw ? Ext.util.Format.number(raw,'0,000') : 0);
+    },
 
     startCollection: function () {
-       
+
 		Ext.getBody().mask('Loading...');
 
         var me = this;
@@ -946,7 +1038,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
         var id = datailsController.DetailsComponent.currentCollection.id;
         var code = datailsController.DetailsComponent.currentCollection.code;
-		
+
 		Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
@@ -1001,14 +1093,14 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         var editPanelEl = cmp.up('panel').getEl();
         editPanelEl.mask("Updating...");
-        
-        var fi = 0, ff = 0;
-        
+
+        var fi = 0, ff = 0, follow;
+
         if(TYPE === 'Facebook'){
         	var fi = form.findField('fetchInterval').getValue();
-			var ff = form.findField('fetchFrom').getValue();
+		    var ff = form.findField('fetchFrom').getValue();
         }
-        
+
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/update',
             method: 'POST',
@@ -1082,7 +1174,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
 
       //  this.DetailsComponent.collectionLogStore.load();
-        
+
         if(!(me.DetailsComponent.statusL.html =="<b class='warningFont'>TRASHED </b>")){
         	Ext.Ajax.request({
                 url: BASE_URL + '/protected/collection/refreshCount.action',
@@ -1107,6 +1199,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                             me.setWillStoppedDate(data.status, data.startDate, data.durationHours);
                             me.setCountOfDocuments(data.count);
                             me.setTotalCountOfDocuments(data.totalCount);
+                            //me.setTotalImageCount(data.totalImageCount);
                             me.setLastDowloadedDoc(data.lastDocument);
                             me.setManagers(data.managers);
                             Ext.resumeLayouts();
@@ -1118,7 +1211,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             });
         }
-        
+
     },
 
     enableTagger: function(view, record, item, index, e, eOpts) {
@@ -1133,7 +1226,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var code = collection.code;
         var name = collection.name;
 
-        
+
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/classifier/enable',
             method: 'POST',
@@ -1157,11 +1250,23 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     },
 
     beforeUpdateCollection: function() {
-        var status = this.DetailsComponent.currentCollection.status;
-        if (status == 'RUNNING_WARNING' || status == 'RUNNING') {
-            this.updateCollection(true);
-        } else {
-            this.updateCollection(false);
+        if(TYPE === 'Facebook'){
+        	follow = [];
+            var fb_profiles = this.DetailsComponent.profiles;
+            for(id in fb_profiles) {
+              var item = fb_profiles[id];
+              follow.push(item);
+            }
+            follow = JSON.stringify(follow);
+            Ext.getCmp('collectionForm').getForm().findField('follow').setValue(follow);
+        }
+        if(AIDRFMFunctions.mandatoryFieldsEntered()){
+        	var status = this.DetailsComponent.currentCollection.status;
+            if (status == 'RUNNING_WARNING' || status == 'RUNNING') {
+                this.updateCollection(true);
+            } else {
+                this.updateCollection(false);
+            }
         }
     },
 
@@ -1210,7 +1315,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
                 Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
                 Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
-                
+
             }
         });
     },
@@ -1241,8 +1346,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     if (resp.data && resp.data != '') {
                         me.DetailsComponent.tweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
                         if (resp.message) {
-                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
-                        } 
+                     	   AIDRFMFunctions.setAlert("Error", resp.message);
+                        }
                     } else {
                         me.DetailsComponent.tweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
@@ -1267,7 +1372,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             }
         });
     },
-    
+
     generateJSONLink: function(btn) {
         var me = this;
         btn.setDisabled(true);
@@ -1343,8 +1448,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     if (resp.data && resp.data != '') {
                         me.DetailsComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
                         if (resp.message) {
-                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
-                        } 
+                     	   AIDRFMFunctions.setAlert("Error", resp.message);
+                        }
                     } else {
                         me.DetailsComponent.JsonTweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate JSON Tweet Ids service returned empty url. For further inquiries please contact admin.");

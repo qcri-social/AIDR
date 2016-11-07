@@ -6,6 +6,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
     ],
 
     init: function () {
+
         this.control({
 
             'collection-create': {
@@ -36,7 +37,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     'Queries with or without hashtags:<br>' +
                     '- If you don\'t include \'#\', you also match hashtags ("bridge" matches "#bridge")<br>' +
                     '- If you do include \'#\', you only match hashtags ("#bridge" does not match "bridge")<br>';
-                    
+
                 	if(SIGNED_IN_PROVIDER === 'facebook'){
                 		infoText = 'This field represents comma separated keywords to filter the Facebook page/group/event.<br>' +
                         'General rules:<br>' +
@@ -47,7 +48,23 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         '- If you include two or more words on a query, all of them must be present in the page/group/event ("Brooklyn bridge" does not match a page/group/event that does not contain "Brooklyn" or does not contain "bridge")<br>' +
                         '- The words does not need to be consecutive or in that order ("Brooklyn bridge" will match "the bridge to Brooklyn")<br>';
                 	}
-                	
+
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: infoText,
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
+            "#subscriptionComboInfo": {
+                render: function (infoPanel, eOpts) {
+                	var infoText = 'This field represents the subscription list for the Facebook page/group/event.<br>' +
+                    'Minimum 3 characters will search the page/group/event in Facebook' +
+                    'User can subscribe to the page/group/event from the search results.<br>' +
+                    'Subscription list must not be greater than 30.';
+
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
                         html: infoText,
@@ -100,7 +117,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     });
                 }
             },
-			
+
 			"#fetchFromInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -111,7 +128,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     });
                 }
             },
-            
+
             "#collectionLangInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -135,6 +152,17 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             },
 
             "#crisisTypesInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection type specifies a type of the crisis.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
+            "#keywordsComboInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
@@ -182,6 +210,12 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+            "#addProfile": {
+                click: function (btn, e, eOpts) {
+                    CollectionCreateController.addProfiles();
+                }
+            },
+
             "#CollectionType":{
 				render: function(field, newValue, oldValue){
 					if(SIGNED_IN_PROVIDER == 'facebook'){
@@ -194,7 +228,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                      if(newValue === 'SMS'){
                          Ext.getCmp('keywordsPanel').hide();
                          Ext.getCmp('langPanel').hide();
-                         Ext.getCmp('geoPanel').hide(); 
+                         Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('geoRPanel').hide();
                          Ext.getCmp('followPanel').hide();
                          Ext.getCmp('durationDescription').hide();
@@ -210,7 +244,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('geoDescription').show();
                          Ext.getCmp('fetchIntervalPanel').hide();
-						 Ext.getCmp('fetchFromPanel').hide();
+						             Ext.getCmp('fetchFromPanel').hide();
                      }
                      else if(newValue === 'Facebook'){
                          Ext.getCmp('keywordsPanel').show();
@@ -218,8 +252,11 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('geoRPanel').hide();
                          Ext.getCmp('followPanel').hide();
+
+                         Ext.getCmp('subscriptionPanel').show();
+                         Ext.getCmp('subscribeResult').show();
                          Ext.getCmp('fetchIntervalPanel').show();
-						 Ext.getCmp('fetchFromPanel').show();
+						             Ext.getCmp('fetchFromPanel').show();
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('geoDescription').hide();
                      }
@@ -236,8 +273,10 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
     saveCollection: function () {
 
+      var fb_profiles = this.CollectionCreateComponent.profiles;
+
     	var purpose='Using collection for humanitarian and crisis response purpose only.';
-    	
+
     	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
 			if (buttonId === 'yes') {
 				checkRunningStatus();
@@ -268,125 +307,135 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 		       	});
 		    }
         });
-    	
-    	
+
+
     	function checkRunningStatus(){
-        if (AIDRFMFunctions.mandatoryFieldsEntered()) {
+    		var form = Ext.getCmp('collectionForm').getForm();
+    		if(form.findField('collectionType').getValue() ==='Facebook'){
+    			follow = [];
+    			for(id in fb_profiles) {
+    				var item = fb_profiles[id];
+    				follow.push(item);
+    			}
+	            follow = JSON.stringify(follow);
+	            form.findField('follow').setValue(follow);
+    		}
 
-            var form = Ext.getCmp('collectionForm').getForm();
+	        if (AIDRFMFunctions.mandatoryFieldsEntered()) {
 
-            Ext.getBody().mask('Loading...');
-            
-            //Check if some collection already is running for current user
-            Ext.Ajax.request({
-                url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
-                method: 'GET',
-                params: {
-                    id: USER_ID
-                },
-                headers: {
-                    'Accept': 'application/json'
-                },
-                success: function (resp) {
-                    var response = Ext.decode(resp.responseText);
-                    var name = form.findField('name').getValue();
-                    Ext.getBody().unmask();
-                    if (response.success) {
-                        if (response.data) {
-                            var collectionData = response.data;
-                            var collectionName = collectionData.name;
-                            Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running for user <b>' + USER_NAME + '</b>. ' +
-                                'Do you want to stop <b>' + collectionName + '</b>  and start <b>' + name + ' </b>?', function (buttonId) {
-                                if (buttonId === 'yes') {
-                                    //Create collection and run after creating
-                                    createCollection(true)
-                                } else {
-                                    //Create collection without running
-                                    createCollection(false)
-                                }
-                            });
-                        } else {
-                            createCollection(true)
-                        }
-                    } else {
-                        AIDRFMFunctions.setAlert(
-                            "Error",
-                            ['Error while starting Collection .',
-                                'Please try again later or contact Support']
-                        );
-                        AIDRFMFunctions.reportIssue(resp);
-                    }
-                },
-                failure: function () {
-                    Ext.getBody().unmask();
-                   
-                }
-            });
+	            Ext.getBody().mask('Loading...');
 
-            /**
-             * Creates collection
-             * @param shouldRun - decides whether run collection after creating. If true then created collection will be
-             * started after creating.
-             */
-            function createCollection(shouldRun) {
+	            //Check if some collection already is running for current user
+	            Ext.Ajax.request({
+	                url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
+	                method: 'GET',
+	                params: {
+	                    id: USER_ID
+	                },
+	                headers: {
+	                    'Accept': 'application/json'
+	                },
+	                success: function (resp) {
+	                    var response = Ext.decode(resp.responseText);
+	                    var name = form.findField('name').getValue();
+	                    Ext.getBody().unmask();
+	                    if (response.success) {
+	                        if (response.data) {
+	                            var collectionData = response.data;
+	                            var collectionName = collectionData.name;
+	                            Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running for user <b>' + USER_NAME + '</b>. ' +
+	                                'Do you want to stop <b>' + collectionName + '</b>  and start <b>' + name + ' </b>?', function (buttonId) {
+	                                if (buttonId === 'yes') {
+	                                    //Create collection and run after creating
+	                                    createCollection(true)
+	                                } else {
+	                                    //Create collection without running
+	                                    createCollection(false)
+	                                }
+	                            });
+	                        } else {
+	                            createCollection(true)
+	                        }
+	                    } else {
+	                        AIDRFMFunctions.setAlert(
+	                            "Error",
+	                            ['Error while starting Collection .',
+	                                'Please try again later or contact Support']
+	                        );
+	                        AIDRFMFunctions.reportIssue(resp);
+	                    }
+	                },
+	                failure: function () {
+	                    Ext.getBody().unmask();
 
-                Ext.getBody().mask('Saving collection ...');
-                var fi =0, ff = 0;
-                if(form.findField('collectionType').getValue() ==='Facebook'){
-                	fi = form.findField('fetchInterval').getValue();
-					ff = form.findField('fetchFrom').getValue();
-                }
-                
-                Ext.Ajax.request({
-                    url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
-                    method: 'POST',
-                    params: {
-                        name: Ext.String.trim( form.findField('name').getValue() ),
-                        code: Ext.String.trim( form.findField('code').getValue() ),
-                        track: Ext.String.trim( form.findField('track').getValue() ),
-                        follow: Ext.String.trim( form.findField('follow').getValue() ),
-                        geo: Ext.String.trim( form.findField('geo').getValue() ),
-                        geoR: Ext.String.trim(  form.findField('geoR').getValue().geoR1 ),
-                        langFilters: form.findField('langFilters').getValue(),
-                        fetchInterval: fi,
-						fetchFrom: ff,
-                        durationHours: form.findField('durationHours').getValue(),
-                        crisisType: form.findField('crisisType').getValue(),
-                        provider: form.findField('collectionType').getValue(),
-                        purpose: Ext.String.trim(purpose)
-                    },
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    success: function (resp) {
-                        Ext.getBody().unmask();
-                        var response = Ext.decode(resp.responseText);
-                        if (response.success) {
-                            AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
-                            Ext.getBody().mask('Redirecting ...');
+	                }
+	            });
 
-                            //wait for 3 sec to let user read information box
-                            var isFirstRun = true;
-                            Ext.TaskManager.start({
-                                run: function () {
-                                    if (!isFirstRun) {
-                                        document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
-                                    }
-                                    isFirstRun = false;
-                                },
-                                interval: 3 * 1000
-                            });
-                    	} else {
-                        	AIDRFMFunctions.setAlert("Error", ["Error in creating collection.", "Please try again later."]);
-                        }
+	            /**
+	             * Creates collection
+	             * @param shouldRun - decides whether run collection after creating. If true then created collection will be
+	             * started after creating.
+	             */
+	            function createCollection(shouldRun) {
 
-                    },
-                    failure: function(response) {
-                    	Ext.getBody().unmask();
-                    }
-                });
-            }
-        }
+	                Ext.getBody().mask('Saving collection ...');
+	                var fi =0, ff = 0, follow;
+
+	                if(form.findField('collectionType').getValue() ==='Facebook'){
+	                	fi = form.findField('fetchInterval').getValue();
+						        ff = form.findField('fetchFrom').getValue();
+	                }
+
+	                Ext.Ajax.request({
+	                    url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
+	                    method: 'POST',
+	                    params: {
+	                        name: Ext.String.trim( form.findField('name').getValue() ),
+	                        code: Ext.String.trim( form.findField('code').getValue() ),
+	                        track: Ext.String.trim( form.findField('track').getValue() ),
+	                        follow: Ext.String.trim( form.findField('follow').getValue() ),
+	                        geo: Ext.String.trim( form.findField('geo').getValue() ),
+	                        geoR: Ext.String.trim(  form.findField('geoR').getValue().geoR1 ),
+	                        langFilters: form.findField('langFilters').getValue(),
+	                        fetchInterval: fi,
+							fetchFrom: ff,
+	                        durationHours: form.findField('durationHours').getValue(),
+	                        crisisType: form.findField('crisisType').getValue(),
+	                        provider: form.findField('collectionType').getValue(),
+	                        purpose: Ext.String.trim(purpose)
+	                    },
+	                    headers: {
+	                        'Accept': 'application/json'
+	                    },
+	                    success: function (resp) {
+	                        Ext.getBody().unmask();
+	                        var response = Ext.decode(resp.responseText);
+	                        if (response.success) {
+	                            AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
+	                            Ext.getBody().mask('Redirecting ...');
+
+	                            //wait for 3 sec to let user read information box
+	                            var isFirstRun = true;
+	                            Ext.TaskManager.start({
+	                                run: function () {
+	                                    if (!isFirstRun) {
+	                                        document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
+	                                    }
+	                                    isFirstRun = false;
+	                                },
+	                                interval: 3 * 1000
+	                            });
+	                    	} else {
+	                        	AIDRFMFunctions.setAlert("Error", ["Error in creating collection.", "Please try again later."]);
+	                        }
+
+	                    },
+	                    failure: function(response) {
+	                    	Ext.getBody().unmask();
+	                    }
+	                });
+	            }
+	        }
     }
     },
 
@@ -447,7 +496,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         '&quot;Earthquake in Concepcion, Chile in 2014&quot;',
                         '&quot;Consequences of earthquake in Concepcion, Chile in 2014&quot;'
                     ]);
-                    
+
                     name.markInvalid("Collection Name already exist. Please select another name");
                 } else {
                     if (me.checkCount == 0) {
@@ -460,7 +509,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
     agreeTOS: function () {
     	var me = this;
-    	
+
     	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
                 if (buttonId === 'yes') {
                 }
@@ -483,7 +532,58 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             });
     },
-    
+
+    addProfiles: function() {
+      var profiles = this.CollectionCreateComponent.profiles;
+      var isFull = false;
+      if(this.CollectionCreateComponent.profilesCombo.valueCollection.items) {
+        this.CollectionCreateComponent.profilesCombo.valueCollection.items.forEach(function (item, index) {
+          if(Object.keys(profiles).length > 30) {
+              isFull = true;
+          } else {
+            profiles[item.id] = item.data;
+          }
+        });
+        this.CollectionCreateComponent.profilesCombo.setValue(null);
+      }
+      CollectionCreateController.renderProfiles(this.CollectionCreateComponent.profiles);
+      if(isFull){
+        AIDRFMFunctions.setAlert("Error", "Subscriptions size must not be greater than 30.");
+      }
+    },
+
+    renderProfiles: function(profiles) {
+      var temp_html = '<div>';
+      for(id in profiles) {
+        var item = profiles[id];
+        var name = AIDRFMFunctions.applyEllipsis(item.name, 10);
+        var likes;
+        if(item.fans) {
+          likes = item.fans.toLocaleString();
+        }
+        temp_html+= '<div class="profile-div"><div style="float: left"><img src="'+ item.imageUrl +'"/></div>';
+        if(item.type == 'PAGE') {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ likes +' Likes</div>';
+        } else {
+            temp_html+= '<div style="float: left; padding: 8px"><b>'+ name +'</b><br/>'+ item.type +'</div>';
+        }
+        temp_html+= '<div style="float: right;padding: -5px;margin: -5px;color: #3c7ac6"><i class="fa fa-external-link link" onclick="CollectionCreateController.openProfile(\''+ item.link +'\')"></i> <i class="fa fa-times-circle-o link" onclick="CollectionCreateController.removeProfile('+ item.id +')"></i></div>';
+        //temp_html+= '<span class="tooltiptext">'+ item.name +'</span></div>';
+        temp_html+= '</div>';
+      }
+      temp_html+= '</div>';
+      Ext.getCmp('subscribeResult').update(temp_html);
+    },
+
+    removeProfile: function(id) {
+      delete this.CollectionCreateComponent.profiles[id];
+      CollectionCreateController.renderProfiles(this.CollectionCreateComponent.profiles);
+    },
+
+    openProfile: function(link) {
+      window.open(link, '_blank');
+    },
+
     initNameAndCodeValidation: function() {
     	this.checkCount = 2;
     	this.isExist();

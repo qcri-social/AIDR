@@ -265,6 +265,8 @@ No use for this label as all the information is rendered in a single taggerDescr
         var obj = Ext.JSON.decode(r);
         if (obj && obj.text) {
             return obj.text;
+        } else if (obj && obj.message) {
+        	return obj.message;
         } else {
             return "<span class='na-text'>Not specified</span>";
         }
