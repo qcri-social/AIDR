@@ -4,8 +4,6 @@ AIDR—Artificial Intelligence for Digital Response—is a free and open-source 
 
 If you want to see AIDR in operation, go to: http://aidr.qcri.org/
 
-If you need help, check the [Operator's Manual](https://github.com/qcri-social/AIDR/wiki/AIDR%20Operator%27s%20Manual)
-
 # Documentation for Developers
 
 To build AIDR using maven use:
